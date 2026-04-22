@@ -1,0 +1,3733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Trescinco Volkswagen</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #001E50;
+  --sky:    #00B0F0;
+  --white:  #FFFFFF;
+  --bg:     #F0F3F8;
+  --card:   #FFFFFF;
+  --border: #E2E8F0;
+  --ink:    #0F172A;
+  --mid:    #475569;
+  --light:  #94A3B8;
+  --frio:   #3B82F6;
+  --morno:  #F59E0B;
+  --quente: #EF4444;
+  --vendido:#10B981;
+  --sidebar-w: 240px;
+}
+
+html, body { height: 100%; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; -webkit-font-smoothing: antialiased; }
+
+/* ── LAYOUT ── */
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: #001E50;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-logo svg { width: 36px; height: 36px; flex-shrink: 0; }
+
+.sidebar-logo-text .sub  { font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,.45); }
+.sidebar-logo-text .name { font-size: 15px; font-weight: 800; color: white; margin-top: 2px; }
+
+.sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,.55);
+  transition: all .15s;
+  user-select: none;
+}
+
+.nav-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.85); }
+
+.nav-item.active { background: rgba(0,176,240,.15); color: #00B0F0; }
+
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.nav-label { flex: 1; }
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  line-height: 1.5;
+}
+
+.live-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: #10B981;
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── MAIN ── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.topbar-title { font-size: 16px; font-weight: 700; color: var(--navy); }
+.topbar-sub   { font-size: 12px; color: var(--light); margin-top: 1px; }
+
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.period-tabs { display: flex; background: var(--bg); border-radius: 6px; padding: 3px; gap: 2px; }
+
+.period-tab {
+  padding: 5px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mid);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.period-tab.active { background: white; color: var(--navy); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+/* ── CONTENT ── */
+.content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+/* ── PAGE ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── KPI GRID ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+
+.kpi-card {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+}
+
+.kpi-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--light); margin-bottom: 10px; }
+.kpi-value { font-size: 32px; font-weight: 800; color: var(--navy); letter-spacing: -1px; line-height: 1; margin-bottom: 8px; }
+.kpi-delta { font-size: 12px; font-weight: 600; }
+.kpi-delta.up   { color: #10B981; }
+.kpi-delta.down { color: #EF4444; }
+.kpi-delta.neu  { color: var(--light); }
+
+/* ── GRID 2 ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+.card-sub   { font-size: 11px; color: var(--light); margin-top: 1px; }
+.card-body  { padding: 20px; }
+
+/* ── TEMP BARS ── */
+.temp-bar-list { display: flex; flex-direction: column; gap: 14px; }
+
+.temp-bar-row { display: flex; flex-direction: column; gap: 6px; }
+
+.temp-bar-head { display: flex; justify-content: space-between; align-items: center; }
+.temp-bar-name { font-size: 12px; font-weight: 600; }
+.temp-bar-val  { font-size: 12px; font-weight: 700; color: var(--mid); }
+
+.temp-bar-track { height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+.temp-bar-fill  { height: 100%; border-radius: 99px; transition: width .6s ease; }
+
+/* ── ORIGEM LIST ── */
+.origem-list { display: flex; flex-direction: column; gap: 12px; }
+
+.origem-row { display: flex; align-items: center; gap: 12px; }
+.origem-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.origem-name { font-size: 13px; color: var(--mid); flex: 1; }
+.origem-val  { font-size: 13px; font-weight: 700; color: var(--navy); }
+.origem-pct  { font-size: 11px; color: var(--light); width: 36px; text-align: right; }
+
+/* ── TABLE ── */
+.tbl { width: 100%; border-collapse: collapse; min-width: 860px; }
+.tbl th { background: var(--bg); padding: 10px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--light); white-space: nowrap; border-bottom: 1px solid var(--border); }
+.tbl td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--mid); vertical-align: middle; white-space: nowrap; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tbody tr { cursor: pointer; }
+.tbl tbody tr:hover td { background: #F0F7FF; }
+.tbl td.bold { font-weight: 600; color: var(--navy); }
+.tbl-wrap { overflow-x: auto; }
+
+/* ── LEAD DRAWER ── */
+.lead-drawer {
+  position: fixed; top: 0; right: -500px; width: 460px; height: 100vh;
+  background: white; border-left: 1px solid var(--border);
+  box-shadow: -8px 0 40px rgba(0,0,0,.14); z-index: 600;
+  display: flex; flex-direction: column;
+  transition: right .28s cubic-bezier(.4,0,.2,1);
+}
+.lead-drawer.open { right: 0; }
+.drawer-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.28);
+  z-index: 599; display: none; cursor: pointer;
+}
+.drawer-overlay.open { display: block; }
+.chat-area {
+  flex: 1; overflow-y: auto; padding: 14px 14px 20px;
+  display: flex; flex-direction: column; gap: 4px;
+  background: #ECEAE3;
+}
+.chat-bubble {
+  max-width: 78%; padding: 7px 10px 4px; border-radius: 8px;
+  font-size: 13px; line-height: 1.5; word-break: break-word;
+}
+.chat-bubble.bot {
+  background: white; color: #111; border-top-left-radius: 0;
+  align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+.chat-bubble.lead {
+  background: #D9FDD3; color: #111; border-top-right-radius: 0;
+  align-self: flex-end; box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+.chat-meta { display:flex; align-items:center; justify-content:flex-end; margin-top:2px; font-size:10px; color:#8696A0; }
+.chat-day {
+  align-self: center; background: rgba(255,255,255,.85); border-radius: 20px;
+  padding: 3px 12px; font-size: 11px; color: #667; margin: 8px 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+.badge.frio    { background: #EFF6FF; color: #2563EB; }
+.badge.morno   { background: #FFFBEB; color: #D97706; }
+.badge.quente  { background: #FEF2F2; color: #DC2626; }
+.badge.vendido { background: #ECFDF5; color: #059669; }
+
+.badge.frio    .badge-dot { background: #3B82F6; }
+.badge.morno   .badge-dot { background: #F59E0B; }
+.badge.quente  .badge-dot { background: #EF4444; }
+.badge.vendido .badge-dot { background: #10B981; }
+
+/* ── FILTERS ── */
+.filters { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
+
+.filter-input {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--ink);
+  background: white;
+  outline: none;
+  font-family: inherit;
+}
+
+.filter-input:focus { border-color: var(--sky); }
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--mid);
+  background: white;
+  outline: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ── FUNNEL v2 ── */
+.fn2-layout { display: grid; grid-template-columns: 1fr 232px; gap: 28px; align-items: start; }
+
+/* Pirâmide centralizada */
+.fn2-funnel { display: flex; flex-direction: column; align-items: center; gap: 0; max-width: 480px; }
+
+.fn2-bar {
+  width: 100%; border-radius: 12px; height: 72px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px; cursor: default; transition: filter .18s;
+}
+.fn2-bar:hover { filter: brightness(.95); }
+.fn2-bar-left  { display: flex; align-items: center; gap: 12px; }
+.fn2-bar-emoji { font-size: 22px; line-height: 1; }
+.fn2-bar-name  { font-size: 14px; font-weight: 800; color: white; letter-spacing: -.2px; }
+.fn2-bar-desc  { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; }
+.fn2-bar-right { text-align: right; }
+.fn2-bar-num   { font-size: 32px; font-weight: 900; color: white; letter-spacing: -1.5px; line-height: 1; }
+.fn2-bar-pct   { font-size: 11px; color: rgba(255,255,255,.65); font-weight: 600; margin-top: 3px; }
+
+.fn2-conn {
+  height: 38px; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--mid); gap: 8px;
+  width: 100%; position: relative;
+}
+.fn2-conn::before, .fn2-conn::after {
+  content: ''; position: absolute; top: 50%;
+  width: calc(50% - 90px); height: 1px; background: var(--border);
+}
+.fn2-conn::before { left: 0; }
+.fn2-conn::after  { right: 0; }
+.fn2-conn-inner {
+  background: white; border: 1px solid var(--border); border-radius: 99px;
+  padding: 4px 14px; white-space: nowrap; position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 6px;
+}
+.fn2-conn-adv  { font-weight: 700; }
+.fn2-conn-lost { color: #DC2626; font-weight: 600; }
+.fn2-conn-gargalo {
+  background: #FEF3C7; border-color: #FCD34D; color: #92400E;
+}
+.fn2-conn-gargalo .fn2-conn-adv { color: #92400E; }
+.fn2-conn-gargalo .fn2-conn-lost { color: #B45309; }
+.fn2-conn-badge {
+  background: #F59E0B; color: white; border-radius: 99px;
+  padding: 1px 7px; font-size: 9px; font-weight: 800;
+}
+
+/* Painel direito */
+.fn2-side { display: flex; flex-direction: column; gap: 8px; }
+.fn2-side-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  background: var(--bg); border-radius: 8px;
+}
+.fn2-side-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.fn2-side-label { flex: 1; font-size: 12px; font-weight: 600; color: var(--navy); }
+.fn2-side-val { font-size: 16px; font-weight: 800; color: var(--navy); letter-spacing: -.5px; }
+.fn2-side-pct { font-size: 10px; color: var(--light); font-weight: 600; }
+
+.fn2-metric {
+  background: var(--bg); border-radius: 8px; padding: 12px 14px;
+  margin-top: 4px;
+}
+.fn2-metric-label { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--light); margin-bottom: 4px; }
+.fn2-metric-val   { font-size: 18px; font-weight: 800; color: var(--navy); letter-spacing: -.5px; }
+.fn2-metric-sub   { font-size: 11px; color: var(--mid); margin-top: 2px; }
+
+/* Setor */
+.setor-row {
+  display: grid; grid-template-columns: 180px 60px 1fr 80px 70px;
+  align-items: center; gap: 16px;
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  transition: background .12s;
+}
+.setor-row:last-child { border-bottom: none; }
+.setor-row:hover { background: #F8FAFC; }
+.setor-label { display: flex; align-items: center; gap: 10px; }
+.setor-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.setor-name  { font-size: 13px; font-weight: 700; color: var(--navy); }
+.setor-sub   { font-size: 11px; color: var(--light); margin-top: 1px; }
+.setor-count { font-size: 18px; font-weight: 800; color: var(--navy); letter-spacing: -.5px; text-align: right; }
+.setor-bar-wrap { }
+.setor-bar-track { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.setor-bar-fill  { height: 100%; border-radius: 99px; }
+.setor-conv { text-align: right; font-size: 13px; font-weight: 700; }
+.setor-hot  { text-align: right; font-size: 13px; color: var(--mid); }
+
+/* ── OFERTAS ── */
+.oferta-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.oferta-card {
+  background: white; border: 1.5px solid var(--border); border-radius: 14px;
+  overflow: hidden; transition: box-shadow .18s, transform .18s;
+}
+.oferta-card:hover { box-shadow: 0 4px 20px rgba(0,30,80,.09); transform: translateY(-2px); }
+.oferta-card-head {
+  padding: 16px 18px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+}
+.oferta-card-titulo { font-size: 14px; font-weight: 800; color: var(--navy); line-height: 1.3; }
+.oferta-card-veiculo {
+  font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+  background: var(--navy); color: white; border-radius: 99px; padding: 3px 10px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.oferta-card-veiculo.todos { background: var(--sky); }
+.oferta-card-body { padding: 14px 18px; }
+.oferta-beneficios { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+.oferta-beneficio {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12px; color: var(--mid); line-height: 1.4;
+}
+.oferta-beneficio::before { content: '✦'; color: var(--sky); font-size: 10px; margin-top: 2px; flex-shrink: 0; }
+.oferta-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 18px 14px; gap: 8px;
+}
+.oferta-validade { font-size: 10px; color: var(--light); font-weight: 600; }
+.oferta-tag {
+  font-size: 10px; font-weight: 700; border-radius: 99px; padding: 3px 10px;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.oferta-tag.destaque { background: #FEF3C7; color: #92400E; }
+.oferta-tag.taxa     { background: #DBEAFE; color: #1D4ED8; }
+.oferta-tag.desconto { background: #DCFCE7; color: #15803D; }
+.oferta-tag.pcd      { background: #F3E8FF; color: #7C3AED; }
+.oferta-tag.padrao   { background: var(--bg); color: var(--mid); }
+.oferta-site-badge {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 10px;
+  background: #F0FDF4; color: #15803D; border-radius: 99px; padding: 3px 10px;
+  font-weight: 700; border: 1px solid #BBF7D0;
+}
+
+/* ── FOLLOW-UP ── */
+.fu-cats { display:flex; gap:8px; margin-bottom:20px; overflow-x:auto; padding-bottom:2px; }
+.fu-cat {
+  flex:1; min-width:138px; background:white; border:2px solid var(--border);
+  border-radius:12px; padding:14px 14px 12px; cursor:pointer; transition:.18s;
+  display:flex; flex-direction:column; gap:5px;
+}
+.fu-cat:hover { border-color:var(--sky); box-shadow:0 2px 10px rgba(0,176,240,.1); }
+.fu-cat.active { border-color:var(--navy); background:var(--navy); }
+.fu-cat-icon { font-size:22px; line-height:1; }
+.fu-cat-name { font-size:12px; font-weight:700; color:var(--navy); margin-top:2px; }
+.fu-cat.active .fu-cat-name { color:white; }
+.fu-cat-desc { font-size:10px; color:var(--light); line-height:1.4; }
+.fu-cat.active .fu-cat-desc { color:rgba(255,255,255,.55); }
+.fu-cat-footer { display:flex; align-items:center; justify-content:space-between; margin-top:6px; }
+.fu-cat-count { font-size:18px; font-weight:800; color:var(--navy); letter-spacing:-0.5px; }
+.fu-cat.active .fu-cat-count { color:white; }
+.fu-cat-last { font-size:9px; color:var(--light); }
+.fu-cat.active .fu-cat-last { color:rgba(255,255,255,.45); }
+
+.fu-layout { display:grid; grid-template-columns:1fr 370px; gap:16px; align-items:start; }
+.fu-panel { background:white; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.fu-panel-head {
+  padding:11px 16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+.fu-panel-title { font-size:12px; font-weight:700; color:var(--navy); flex:1; }
+.fu-search {
+  flex:1; border:1px solid var(--border); border-radius:6px; padding:5px 10px;
+  font-size:12px; color:var(--navy); outline:none; font-family:inherit;
+}
+.fu-search:focus { border-color:var(--navy); }
+.fu-select-bar {
+  padding:8px 16px; background:var(--bg); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px; font-size:12px;
+}
+.fu-contact-list { max-height:340px; overflow-y:auto; }
+.fu-contact-item {
+  display:flex; align-items:center; gap:10px; padding:10px 16px;
+  border-bottom:1px solid var(--border); cursor:pointer; transition:.12s; user-select:none;
+}
+.fu-contact-item:last-child { border-bottom:none; }
+.fu-contact-item:hover { background:#F8FAFC; }
+.fu-contact-item.sel { background:#EFF6FF; }
+.fu-chk {
+  width:16px; height:16px; border-radius:4px; border:2px solid var(--border);
+  flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:.12s;
+}
+.fu-contact-item.sel .fu-chk { background:var(--sky); border-color:var(--sky); }
+.fu-chk::after { content:''; }
+.fu-contact-item.sel .fu-chk::after { content:'✓'; color:white; font-size:9px; font-weight:900; }
+.fu-av {
+  width:32px; height:32px; border-radius:50%; background:var(--bg); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;
+  color:var(--navy); flex-shrink:0;
+}
+.fu-cn { font-size:13px; font-weight:600; color:var(--navy); }
+.fu-cs { font-size:11px; color:var(--light); margin-top:1px; }
+.fu-tel { font-size:11px; color:var(--mid); margin-left:auto; white-space:nowrap; }
+.fu-empty-list { padding:28px; text-align:center; font-size:13px; color:var(--light); }
+
+.fu-template {
+  width:100%; padding:14px; font-size:13px; font-family:inherit; color:var(--navy);
+  line-height:1.65; border:none; resize:none; outline:none; min-height:190px; box-sizing:border-box;
+}
+.fu-vars {
+  padding:8px 12px; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+  display:flex; gap:5px; flex-wrap:wrap; background:var(--bg);
+}
+.fu-var {
+  background:white; border:1px solid var(--border); border-radius:99px;
+  padding:3px 10px; font-size:11px; font-weight:600; color:var(--navy);
+  cursor:pointer; transition:.12s;
+}
+.fu-var:hover { border-color:var(--sky); color:var(--sky); }
+.fu-sched { padding:12px 14px; border-top:1px solid var(--border); display:flex; gap:8px; }
+.fu-sched-opt {
+  flex:1; padding:8px 6px; border:2px solid var(--border); border-radius:8px; text-align:center;
+  cursor:pointer; transition:.15s; font-size:11px; font-weight:600; color:var(--mid);
+}
+.fu-sched-opt.on { border-color:var(--navy); color:var(--navy); background:#EFF6FF; }
+.fu-date-input {
+  border:1px solid var(--border); border-radius:6px; padding:7px 10px; font-size:12px;
+  font-family:inherit; color:var(--navy); outline:none; width:100%;
+}
+.fu-send-btn {
+  width:100%; background:#25D366; color:white; border:none; border-radius:8px;
+  padding:13px; font-size:13px; font-weight:700; cursor:pointer; transition:.15s;
+  display:flex; align-items:center; justify-content:center; gap:8px; margin-top:12px;
+}
+.fu-send-btn:hover { background:#1DB954; }
+.fu-send-btn:disabled { background:var(--border); color:var(--light); cursor:not-allowed; }
+.fu-meta-bar {
+  display:flex; gap:0; border-top:1px solid var(--border); background:var(--bg);
+}
+.fu-meta-item { flex:1; padding:12px 14px; border-right:1px solid var(--border); }
+.fu-meta-item:last-child { border-right:none; }
+.fu-meta-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--light); margin-bottom:3px; }
+.fu-meta-val { font-size:16px; font-weight:800; color:var(--navy); }
+.fu-meta-sub { font-size:10px; color:var(--light); margin-top:1px; }
+
+/* ── RECURSOS ── */
+.res-toolbar { display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+.res-tabs { display:flex; gap:4px; background:white; border:1px solid var(--border); border-radius:8px; padding:3px; flex-wrap:wrap; }
+.res-tab {
+  padding:5px 13px; border-radius:6px; font-size:12px; font-weight:600;
+  color:var(--light); cursor:pointer; transition:.15s; white-space:nowrap;
+}
+.res-tab:hover { color:var(--navy); background:var(--bg); }
+.res-tab.active { background:var(--navy); color:white; }
+.res-section { margin-bottom:24px; }
+.res-section-head {
+  display:flex; align-items:center; gap:8px; margin-bottom:12px;
+  padding-bottom:10px; border-bottom:1px solid var(--border);
+}
+.res-section-icon { font-size:16px; }
+.res-section-title { font-size:13px; font-weight:700; color:var(--navy); flex:1; }
+.res-section-count { font-size:11px; font-weight:600; color:var(--light);
+  background:var(--bg); border:1px solid var(--border); border-radius:99px;
+  padding:2px 8px; }
+.res-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+.res-card {
+  background:white; border:1px solid var(--border); border-radius:10px;
+  padding:14px; cursor:pointer; transition:.15s;
+  display:flex; flex-direction:column; gap:10px;
+}
+.res-card:hover { border-color:var(--sky); box-shadow:0 2px 12px rgba(0,176,240,.1); }
+.res-thumb {
+  width:100%; height:72px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center; font-size:28px;
+  flex-shrink:0;
+}
+.res-thumb.veiculo  { background:#EFF6FF; }
+.res-thumb.documento{ background:#F0FDF4; }
+.res-thumb.video    { background:#FFF7ED; }
+.res-thumb.audio    { background:#FDF4FF; }
+.res-thumb.foto     { background:#FFF1F2; object-fit:cover; }
+.res-card-name { font-size:12px; font-weight:600; color:var(--navy); line-height:1.35;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.res-card-meta { font-size:11px; color:var(--light); }
+.res-card-footer { display:flex; align-items:center; justify-content:space-between; }
+.res-auto-tag { font-size:9px; font-weight:700; letter-spacing:.8px; text-transform:uppercase;
+  color:var(--sky); background:rgba(0,176,240,.1); border-radius:99px; padding:2px 7px; }
+.res-type-tag { font-size:9px; font-weight:700; letter-spacing:.8px; text-transform:uppercase;
+  color:var(--light); background:var(--bg); border-radius:99px; padding:2px 7px; border:1px solid var(--border); }
+.res-empty { text-align:center; padding:32px 20px; color:var(--light); font-size:13px; grid-column:1/-1; }
+.res-drop-zone {
+  border:2px dashed var(--border); border-radius:10px; padding:32px;
+  text-align:center; cursor:pointer; transition:.15s; margin-bottom:20px;
+}
+.res-drop-zone:hover { border-color:var(--sky); background:rgba(0,176,240,.04); }
+
+/* ── FILTER MODAL ── */
+.filter-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 14px; border-radius: 6px;
+  font-size: 12px; font-weight: 600; color: var(--mid);
+  background: var(--bg); border: 1px solid var(--border);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.filter-btn:hover { border-color: var(--navy); color: var(--navy); }
+.filter-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.filter-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: white; border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  padding: 16px; min-width: 280px; z-index: 200;
+  display: none;
+}
+.filter-dropdown.open { display: block; }
+
+.filter-dropdown-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--light); margin-bottom: 10px; }
+
+.month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+.month-chip {
+  padding: 6px 4px; text-align: center; border-radius: 6px;
+  font-size: 12px; font-weight: 600; color: var(--mid);
+  background: var(--bg); border: 1px solid transparent;
+  cursor: pointer; transition: all .15s;
+}
+.month-chip:hover { border-color: var(--navy); color: var(--navy); }
+.month-chip.active { background: var(--navy); color: white; }
+
+.custom-range { display: flex; gap: 8px; align-items: center; }
+.custom-range input[type=date] {
+  flex: 1; padding: 6px 10px; border-radius: 6px;
+  border: 1px solid var(--border); font-size: 12px; color: var(--ink);
+  font-family: inherit; outline: none;
+}
+.custom-range input[type=date]:focus { border-color: var(--navy); }
+.custom-range-sep { font-size: 11px; color: var(--light); font-weight: 600; }
+
+.filter-apply-btn {
+  width: 100%; margin-top: 12px; padding: 8px;
+  background: var(--navy); color: white; border: none; border-radius: 6px;
+  font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity .15s;
+}
+.filter-apply-btn:hover { opacity: .85; }
+
+/* ── RANKING ── */
+.rank-list { display: flex; flex-direction: column; gap: 0; }
+
+.rank-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 80px 80px 80px 100px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+
+.rank-row:last-child { border-bottom: none; }
+.rank-row:hover { background: #F8FAFC; }
+
+.rank-pos { font-size: 14px; font-weight: 800; color: var(--light); }
+.rank-pos.gold   { color: #F59E0B; }
+.rank-pos.silver { color: #94A3B8; }
+.rank-pos.bronze { color: #B45309; }
+
+.rank-name { font-size: 13px; font-weight: 600; color: var(--navy); }
+.rank-loja { font-size: 11px; color: var(--light); margin-top: 2px; }
+
+.rank-num { font-size: 14px; font-weight: 700; color: var(--mid); text-align: right; }
+.rank-pct { font-size: 13px; font-weight: 700; text-align: right; }
+
+.rank-bar-wrap { padding-left: 12px; }
+.rank-bar-track { height: 5px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+.rank-bar-fill  { height: 100%; background: var(--sky); border-radius: 99px; }
+
+/* ── FIELD INPUTS ── */
+.field-label { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--mid); display:block; margin-bottom:6px; }
+.field-input { width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:6px; font-size:13px; font-family:inherit; outline:none; color:var(--ink); background:white; }
+.field-input:focus { border-color:var(--navy); }
+
+/* ── MODELO GROUP ── */
+.modelo-group { background:white; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.modelo-header {
+  display:flex; align-items:center; gap:14px; padding:16px 20px;
+  cursor:pointer; user-select:none; transition:background .15s;
+}
+.modelo-header:hover { background:#F8FAFC; }
+.modelo-icon { width:40px; height:40px; border-radius:8px; background:var(--navy); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.modelo-name { font-size:15px; font-weight:800; color:var(--navy); }
+.modelo-seg  { font-size:11px; color:var(--light); margin-top:2px; font-weight:500; }
+.modelo-count { margin-left:auto; background:var(--bg); border:1px solid var(--border); border-radius:99px; padding:2px 12px; font-size:11px; font-weight:700; color:var(--mid); }
+.modelo-chevron { width:16px; height:16px; stroke:var(--light); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:transform .2s; }
+.modelo-group.open .modelo-chevron { transform:rotate(180deg); }
+.modelo-actions { display:flex; gap:6px; margin-left:8px; }
+
+.versoes-list { display:none; border-top:1px solid var(--border); }
+.modelo-group.open .versoes-list { display:block; }
+
+/* ── VERSÃO ROW ── */
+.versao-row {
+  display:grid;
+  grid-template-columns: 1fr 72px 90px 90px 100px 90px auto;
+  align-items:center; gap:12px;
+  padding:13px 20px;
+  border-bottom:1px solid var(--border);
+  transition:background .1s; cursor:pointer;
+}
+.versao-row:last-child { border-bottom:none; }
+.versao-row:hover { background:#F8FAFC; }
+.versao-row.editing { background:#F0F7FF; cursor:default; }
+.versao-row.inativo  { opacity:.42; }
+.modelo-group.inativo > .modelo-header { opacity:.6; }
+
+/* Toggle switch reutilizável */
+.sw-wrap { display:inline-flex;align-items:center;gap:5px;cursor:pointer;flex-shrink:0; }
+.sw-track { width:34px;height:19px;background:var(--border);border-radius:99px;position:relative;transition:.18s;flex-shrink:0; }
+.sw-track::after { content:'';position:absolute;width:15px;height:15px;background:white;border-radius:50%;top:2px;left:2px;transition:.18s;box-shadow:0 1px 2px rgba(0,0,0,.2); }
+.sw-track.on { background:#22C55E; }
+.sw-track.on::after { left:17px; }
+.sw-label { font-size:11px;font-weight:600; }
+
+.versao-name { font-size:13px; font-weight:700; color:var(--navy); }
+.versao-sub  { font-size:11px; color:var(--light); margin-top:1px; }
+
+.v-badge { display:inline-block; padding:2px 9px; border-radius:99px; font-size:11px; font-weight:600; }
+.v-badge.cambio   { background:#EFF6FF; color:#1D4ED8; }
+.v-badge.comb     { background:#F0FDF4; color:#15803D; }
+
+.versao-row-actions { display:flex; gap:6px; justify-content:flex-end; }
+
+/* ── DETAIL PAGE ── */
+.detail-back { display:flex; align-items:center; gap:8px; color:var(--mid); font-size:13px; font-weight:600; cursor:pointer; margin-bottom:20px; transition:color .15s; width:fit-content; }
+.detail-back:hover { color:var(--navy); }
+.detail-back svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+.detail-hero { background:linear-gradient(135deg,#001E50 0%,#003080 100%); border-radius:12px; padding:32px; margin-bottom:20px; display:flex; align-items:center; gap:32px; }
+.detail-hero-icon { font-size:64px; opacity:.9; }
+.detail-hero-body { flex:1; }
+.detail-hero-modelo { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.5); margin-bottom:4px; }
+.detail-hero-name { font-size:28px; font-weight:900; color:white; letter-spacing:-0.5px; }
+.detail-hero-tags { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.detail-hero-tag { background:rgba(255,255,255,.12); color:rgba(255,255,255,.85); font-size:12px; font-weight:600; padding:4px 14px; border-radius:99px; }
+.detail-hero-price { text-align:right; }
+.detail-hero-price-label { font-size:11px; color:rgba(255,255,255,.5); font-weight:600; }
+.detail-hero-price-val { font-size:26px; font-weight:900; color:white; margin-top:4px; }
+
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+
+.detail-section { background:white; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.detail-section-head { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.detail-section-title { font-size:13px; font-weight:700; color:var(--navy); }
+.detail-section-body { padding:16px 18px; }
+
+.detail-field-row { display:flex; justify-content:space-between; align-items:flex-start; padding:7px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.detail-field-row:last-child { border-bottom:none; }
+.detail-field-key { color:var(--light); font-weight:500; }
+.detail-field-val { color:var(--navy); font-weight:600; text-align:right; max-width:60%; }
+
+.foto-thumb { width:100px; height:72px; border-radius:8px; object-fit:cover; border:1px solid var(--border); }
+.foto-placeholder { width:100px; height:72px; border-radius:8px; background:var(--bg); border:2px dashed var(--border); display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; transition:border-color .15s; }
+.foto-placeholder:hover { border-color:var(--navy); }
+
+/* ── KNOWLEDGE BLOCKS ── */
+.knowledge-block { padding:16px 20px; border-bottom:1px solid var(--border); }
+.knowledge-block:last-child { border-bottom:none; }
+.kb-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.kb-body { font-size:13px; color:var(--mid); line-height:1.65; }
+
+/* ── TOM DE VOZ / IA CONFIG ── */
+.tone-option {
+  border:2px solid var(--border); border-radius:8px; padding:12px 14px;
+  cursor:pointer; transition:all .15s;
+}
+.tone-option:hover { border-color:var(--sky); }
+.tone-option.active-tone { border-color:var(--navy); background:#F8FAFF; }
+
+/* ── TOGGLE ── */
+.toggle {
+  width:40px; height:22px; border-radius:99px; background:var(--border);
+  position:relative; cursor:pointer; transition:background .2s; flex-shrink:0;
+}
+.toggle.active-toggle { background:var(--navy); }
+.toggle-knob {
+  position:absolute; top:3px; left:3px; width:16px; height:16px;
+  border-radius:50%; background:white; transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.active-toggle .toggle-knob { transform:translateX(18px); }
+
+/* ── GESTÃO ── */
+.mgmt-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+
+.btn-primary {
+  background: var(--navy);
+  color: white;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: background .15s;
+}
+
+.btn-primary:hover { background: #002870; }
+
+.btn-ghost {
+  background: white;
+  color: var(--mid);
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+}
+
+.btn-ghost:hover { border-color: var(--navy); color: var(--navy); }
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-pill.on  { background: #ECFDF5; color: #059669; }
+.status-pill.off { background: #FEF2F2; color: #DC2626; }
+
+.status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+.rodizio-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mid);
+}
+
+.rodizio-badge.next { background: #EFF6FF; border-color: #BFDBFE; color: #2563EB; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
+      <text x="50" y="63" text-anchor="middle" font-family="Inter, Arial" font-weight="900" font-size="28" fill="white" letter-spacing="-1">VW</text>
+    </svg>
+    <div class="sidebar-logo-text">
+      <div class="sub">Trescinco</div>
+      <div class="name">Volkswagen</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-item active" onclick="navigate('overview',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-label">Visão Geral</span>
+    </div>
+    <div class="nav-item" onclick="navigate('leads',this)">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      <span class="nav-label">Leads ao Vivo</span>
+      <span style="background:rgba(0,176,240,.2);color:#00B0F0;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;">12</span>
+    </div>
+    <div class="nav-item" onclick="navigate('funil',this)">
+      <svg viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"/></svg>
+      <span class="nav-label">Funil de Vendas</span>
+    </div>
+    <div class="nav-item" onclick="navigate('ranking',this)">
+      <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      <span class="nav-label">Ranking</span>
+    </div>
+    <div class="nav-item" onclick="navigate('gestao',this)">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Gestão de Vendedores</span>
+    </div>
+
+    <!-- DIVISOR: CÉREBRO DA IA -->
+    <div style="margin:14px 0 10px;padding:0 4px;">
+      <div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:12px;"></div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:0 8px;">Cérebro da IA</div>
+    </div>
+
+    <div class="nav-item" onclick="navigate('veiculos',this)">
+      <svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v5"/><path d="M14 21H6a2 2 0 01-2-2v-2"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="17" r="3"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="nav-label">Veículos</span>
+    </div>
+    <div class="nav-item" onclick="navigate('informacoes',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span class="nav-label">Informações</span>
+    </div>
+    <div class="nav-item" onclick="navigate('recursos',this)">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h.01M11 8h6M7 12h.01M11 12h6"/></svg>
+      <span class="nav-label">Recursos</span>
+    </div>
+    <div class="nav-item" onclick="navigate('ofertas',this)">
+      <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+      <span class="nav-label">Ofertas</span>
+    </div>
+    <div class="nav-item" onclick="navigate('configia',this)">
+      <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 017 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      <span class="nav-label">Configurar IA</span>
+    </div>
+
+    <!-- DIVISOR: DISPAROS -->
+    <div style="margin:14px 0 10px;padding:0 4px;">
+      <div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:12px;"></div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:0 8px;">Disparos</div>
+    </div>
+
+    <div class="nav-item" onclick="navigate('followup',this)">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>
+      <span class="nav-label">Follow-up</span>
+      <span style="background:rgba(37,211,102,.2);color:#25D366;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;">5</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div><span class="live-dot"></span>Tempo real · Supabase</div>
+    <div style="margin-top:4px;">Atualizado agora</div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Visão Geral</div>
+      <div class="topbar-sub">Trescinco Volkswagen · Abril de 2026</div>
+    </div>
+    <div class="topbar-right">
+      <div class="period-tabs">
+        <div class="period-tab active" onclick="setPeriod('Hoje',this)">Hoje</div>
+        <div class="period-tab" onclick="setPeriod('Semana',this)">Semana</div>
+        <div class="period-tab" onclick="setPeriod('Mês',this)">Mês</div>
+      </div>
+
+      <!-- Filtro de Mês -->
+      <div style="position:relative;">
+        <div class="filter-btn" onclick="toggleFilter('month-filter')" id="month-filter-btn">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span id="month-filter-label">Abril 2026</span>
+        </div>
+        <div class="filter-dropdown" id="month-filter">
+          <div class="filter-dropdown-title">Selecionar Mês</div>
+          <div class="month-grid">
+            <div class="month-chip" onclick="selectMonth('Jan','month-filter-label',this)">Jan</div>
+            <div class="month-chip" onclick="selectMonth('Fev','month-filter-label',this)">Fev</div>
+            <div class="month-chip" onclick="selectMonth('Mar','month-filter-label',this)">Mar</div>
+            <div class="month-chip active" onclick="selectMonth('Abr','month-filter-label',this)">Abr</div>
+            <div class="month-chip" onclick="selectMonth('Mai','month-filter-label',this)">Mai</div>
+            <div class="month-chip" onclick="selectMonth('Jun','month-filter-label',this)">Jun</div>
+            <div class="month-chip" onclick="selectMonth('Jul','month-filter-label',this)">Jul</div>
+            <div class="month-chip" onclick="selectMonth('Ago','month-filter-label',this)">Ago</div>
+            <div class="month-chip" onclick="selectMonth('Set','month-filter-label',this)">Set</div>
+            <div class="month-chip" onclick="selectMonth('Out','month-filter-label',this)">Out</div>
+            <div class="month-chip" onclick="selectMonth('Nov','month-filter-label',this)">Nov</div>
+            <div class="month-chip" onclick="selectMonth('Dez','month-filter-label',this)">Dez</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtro Período Personalizado -->
+      <div style="position:relative;">
+        <div class="filter-btn" onclick="toggleFilter('custom-filter')" id="custom-filter-btn">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="custom-filter-label">Período</span>
+        </div>
+        <div class="filter-dropdown" id="custom-filter">
+          <div class="filter-dropdown-title">Período Personalizado</div>
+          <div class="custom-range">
+            <input type="date" id="date-from" value="2026-04-01">
+            <span class="custom-range-sep">até</span>
+            <input type="date" id="date-to" value="2026-04-18">
+          </div>
+          <button class="filter-apply-btn" onclick="applyCustomRange()">Aplicar Período</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ PAGE: VISÃO GERAL ══ -->
+    <div class="page active" id="page-overview">
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Total de Leads</div>
+          <div class="kpi-value">127</div>
+          <div class="kpi-delta up">↑ 18% vs ontem</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Taxa de Conversão</div>
+          <div class="kpi-value">22<span style="font-size:18px;font-weight:500;color:var(--mid)">%</span></div>
+          <div class="kpi-delta up">↑ 4% vs ontem</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Leads Quentes</div>
+          <div class="kpi-value" style="color:var(--quente)">31</div>
+          <div class="kpi-delta neu">24% do total</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Vendidos Hoje</div>
+          <div class="kpi-value" style="color:var(--vendido)">8</div>
+          <div class="kpi-delta up">↑ 2 vs ontem</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Temperatura -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Leads por Temperatura</div>
+              <div class="card-sub">Distribuição atual</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="temp-bar-list">
+              <div class="temp-bar-row">
+                <div class="temp-bar-head">
+                  <span class="temp-bar-name" style="color:var(--frio)">❄ Frio</span>
+                  <span class="temp-bar-val">58 leads</span>
+                </div>
+                <div class="temp-bar-track">
+                  <div class="temp-bar-fill" style="width:46%;background:var(--frio)"></div>
+                </div>
+              </div>
+              <div class="temp-bar-row">
+                <div class="temp-bar-head">
+                  <span class="temp-bar-name" style="color:var(--morno)">◑ Morno</span>
+                  <span class="temp-bar-val">30 leads</span>
+                </div>
+                <div class="temp-bar-track">
+                  <div class="temp-bar-fill" style="width:24%;background:var(--morno)"></div>
+                </div>
+              </div>
+              <div class="temp-bar-row">
+                <div class="temp-bar-head">
+                  <span class="temp-bar-name" style="color:var(--quente)">▲ Quente</span>
+                  <span class="temp-bar-val">31 leads</span>
+                </div>
+                <div class="temp-bar-track">
+                  <div class="temp-bar-fill" style="width:24%;background:var(--quente)"></div>
+                </div>
+              </div>
+              <div class="temp-bar-row">
+                <div class="temp-bar-head">
+                  <span class="temp-bar-name" style="color:var(--vendido)">✓ Vendido</span>
+                  <span class="temp-bar-val">8 leads</span>
+                </div>
+                <div class="temp-bar-track">
+                  <div class="temp-bar-fill" style="width:6%;background:var(--vendido)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Origem -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Origem dos Leads</div>
+              <div class="card-sub">Por canal de entrada</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="origem-list">
+              <div class="origem-row">
+                <div class="origem-dot" style="background:#25D366"></div>
+                <div class="origem-name">WhatsApp</div>
+                <div class="origem-val">74</div>
+                <div class="origem-pct">58%</div>
+              </div>
+              <div class="origem-row">
+                <div class="origem-dot" style="background:#E1306C"></div>
+                <div class="origem-name">Instagram</div>
+                <div class="origem-val">28</div>
+                <div class="origem-pct">22%</div>
+              </div>
+              <div class="origem-row">
+                <div class="origem-dot" style="background:#1877F2"></div>
+                <div class="origem-name">Facebook</div>
+                <div class="origem-val">16</div>
+                <div class="origem-pct">13%</div>
+              </div>
+              <div class="origem-row">
+                <div class="origem-dot" style="background:#FF6B00"></div>
+                <div class="origem-name">Usado Fácil</div>
+                <div class="origem-val">9</div>
+                <div class="origem-pct">7%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <!-- Interesse -->
+        <div class="card">
+          <div class="card-head"><div class="card-title">Interesse</div></div>
+          <div class="card-body" style="padding:0">
+            <table class="tbl">
+              <tbody>
+                <tr><td class="bold">Veículos Novos</td><td style="text-align:right;font-weight:700;color:var(--navy)">52</td></tr>
+                <tr><td class="bold">Usados</td><td style="text-align:right;font-weight:700;color:var(--navy)">31</td></tr>
+                <tr><td class="bold">Consórcio</td><td style="text-align:right;font-weight:700;color:var(--navy)">18</td></tr>
+                <tr><td class="bold">PCD / Corp.</td><td style="text-align:right;font-weight:700;color:var(--navy)">14</td></tr>
+                <tr><td class="bold">Serviços</td><td style="text-align:right;font-weight:700;color:var(--navy)">8</td></tr>
+                <tr><td class="bold">Assinatura</td><td style="text-align:right;font-weight:700;color:var(--navy)">4</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Modalidade -->
+        <div class="card">
+          <div class="card-head"><div class="card-title">Modalidade</div></div>
+          <div class="card-body" style="padding:0">
+            <table class="tbl">
+              <tbody>
+                <tr><td class="bold">Financiamento</td><td style="text-align:right;font-weight:700;color:var(--navy)">68</td></tr>
+                <tr><td class="bold">À vista</td><td style="text-align:right;font-weight:700;color:var(--navy)">34</td></tr>
+                <tr><td class="bold">Consórcio</td><td style="text-align:right;font-weight:700;color:var(--navy)">25</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Modelos -->
+        <div class="card">
+          <div class="card-head"><div class="card-title">Modelos Mais Buscados</div></div>
+          <div class="card-body" style="padding:0">
+            <table class="tbl">
+              <tbody>
+                <tr><td class="bold">Polo Track</td><td style="text-align:right;font-weight:700;color:var(--navy)">29</td></tr>
+                <tr><td class="bold">T-Cross</td><td style="text-align:right;font-weight:700;color:var(--navy)">22</td></tr>
+                <tr><td class="bold">Virtus</td><td style="text-align:right;font-weight:700;color:var(--navy)">18</td></tr>
+                <tr><td class="bold">Nivus</td><td style="text-align:right;font-weight:700;color:var(--navy)">14</td></tr>
+                <tr><td class="bold">Saveiro</td><td style="text-align:right;font-weight:700;color:var(--navy)">11</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ PAGE: LEADS AO VIVO ══ -->
+    <div class="page" id="page-leads">
+
+      <div class="filters">
+        <input class="filter-input" placeholder="Buscar cliente..." style="flex:1;max-width:280px;">
+        <select class="filter-select">
+          <option>Todos os status</option>
+          <option>Frio</option>
+          <option>Morno</option>
+          <option>Quente</option>
+          <option>Vendido</option>
+        </select>
+        <select class="filter-select">
+          <option>Todas as lojas</option>
+          <option>Loja 1 — Cuiabá</option>
+          <option>Loja 2</option>
+        </select>
+        <select class="filter-select">
+          <option>Todas as origens</option>
+          <option>WhatsApp</option>
+          <option>Instagram</option>
+          <option>Facebook</option>
+          <option>Usado Fácil</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Telefone</th>
+                <th>Origem</th>
+                <th>Interesse</th>
+                <th>Modelo</th>
+                <th>Modalidade</th>
+                <th>Status</th>
+                <th>Vendedor</th>
+                <th>Entrada</th>
+                <th>Últ. contato</th>
+              </tr>
+            </thead>
+            <tbody id="leads-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: FUNIL ══ -->
+    <div class="page" id="page-funil">
+
+      <!-- KPIs -->
+      <div class="kpi-grid" style="margin-bottom:20px;">
+        <div class="kpi-card">
+          <div class="kpi-label">Leads no Funil</div>
+          <div class="kpi-value">127</div>
+          <div class="kpi-delta up">↑ 18% vs período anterior</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Taxa de Conversão</div>
+          <div class="kpi-value">6<span style="font-size:18px;font-weight:500;color:var(--mid)">%</span></div>
+          <div class="kpi-delta neu">Frio → Vendido</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Maior Gargalo</div>
+          <div class="kpi-value" style="font-size:18px;margin-bottom:4px;">Morno→Quente</div>
+          <div class="kpi-delta down">↓ 65% de perda</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Vendidos Hoje</div>
+          <div class="kpi-value" style="color:var(--vendido)">8</div>
+          <div class="kpi-delta up">↑ 2 vs ontem</div>
+        </div>
+      </div>
+
+      <!-- Funil v2 -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Funil de Vendas</div>
+            <div class="card-sub">Progressão de leads por etapa — Abril 2026</div>
+          </div>
+          <div style="font-size:11px;color:var(--light);background:var(--bg);padding:6px 14px;border-radius:99px;font-weight:600;">127 leads ativos</div>
+        </div>
+        <div class="card-body" style="padding:28px 32px 32px;">
+
+          <div class="fn2-layout">
+
+            <!-- ── PIRÂMIDE ── -->
+            <div class="fn2-funnel">
+
+              <!-- FRIO — 100% width -->
+              <div class="fn2-bar" style="background:var(--frio);max-width:100%;">
+                <div class="fn2-bar-left">
+                  <div class="fn2-bar-emoji">❄️</div>
+                  <div>
+                    <div class="fn2-bar-name">Frio</div>
+                    <div class="fn2-bar-desc">Contato inicial</div>
+                  </div>
+                </div>
+                <div class="fn2-bar-right">
+                  <div class="fn2-bar-num">127</div>
+                  <div class="fn2-bar-pct">100% do funil</div>
+                </div>
+              </div>
+
+              <!-- connector 1 -->
+              <div class="fn2-conn" style="max-width:88%;">
+                <div class="fn2-conn-inner">
+                  <span style="color:var(--mid);">↓</span>
+                  <span class="fn2-conn-adv" style="color:var(--morno);">69% avançaram</span>
+                  <span class="fn2-conn-lost">· 39 perdidos</span>
+                </div>
+              </div>
+
+              <!-- MORNO — 88% width -->
+              <div class="fn2-bar" style="background:var(--morno);max-width:88%;">
+                <div class="fn2-bar-left">
+                  <div class="fn2-bar-emoji">◑</div>
+                  <div>
+                    <div class="fn2-bar-name">Morno</div>
+                    <div class="fn2-bar-desc">Interesse demonstrado</div>
+                  </div>
+                </div>
+                <div class="fn2-bar-right">
+                  <div class="fn2-bar-num">88</div>
+                  <div class="fn2-bar-pct">69% do funil</div>
+                </div>
+              </div>
+
+              <!-- connector 2 — GARGALO -->
+              <div class="fn2-conn" style="max-width:60%;">
+                <div class="fn2-conn-inner fn2-conn-gargalo">
+                  <span>↓</span>
+                  <span class="fn2-conn-adv">35% avançaram</span>
+                  <span class="fn2-conn-lost">· 57 perdidos</span>
+                  <span class="fn2-conn-badge">⚠ GARGALO</span>
+                </div>
+              </div>
+
+              <!-- QUENTE — 44% width -->
+              <div class="fn2-bar" style="background:var(--quente);max-width:44%;">
+                <div class="fn2-bar-left">
+                  <div class="fn2-bar-emoji">🔥</div>
+                  <div>
+                    <div class="fn2-bar-name">Quente</div>
+                    <div class="fn2-bar-desc">Alta intenção</div>
+                  </div>
+                </div>
+                <div class="fn2-bar-right">
+                  <div class="fn2-bar-num">31</div>
+                  <div class="fn2-bar-pct">24% do funil</div>
+                </div>
+              </div>
+
+              <!-- connector 3 -->
+              <div class="fn2-conn" style="max-width:28%;">
+                <div class="fn2-conn-inner">
+                  <span style="color:var(--mid);">↓</span>
+                  <span class="fn2-conn-adv" style="color:var(--vendido);">26% fecharam</span>
+                  <span class="fn2-conn-lost">· 23 perdidos</span>
+                </div>
+              </div>
+
+              <!-- VENDIDO — 18% width -->
+              <div class="fn2-bar" style="background:var(--vendido);max-width:24%;">
+                <div class="fn2-bar-left">
+                  <div class="fn2-bar-emoji">✅</div>
+                  <div>
+                    <div class="fn2-bar-name">Vendido</div>
+                    <div class="fn2-bar-desc">Venda fechada</div>
+                  </div>
+                </div>
+                <div class="fn2-bar-right">
+                  <div class="fn2-bar-num">8</div>
+                  <div class="fn2-bar-pct">6% do funil</div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ── PAINEL DIREITO ── -->
+            <div class="fn2-side">
+              <div style="font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--light);margin-bottom:4px;">Resumo por etapa</div>
+
+              <div class="fn2-side-item">
+                <div class="fn2-side-dot" style="background:var(--frio);"></div>
+                <div style="flex:1;">
+                  <div class="fn2-side-label">❄️ Frio</div>
+                  <div class="fn2-side-pct">Topo do funil</div>
+                </div>
+                <div class="fn2-side-val">127</div>
+              </div>
+
+              <div class="fn2-side-item">
+                <div class="fn2-side-dot" style="background:var(--morno);"></div>
+                <div style="flex:1;">
+                  <div class="fn2-side-label">◑ Morno</div>
+                  <div class="fn2-side-pct">69% do funil</div>
+                </div>
+                <div class="fn2-side-val">88</div>
+              </div>
+
+              <div class="fn2-side-item" style="background:#FEF3C7;border:1px solid #FCD34D;">
+                <div class="fn2-side-dot" style="background:var(--quente);"></div>
+                <div style="flex:1;">
+                  <div class="fn2-side-label" style="color:#92400E;">🔥 Quente</div>
+                  <div class="fn2-side-pct" style="color:#B45309;">⚠ Gargalo aqui</div>
+                </div>
+                <div class="fn2-side-val" style="color:#92400E;">31</div>
+              </div>
+
+              <div class="fn2-side-item">
+                <div class="fn2-side-dot" style="background:var(--vendido);"></div>
+                <div style="flex:1;">
+                  <div class="fn2-side-label">✅ Vendido</div>
+                  <div class="fn2-side-pct">6% do funil</div>
+                </div>
+                <div class="fn2-side-val" style="color:var(--vendido);">8</div>
+              </div>
+
+              <div class="fn2-metric">
+                <div class="fn2-metric-label">Tempo médio</div>
+                <div class="fn2-metric-val">4,2 dias</div>
+                <div class="fn2-metric-sub">até fechar negócio</div>
+              </div>
+
+              <div class="fn2-metric">
+                <div class="fn2-metric-label">Ticket médio</div>
+                <div class="fn2-metric-val">R$ 94k</div>
+                <div class="fn2-metric-sub">por venda fechada</div>
+              </div>
+
+              <div class="fn2-metric" style="background:#FEE2E2;">
+                <div class="fn2-metric-label" style="color:#991B1B;">Alerta de gargalo</div>
+                <div class="fn2-metric-val" style="font-size:14px;color:#DC2626;">Morno → Quente</div>
+                <div class="fn2-metric-sub" style="color:#DC2626;">57 leads perdidos · 65% de queda</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Leads por Setor -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Leads por Setor</div>
+            <div class="card-sub">Distribuição e conversão por segmento de negócio</div>
+          </div>
+        </div>
+
+        <!-- header -->
+        <div style="display:grid;grid-template-columns:180px 60px 1fr 80px 70px;gap:16px;padding:10px 20px;border-bottom:1px solid var(--border);">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--light);">Setor</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--light);text-align:right;">Leads</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--light);">Participação</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--light);text-align:right;">Conversão</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--light);text-align:right;">Quentes</div>
+        </div>
+
+        <!-- Novos -->
+        <div class="setor-row">
+          <div class="setor-label">
+            <div class="setor-dot" style="background:#3B82F6;"></div>
+            <div>
+              <div class="setor-name">🚗 Novos</div>
+              <div class="setor-sub">Veículos 0km</div>
+            </div>
+          </div>
+          <div class="setor-count">68</div>
+          <div class="setor-bar-wrap">
+            <div class="setor-bar-track">
+              <div class="setor-bar-fill" style="width:53.5%;background:#3B82F6;"></div>
+            </div>
+          </div>
+          <div class="setor-conv" style="color:#16A34A;">8,8%</div>
+          <div class="setor-hot" style="color:var(--quente);font-weight:700;">18</div>
+        </div>
+
+        <!-- Seminovos -->
+        <div class="setor-row">
+          <div class="setor-label">
+            <div class="setor-dot" style="background:#8B5CF6;"></div>
+            <div>
+              <div class="setor-name">🔑 Seminovos</div>
+              <div class="setor-sub">Usados certificados</div>
+            </div>
+          </div>
+          <div class="setor-count">28</div>
+          <div class="setor-bar-wrap">
+            <div class="setor-bar-track">
+              <div class="setor-bar-fill" style="width:22%;background:#8B5CF6;"></div>
+            </div>
+          </div>
+          <div class="setor-conv" style="color:#16A34A;">7,1%</div>
+          <div class="setor-hot" style="color:var(--quente);font-weight:700;">7</div>
+        </div>
+
+        <!-- PCD -->
+        <div class="setor-row">
+          <div class="setor-label">
+            <div class="setor-dot" style="background:#F59E0B;"></div>
+            <div>
+              <div class="setor-name">♿ PCD</div>
+              <div class="setor-sub">Pessoa com deficiência</div>
+            </div>
+          </div>
+          <div class="setor-count">14</div>
+          <div class="setor-bar-wrap">
+            <div class="setor-bar-track">
+              <div class="setor-bar-fill" style="width:11%;background:#F59E0B;"></div>
+            </div>
+          </div>
+          <div class="setor-conv" style="color:#16A34A;">14,3%</div>
+          <div class="setor-hot" style="color:var(--quente);font-weight:700;">4</div>
+        </div>
+
+        <!-- Consórcio -->
+        <div class="setor-row">
+          <div class="setor-label">
+            <div class="setor-dot" style="background:#10B981;"></div>
+            <div>
+              <div class="setor-name">🤝 Consórcio</div>
+              <div class="setor-sub">Planos e cotas</div>
+            </div>
+          </div>
+          <div class="setor-count">8</div>
+          <div class="setor-bar-wrap">
+            <div class="setor-bar-track">
+              <div class="setor-bar-fill" style="width:6.3%;background:#10B981;"></div>
+            </div>
+          </div>
+          <div class="setor-conv" style="color:#DC2626;">0%</div>
+          <div class="setor-hot" style="color:var(--quente);font-weight:700;">1</div>
+        </div>
+
+        <!-- Assinatura -->
+        <div class="setor-row">
+          <div class="setor-label">
+            <div class="setor-dot" style="background:#EC4899;"></div>
+            <div>
+              <div class="setor-name">📋 Assinatura</div>
+              <div class="setor-sub">Carro por assinatura</div>
+            </div>
+          </div>
+          <div class="setor-count">6</div>
+          <div class="setor-bar-wrap">
+            <div class="setor-bar-track">
+              <div class="setor-bar-fill" style="width:4.7%;background:#EC4899;"></div>
+            </div>
+          </div>
+          <div class="setor-conv" style="color:#DC2626;">0%</div>
+          <div class="setor-hot" style="color:var(--mid);">1</div>
+        </div>
+
+        <!-- Serviços -->
+        <div class="setor-row">
+          <div class="setor-label">
+            <div class="setor-dot" style="background:#6B7280;"></div>
+            <div>
+              <div class="setor-name">🔧 Serviços</div>
+              <div class="setor-sub">Revisão e pós-venda</div>
+            </div>
+          </div>
+          <div class="setor-count">3</div>
+          <div class="setor-bar-wrap">
+            <div class="setor-bar-track">
+              <div class="setor-bar-fill" style="width:2.4%;background:#6B7280;"></div>
+            </div>
+          </div>
+          <div class="setor-conv" style="color:#16A34A;">33,3%</div>
+          <div class="setor-hot" style="color:var(--mid);">0</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ PAGE: RANKING ══ -->
+    <div class="page" id="page-ranking">
+
+      <div class="kpi-grid" style="margin-bottom:24px;">
+        <div class="kpi-card">
+          <div class="kpi-label">Melhor Vendedor</div>
+          <div class="kpi-value" style="font-size:22px;margin-bottom:4px;">Thiago</div>
+          <div class="kpi-delta up">18 leads · 33% conversão</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Loja Líder</div>
+          <div class="kpi-value" style="font-size:22px;margin-bottom:4px;">Loja 1</div>
+          <div class="kpi-delta up">104 leads · 82% do total</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Média por Vendedor</div>
+          <div class="kpi-value">5,5</div>
+          <div class="kpi-delta neu">leads / dia</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Vendas Totais</div>
+          <div class="kpi-value" style="color:var(--vendido)">28</div>
+          <div class="kpi-delta up">↑ 6 vs ontem</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Ranking de Vendedores</div>
+            <div class="card-sub">Por leads convertidos no período</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:40px 1fr 80px 80px 80px 120px;padding:10px 20px;border-bottom:1px solid var(--border);">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);">#</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);">Vendedor</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);text-align:right;">Leads</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);text-align:right;">Vendas</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);text-align:right;">Conversão</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);padding-left:12px;">Performance</div>
+        </div>
+
+        <div class="rank-list">
+          <div class="rank-row">
+            <div class="rank-pos gold">1</div>
+            <div><div class="rank-name">Thiago</div><div class="rank-loja">Loja 1 · Cuiabá</div></div>
+            <div class="rank-num">18</div>
+            <div class="rank-num" style="color:var(--vendido)">6</div>
+            <div class="rank-pct" style="color:var(--vendido)">33%</div>
+            <div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:100%"></div></div></div>
+          </div>
+          <div class="rank-row">
+            <div class="rank-pos silver">2</div>
+            <div><div class="rank-name">Danielle</div><div class="rank-loja">Loja 1 · Cuiabá</div></div>
+            <div class="rank-num">15</div>
+            <div class="rank-num" style="color:var(--vendido)">5</div>
+            <div class="rank-pct" style="color:var(--vendido)">33%</div>
+            <div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:83%"></div></div></div>
+          </div>
+          <div class="rank-row">
+            <div class="rank-pos bronze">3</div>
+            <div><div class="rank-name">Luciana</div><div class="rank-loja">Loja 1 · Cuiabá</div></div>
+            <div class="rank-num">14</div>
+            <div class="rank-num" style="color:var(--vendido)">4</div>
+            <div class="rank-pct" style="color:var(--vendido)">29%</div>
+            <div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:78%"></div></div></div>
+          </div>
+          <div class="rank-row">
+            <div class="rank-pos">4</div>
+            <div><div class="rank-name">Marcelo</div><div class="rank-loja">Loja 1 · Cuiabá</div></div>
+            <div class="rank-num">12</div>
+            <div class="rank-num" style="color:var(--vendido)">3</div>
+            <div class="rank-pct" style="color:var(--vendido)">25%</div>
+            <div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:67%"></div></div></div>
+          </div>
+          <div class="rank-row">
+            <div class="rank-pos">5</div>
+            <div><div class="rank-name">Oscar</div><div class="rank-loja">Loja 1 · Cuiabá</div></div>
+            <div class="rank-num">11</div>
+            <div class="rank-num" style="color:var(--vendido)">3</div>
+            <div class="rank-pct" style="color:var(--vendido)">27%</div>
+            <div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:61%"></div></div></div>
+          </div>
+          <div class="rank-row">
+            <div class="rank-pos">6</div>
+            <div><div class="rank-name">Carlos Costa</div><div class="rank-loja">Loja 2</div></div>
+            <div class="rank-num">23</div>
+            <div class="rank-num" style="color:var(--vendido)">7</div>
+            <div class="rank-pct" style="color:var(--vendido)">30%</div>
+            <div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:90%;background:#6366F1"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: GESTÃO ══ -->
+    <div class="page" id="page-gestao">
+
+      <div class="mgmt-toolbar">
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input class="filter-input" placeholder="Buscar vendedor..." style="width:240px;">
+          <select class="filter-select">
+            <option>Todas as lojas</option>
+            <option>Loja 1 — Cuiabá</option>
+            <option>Loja 2</option>
+          </select>
+        </div>
+        <button class="btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo Vendedor
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Vendedor</th>
+                <th>Loja</th>
+                <th>WhatsApp</th>
+                <th>Rodízio</th>
+                <th>Status</th>
+                <th>Leads hoje</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="vendedores-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RODÍZIO STATUS -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Status do Rodízio</div>
+            <div class="card-sub">Sequência de distribuição de leads — Loja 1 → Loja 2 → Loja 1 → Loja 2…</div>
+          </div>
+          <button class="btn-ghost" style="font-size:12px;" onclick="avancarRodizio()">Avançar posição</button>
+        </div>
+        <div class="card-body" style="padding:20px;" id="rodizio-status"></div>
+      </div>
+
+      <!-- MODAL EDITAR VENDEDOR -->
+      <div id="modal-vendedor" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:12px;padding:28px;width:460px;max-width:95vw;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div style="font-size:15px;font-weight:700;color:var(--navy);" id="modal-vend-titulo">Editar Vendedor</div>
+            <button onclick="closeModal('modal-vendedor')" style="background:none;border:none;font-size:22px;color:var(--light);cursor:pointer;line-height:1;padding:0 4px;">×</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div style="grid-column:1/-1;">
+              <div class="field-label">Nome</div>
+              <input class="field-input" id="vend-nome" placeholder="Nome do vendedor">
+            </div>
+            <div>
+              <div class="field-label">Loja</div>
+              <select class="field-input" id="vend-loja">
+                <option value="1">Loja 1 — Cuiabá</option>
+                <option value="2">Loja 2</option>
+              </select>
+            </div>
+            <div>
+              <div class="field-label">WhatsApp</div>
+              <input class="field-input" id="vend-tel" placeholder="(65) 99000-0000">
+            </div>
+            <div>
+              <div class="field-label">Posição no Rodízio (Loja 1)</div>
+              <input class="field-input" id="vend-pos" type="number" min="1" max="20" placeholder="1">
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+              <div class="field-label" style="margin:0;">Status</div>
+              <label class="sw-wrap" onclick="toggleVendStatus()">
+                <div class="sw-track on" id="vend-status-sw"></div>
+                <span class="sw-label" id="vend-status-label" style="color:#16A34A;">Ativo</span>
+              </label>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button onclick="closeModal('modal-vendedor')" class="btn-ghost">Cancelar</button>
+            <button class="btn-primary" onclick="salvarVendedor()">Salvar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ PAGE: VEÍCULOS ══ -->
+    <div class="page" id="page-veiculos">
+
+      <!-- TOOLBAR -->
+      <div class="mgmt-toolbar" style="margin-bottom:20px;">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--navy);">Catálogo de Veículos</div>
+          <div style="font-size:12px;color:var(--light);margin-top:2px;">Modelos e versões cadastradas no conhecimento da IA</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-ghost" onclick="openModeloModal()">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Modelo
+          </button>
+          <button class="btn-primary" onclick="openVersaoModal(null)">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Versão
+          </button>
+        </div>
+      </div>
+
+      <!-- LISTA DE MODELOS -->
+      <div id="catalogo" style="display:flex;flex-direction:column;gap:12px;"></div>
+
+      <!-- MODAL NOVO MODELO -->
+      <div id="modal-modelo" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:12px;padding:28px;width:420px;max-width:95vw;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div style="font-size:15px;font-weight:700;color:var(--navy);">Novo Modelo</div>
+            <button onclick="closeModal('modal-modelo')" style="background:none;border:none;font-size:22px;color:var(--light);cursor:pointer;line-height:1;padding:0 4px;">×</button>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="field-label">NOME DO MODELO</label>
+            <input id="input-modelo-nome" type="text" placeholder="Ex: Polo, Nivus, T-Cross, Virtus…" class="field-input">
+          </div>
+          <div style="margin-bottom:20px;">
+            <label class="field-label">SEGMENTO</label>
+            <select id="input-modelo-seg" class="field-input">
+              <option>Hatch</option><option>SUV</option><option>Sedan</option><option>Pickup</option><option>Elétrico</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button onclick="closeModal('modal-modelo')" class="btn-ghost">Cancelar</button>
+            <button class="btn-primary" onclick="salvarModelo()">Criar Modelo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL VERSÃO (criar / editar) -->
+      <div id="modal-versao" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:12px;padding:28px;width:620px;max-width:95vw;max-height:92vh;overflow-y:auto;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div id="modal-versao-titulo" style="font-size:15px;font-weight:700;color:var(--navy);">Nova Versão</div>
+            <button onclick="closeModal('modal-versao')" style="background:none;border:none;font-size:22px;color:var(--light);cursor:pointer;line-height:1;padding:0 4px;">×</button>
+          </div>
+
+          <!-- Linha 1: Modelo + Versão -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div>
+              <label class="field-label">MODELO</label>
+              <select id="v-modelo" class="field-input"><option value="">Selecione…</option></select>
+            </div>
+            <div>
+              <label class="field-label">NOME DA VERSÃO</label>
+              <input id="v-versao" type="text" placeholder="Ex: Track, Comfortline, Highline" class="field-input">
+            </div>
+          </div>
+
+          <!-- Linha 2: Ano + Câmbio + Combustível -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div>
+              <label class="field-label">ANO</label>
+              <input id="v-ano" type="number" placeholder="2025" min="2000" max="2030" class="field-input">
+            </div>
+            <div>
+              <label class="field-label">CÂMBIO</label>
+              <select id="v-cambio" class="field-input">
+                <option>Manual</option><option>Automático</option><option>CVT</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">COMBUSTÍVEL</label>
+              <select id="v-combustivel" class="field-input">
+                <option>Flex</option><option>Gasolina</option><option>Elétrico</option><option>Híbrido</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Linha 3: Motor + Preço sugerido -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div>
+              <label class="field-label">MOTOR</label>
+              <input id="v-motor" type="text" placeholder="Ex: 1.0 TSI 116cv" class="field-input">
+            </div>
+            <div>
+              <label class="field-label">PREÇO SUGERIDO (R$)</label>
+              <input id="v-preco" type="text" placeholder="Ex: 89.990" class="field-input">
+            </div>
+          </div>
+
+          <!-- Cores -->
+          <div style="margin-bottom:14px;">
+            <label class="field-label">CORES DISPONÍVEIS</label>
+            <input id="v-cores" type="text" placeholder="Ex: Branco, Preto, Prata, Vermelho" class="field-input">
+          </div>
+
+          <!-- Itens de série -->
+          <div style="margin-bottom:14px;">
+            <label class="field-label">ITENS DE SÉRIE</label>
+            <textarea id="v-itens" rows="3" placeholder="Liste os principais itens inclusos nesta versão…" class="field-input" style="resize:vertical;"></textarea>
+          </div>
+
+          <!-- Observações para a IA -->
+          <div style="margin-bottom:14px;">
+            <label class="field-label">OBSERVAÇÕES PARA A IA</label>
+            <textarea id="v-obs" rows="2" placeholder="O que a IA deve destacar ao mencionar esta versão?" class="field-input" style="resize:vertical;"></textarea>
+          </div>
+
+          <!-- Fotos -->
+          <div style="margin-bottom:20px;">
+            <label class="field-label">FOTOS</label>
+            <div id="v-fotos-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;"></div>
+            <label style="border:2px dashed var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;color:var(--light);font-size:13px;display:block;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--border)'">
+              <input type="file" accept="image/*" multiple style="display:none;" onchange="previewFotos(this)">
+              📷 Clique para adicionar fotos
+            </label>
+          </div>
+
+          <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button onclick="closeModal('modal-versao')" class="btn-ghost">Cancelar</button>
+            <button class="btn-primary" onclick="salvarVersao()">Salvar Versão</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ PAGE: DETALHE VEÍCULO ══ -->
+    <div class="page" id="page-veiculo-detalhe">
+      <div class="detail-back" onclick="navigate('veiculos', document.querySelector('.nav-item[onclick*=veiculos]'))">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar ao Catálogo
+      </div>
+
+      <div class="detail-hero" id="dh-hero">
+        <div class="detail-hero-icon" id="dh-icon">🚗</div>
+        <div class="detail-hero-body">
+          <div class="detail-hero-modelo" id="dh-modelo">Volkswagen</div>
+          <div class="detail-hero-name" id="dh-name">—</div>
+          <div class="detail-hero-tags" id="dh-tags"></div>
+        </div>
+        <div class="detail-hero-price">
+          <div class="detail-hero-price-label">Preço sugerido</div>
+          <div class="detail-hero-price-val" id="dh-preco">—</div>
+          <button class="btn-ghost" style="margin-top:12px;color:white;border-color:rgba(255,255,255,.3);font-size:12px;" onclick="editarVersaoAtual()">✏ Editar</button>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <!-- Especificações -->
+        <div class="detail-section">
+          <div class="detail-section-head"><div class="detail-section-title">⚙️ Especificações</div></div>
+          <div class="detail-section-body" id="dh-specs"></div>
+        </div>
+
+        <!-- Itens de Série -->
+        <div class="detail-section">
+          <div class="detail-section-head"><div class="detail-section-title">✅ Itens de Série</div></div>
+          <div class="detail-section-body" id="dh-itens" style="font-size:13px;color:var(--mid);line-height:1.7;">—</div>
+        </div>
+      </div>
+
+      <!-- Obs IA -->
+      <div class="detail-section" style="margin-bottom:16px;">
+        <div class="detail-section-head"><div class="detail-section-title">🤖 Observações para a IA</div></div>
+        <div class="detail-section-body" id="dh-obs" style="font-size:13px;color:var(--mid);line-height:1.6;">—</div>
+      </div>
+
+      <!-- Fotos e Vídeos -->
+      <div class="detail-section" style="margin-bottom:16px;">
+        <div class="detail-section-head">
+          <div class="detail-section-title">📸 Fotos & Vídeos</div>
+          <label style="cursor:pointer;">
+            <input type="file" accept="image/*,video/*" multiple style="display:none;" onchange="addMidiaDetalhe(this)">
+            <span class="btn-ghost" style="font-size:12px;">+ Adicionar</span>
+          </label>
+        </div>
+        <div class="detail-section-body">
+          <div id="dh-midia" style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div class="foto-placeholder">📷</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ofertas Vinculadas -->
+      <div class="detail-section" style="margin-bottom:16px;">
+        <div class="detail-section-head">
+          <div class="detail-section-title">⭐ Ofertas Ativas</div>
+          <span style="font-size:11px;color:var(--light);">Ofertas vinculadas a este veículo ou a todos</span>
+        </div>
+        <div class="detail-section-body">
+          <div id="dh-ofertas" style="display:flex;flex-direction:column;gap:8px;min-height:32px;"></div>
+        </div>
+      </div>
+
+      <!-- Recursos Vinculados -->
+      <div class="detail-section">
+        <div class="detail-section-head">
+          <div class="detail-section-title">📎 Recursos Vinculados</div>
+          <span style="font-size:11px;color:var(--light);">Vincule arquivos em Recursos → card do arquivo</span>
+        </div>
+        <div class="detail-section-body">
+          <div id="dh-recursos" style="display:flex;gap:10px;flex-wrap:wrap;min-height:40px;align-items:flex-start;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: INFORMAÇÕES ══ -->
+    <div class="page" id="page-informacoes">
+
+      <div style="margin-bottom:20px;">
+        <div style="font-size:15px;font-weight:700;color:var(--navy);">Informações da Loja</div>
+        <div style="font-size:12px;color:var(--light);margin-top:2px;">Conhecimento base usado pela IA nos atendimentos</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+
+        <!-- Contato -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">📞 Contato</div>
+              <div class="card-sub">Números e canais de atendimento</div>
+            </div>
+            <button class="btn-ghost">Editar</button>
+          </div>
+          <div class="card-body" style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:var(--light);width:80px;font-size:11px;font-weight:600;text-transform:uppercase;">WhatsApp</span><span style="color:var(--navy);font-weight:600;">(65) 3000-0000</span></div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:var(--light);width:80px;font-size:11px;font-weight:600;text-transform:uppercase;">Telefone</span><span style="color:var(--navy);font-weight:600;">(65) 3000-0001</span></div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:var(--light);width:80px;font-size:11px;font-weight:600;text-transform:uppercase;">E-mail</span><span style="color:var(--navy);font-weight:600;">contato@trescinco.com.br</span></div>
+          </div>
+        </div>
+
+        <!-- Endereço -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">📍 Endereço</div>
+              <div class="card-sub">Localização das lojas</div>
+            </div>
+            <button class="btn-ghost">Editar</button>
+          </div>
+          <div class="card-body" style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+            <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:2px;">Loja 1 — Cuiabá</div>
+            <div style="font-size:13px;color:var(--mid);line-height:1.5;">Av. Getúlio Vargas, 1000 — Bairro Centro<br>Cuiabá – MT · CEP 78000-000</div>
+            <div style="margin-top:6px;border-top:1px solid var(--border);padding-top:10px;">
+              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:2px;">Loja 2</div>
+              <div style="font-size:13px;color:var(--mid);">A definir</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Horário -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">🕐 Horário de Atendimento</div>
+              <div class="card-sub">Quando a loja está aberta</div>
+            </div>
+            <button class="btn-ghost">Editar</button>
+          </div>
+          <div class="card-body" style="padding:16px;display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;"><span style="color:var(--mid);">Segunda a Sexta</span><span style="font-weight:600;color:var(--navy);">08h – 18h</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;"><span style="color:var(--mid);">Sábado</span><span style="font-weight:600;color:var(--navy);">08h – 13h</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;"><span style="color:var(--mid);">Domingo e Feriados</span><span style="font-weight:600;color:var(--light);">Fechado</span></div>
+            <div style="margin-top:6px;padding:8px 12px;background:#F0FDF4;border-radius:6px;font-size:12px;color:#15803D;font-weight:600;">IA responde fora do horário normalmente</div>
+          </div>
+        </div>
+
+        <!-- Formas de Pagamento -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">💳 Formas de Pagamento</div>
+              <div class="card-sub">Condições aceitas pela loja</div>
+            </div>
+            <button class="btn-ghost">Editar</button>
+          </div>
+          <div class="card-body" style="padding:16px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--mid);">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#10B981;">✓</span> Financiamento Volkswagen Financial</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#10B981;">✓</span> Financiamento bancário (Bradesco, Itaú, Santander)</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#10B981;">✓</span> Entrada + parcelas</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#10B981;">✓</span> À vista com desconto</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#10B981;">✓</span> Troca / entrada com veículo</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BLOCOS DE CONHECIMENTO CUSTOMIZADOS -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">🧠 Blocos de Conhecimento</div>
+            <div class="card-sub">Informações extras ensinadas à IA</div>
+          </div>
+          <button class="btn-primary" onclick="addKnowledgeBlock()">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Bloco
+          </button>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div id="knowledge-blocks">
+            <!-- Bloco existente -->
+            <div class="knowledge-block">
+              <div class="kb-head">
+                <div style="font-size:13px;font-weight:700;color:var(--navy);">Política de Troca</div>
+                <button class="btn-ghost" style="font-size:11px;padding:4px 10px;">Editar</button>
+              </div>
+              <div class="kb-body">A Trescinco aceita veículos usados como entrada. A avaliação é feita presencialmente ou via fotos enviadas pelo WhatsApp. O valor de troca é abatido diretamente na entrada do financiamento.</div>
+            </div>
+            <div class="knowledge-block">
+              <div class="kb-head">
+                <div style="font-size:13px;font-weight:700;color:var(--navy);">Revisões e Garantia</div>
+                <button class="btn-ghost" style="font-size:11px;padding:4px 10px;">Editar</button>
+              </div>
+              <div class="kb-body">Todos os veículos novos possuem garantia de fábrica de 3 anos ou 100.000 km. As revisões são realizadas na própria Trescinco com mão de obra certificada Volkswagen.</div>
+            </div>
+            <div class="knowledge-block" id="new-block-placeholder" style="display:none;">
+              <div class="kb-head">
+                <input type="text" placeholder="Título do bloco..." style="border:none;outline:none;font-size:13px;font-weight:700;color:var(--navy);width:100%;font-family:inherit;background:transparent;">
+                <button class="btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="saveBlock()">Salvar</button>
+              </div>
+              <div class="kb-body">
+                <textarea placeholder="Descreva o conhecimento que a IA deve ter sobre este assunto..." rows="3" style="width:100%;border:none;outline:none;font-size:13px;color:var(--mid);line-height:1.6;resize:vertical;font-family:inherit;background:transparent;"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ PAGE: CONFIGURAR IA ══ -->
+    <div class="page" id="page-configia">
+
+      <div style="margin-bottom:20px;">
+        <div style="font-size:15px;font-weight:700;color:var(--navy);">Configurar IA</div>
+        <div style="font-size:12px;color:var(--light);margin-top:2px;">Personalize como a IA se comporta nos atendimentos via WhatsApp</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+        <!-- Tom de Voz -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">🎙 Tom de Voz</div>
+              <div class="card-sub">Como a IA se comunica com os clientes</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+            <div class="tone-option active-tone" id="tone-formal" onclick="selectTone(this,'formal')">
+              <div style="font-weight:700;font-size:13px;color:var(--navy);">Formal</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px;">"Bom dia! Como posso auxiliá-lo hoje?"</div>
+            </div>
+            <div class="tone-option" id="tone-intermediario" onclick="selectTone(this,'intermediario')">
+              <div style="font-weight:700;font-size:13px;color:var(--navy);">Intermediário</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px;">"Olá! Tudo bem? Posso te ajudar a escolher seu próximo carro?"</div>
+            </div>
+            <div class="tone-option" id="tone-descontraido" onclick="selectTone(this,'descontraido')">
+              <div style="font-weight:700;font-size:13px;color:var(--navy);">Descontraído</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px;">"Oi! Que legal que você entrou em contato 😄 Vamos achar o carro perfeito pra você?"</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Uso de Emoji -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">😊 Uso de Emojis</div>
+              <div class="card-sub">Se a IA deve usar emojis nas mensagens</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+            <div class="tone-option" id="emoji-nao" onclick="selectEmoji(this,'nao')">
+              <div style="font-weight:700;font-size:13px;color:var(--navy);">Não usar emojis</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px;">Comunicação 100% textual e profissional</div>
+            </div>
+            <div class="tone-option active-tone" id="emoji-moderado" onclick="selectEmoji(this,'moderado')">
+              <div style="font-weight:700;font-size:13px;color:var(--navy);">Uso moderado</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px;">Emojis apenas em pontos estratégicos</div>
+            </div>
+            <div class="tone-option" id="emoji-frequente" onclick="selectEmoji(this,'frequente')">
+              <div style="font-weight:700;font-size:13px;color:var(--navy);">Uso frequente</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px;">Emojis em praticamente todas as mensagens</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comportamento -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">⚙️ Comportamento</div>
+              <div class="card-sub">Como a IA deve agir em certas situações</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding:16px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--navy);">Perguntar nome do cliente</div>
+                <div style="font-size:11px;color:var(--light);margin-top:2px;">Ao iniciar a conversa</div>
+              </div>
+              <div class="toggle active-toggle" id="toggle-nome" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+            </div>
+            <div style="height:1px;background:var(--border);"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--navy);">Perguntar qual modelo tem interesse</div>
+                <div style="font-size:11px;color:var(--light);margin-top:2px;">Logo no início do atendimento</div>
+              </div>
+              <div class="toggle active-toggle" id="toggle-modelo" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+            </div>
+            <div style="height:1px;background:var(--border);"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--navy);">Oferecer agendamento de visita</div>
+                <div style="font-size:11px;color:var(--light);margin-top:2px;">Quando lead demonstrar interesse</div>
+              </div>
+              <div class="toggle active-toggle" id="toggle-agendamento" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+            </div>
+            <div style="height:1px;background:var(--border);"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--navy);">Transferir para vendedor quando "quente"</div>
+                <div style="font-size:11px;color:var(--light);margin-top:2px;">Notificar via rodízio automaticamente</div>
+              </div>
+              <div class="toggle active-toggle" id="toggle-transfer" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensagem de Apresentação -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">💬 Mensagem de Boas-vindas</div>
+              <div class="card-sub">Primeira mensagem enviada ao novo contato</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding:16px;">
+            <textarea id="welcome-msg" rows="5" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--ink);line-height:1.6;resize:vertical;outline:none;" onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--border)'">Olá! 👋 Seja bem-vindo à Trescinco Volkswagen!
+
+Sou a assistente virtual da loja e estou aqui para te ajudar a encontrar o veículo ideal. 🚗
+
+Posso te mostrar nossos modelos disponíveis, condições de financiamento e agendar uma visita à concessionária.
+
+Como posso te ajudar hoje?</textarea>
+            <button class="btn-primary" style="margin-top:12px;width:100%;justify-content:center;" onclick="saveWelcomeMsg()">Salvar Mensagem</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Preview IA -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">👁 Preview da IA</div>
+            <div class="card-sub">Como a conversa aparece no WhatsApp</div>
+          </div>
+        </div>
+        <div class="card-body" style="padding:24px;">
+          <div style="max-width:400px;margin:0 auto;background:#ECE5DD;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;">
+            <!-- Mensagem do cliente -->
+            <div style="display:flex;justify-content:flex-end;">
+              <div style="background:white;border-radius:12px 12px 2px 12px;padding:10px 14px;max-width:80%;box-shadow:0 1px 2px rgba(0,0,0,.1);">
+                <div style="font-size:13px;color:#111;">Olá, quero saber sobre o Polo 2024</div>
+                <div style="font-size:10px;color:#999;text-align:right;margin-top:4px;">14:32 ✓✓</div>
+              </div>
+            </div>
+            <!-- Resposta da IA -->
+            <div style="display:flex;gap:8px;align-items:flex-end;">
+              <div style="width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🤖</div>
+              <div style="background:white;border-radius:12px 12px 12px 2px;padding:10px 14px;max-width:80%;box-shadow:0 1px 2px rgba(0,0,0,.1);">
+                <div style="font-size:13px;color:#111;line-height:1.5;">Olá! 👋 Ótima escolha! O Polo 2024 é um dos nossos modelos mais procurados.<br><br>Ele conta com motor 1.0 TSI de 116cv, central multimídia 10" e câmera de ré de série. 🚗<br><br>Posso verificar a disponibilidade e condições de financiamento para você. Qual é o seu nome?</div>
+                <div style="font-size:10px;color:#999;text-align:right;margin-top:4px;">14:32 ✓✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ PAGE: FOLLOW-UP ══ -->
+    <div class="page" id="page-followup">
+
+      <!-- 5 categorias -->
+      <div class="fu-cats" id="fu-cats"></div>
+
+      <!-- Layout principal -->
+      <div class="fu-layout">
+
+        <!-- Painel esquerdo: contatos -->
+        <div class="fu-panel">
+          <div class="fu-panel-head">
+            <div class="fu-panel-title" id="fu-contacts-title">Destinatários</div>
+            <input class="fu-search" id="fu-search" placeholder="Buscar contato..." oninput="fuSearch(this.value)">
+          </div>
+          <div class="fu-select-bar">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;color:var(--navy);">
+              <input type="checkbox" id="fu-chk-all" onchange="fuSelectAll(this.checked)" style="accent-color:var(--sky);">
+              Selecionar todos
+            </label>
+            <span id="fu-sel-count" style="margin-left:auto;color:var(--sky);font-weight:700;"></span>
+          </div>
+          <div class="fu-contact-list" id="fu-contact-list"></div>
+          <div class="fu-meta-bar">
+            <div class="fu-meta-item">
+              <div class="fu-meta-label">Último Disparo</div>
+              <div class="fu-meta-val" id="fu-meta-last">—</div>
+              <div class="fu-meta-sub">data do envio</div>
+            </div>
+            <div class="fu-meta-item">
+              <div class="fu-meta-label">Taxa de Abertura</div>
+              <div class="fu-meta-val" id="fu-meta-taxa" style="color:var(--vendido);">—</div>
+              <div class="fu-meta-sub">último disparo</div>
+            </div>
+            <div class="fu-meta-item">
+              <div class="fu-meta-label">Total Enviado</div>
+              <div class="fu-meta-val" id="fu-meta-total">—</div>
+              <div class="fu-meta-sub">mensagens</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel direito: compositor -->
+        <div class="fu-panel">
+          <div class="fu-panel-head">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--sky);fill:none;stroke-width:2;stroke-linecap:round;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            <div class="fu-panel-title">Template da Mensagem</div>
+            <span style="font-size:10px;color:var(--light);">WhatsApp Business API</span>
+          </div>
+          <textarea class="fu-template" id="fu-template" placeholder="Digite o template da mensagem..."></textarea>
+          <div class="fu-vars">
+            <span style="font-size:10px;font-weight:700;color:var(--light);align-self:center;margin-right:4px;">Variáveis:</span>
+            <button class="fu-var" onclick="fuInsertVar('{nome}')">&#123;nome&#125;</button>
+            <button class="fu-var" onclick="fuInsertVar('{modelo}')">&#123;modelo&#125;</button>
+            <button class="fu-var" onclick="fuInsertVar('{data}')">&#123;data&#125;</button>
+            <button class="fu-var" onclick="fuInsertVar('{vendedor}')">&#123;vendedor&#125;</button>
+            <button class="fu-var" onclick="fuInsertVar('{loja}')">&#123;loja&#125;</button>
+          </div>
+          <div class="fu-sched" id="fu-sched">
+            <div class="fu-sched-opt on" id="fso-agora" onclick="fuSchedOpt('agora')">⚡ Enviar agora</div>
+            <div class="fu-sched-opt" id="fso-agendar" onclick="fuSchedOpt('agendar')">📅 Agendar</div>
+          </div>
+          <div id="fu-date-wrap" style="display:none;padding:0 14px 12px;">
+            <input type="datetime-local" class="fu-date-input" id="fu-date-input">
+          </div>
+          <div style="padding:0 14px 14px;">
+            <button class="fu-send-btn" id="fu-send-btn" onclick="fuDisparar()">
+              <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:white;"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+              Disparar via WhatsApp
+            </button>
+          </div>
+          <div style="padding:10px 14px 12px;background:var(--bg);border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;">
+            <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:#25D366;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span style="font-size:10px;color:var(--mid);">Conectado à API Oficial do WhatsApp Business · Meta</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ PAGE: OFERTAS ══ -->
+    <div class="page" id="page-ofertas">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--navy);">Ofertas & Benefícios</div>
+          <div style="font-size:12px;color:var(--light);margin-top:2px;">Base de conhecimento usada pela IA no atendimento</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn-ghost" style="font-size:12px;display:flex;align-items:center;gap:6px;" onclick="importarOfertasSite()">
+            🌐 Importar do site
+          </button>
+          <button class="btn" style="font-size:12px;" onclick="abrirNovaOferta()">+ Nova oferta</button>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="res-tab active" data-filtro="todos" onclick="filtrarOfertas('todos',this)">Todas</button>
+        <button class="res-tab" data-filtro="novos" onclick="filtrarOfertas('novos',this)">🚗 Novos</button>
+        <button class="res-tab" data-filtro="seminovos" onclick="filtrarOfertas('seminovos',this)">🔑 Seminovos</button>
+        <button class="res-tab" data-filtro="pcd" onclick="filtrarOfertas('pcd',this)">♿ PCD</button>
+        <button class="res-tab" data-filtro="todos-veiculos" onclick="filtrarOfertas('todos-veiculos',this)">🌐 Todos os veículos</button>
+      </div>
+
+      <!-- Cards -->
+      <div class="oferta-grid" id="oferta-grid"></div>
+
+    </div>
+
+    <!-- MODAL: Nova / Editar Oferta -->
+    <div id="modal-oferta" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:3000;align-items:center;justify-content:center;">
+      <div style="background:white;border-radius:16px;padding:28px;width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+        <div style="font-size:16px;font-weight:800;color:var(--navy);margin-bottom:20px;">Nova Oferta</div>
+
+        <div style="display:grid;gap:14px;">
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--mid);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Título da oferta *</label>
+            <input id="of-titulo" type="text" placeholder="Ex: Taxa Zero no Polo Track" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;" onfocus="this.style.borderColor='var(--sky)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--mid);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Vincular a</label>
+            <select id="of-veiculo" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:white;">
+              <option value="todos">🌐 Todos os veículos</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--mid);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Tipo</label>
+            <select id="of-tipo" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:white;">
+              <option value="destaque">⭐ Destaque</option>
+              <option value="taxa">💳 Taxa especial</option>
+              <option value="desconto">💰 Desconto</option>
+              <option value="pcd">♿ PCD</option>
+              <option value="padrao">📋 Padrão</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--mid);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Benefícios (um por linha) *</label>
+            <textarea id="of-beneficios" rows="5" placeholder="Taxa 0,99% ao mês&#10;60 meses sem entrada&#10;IPVA 2026 pago&#10;Brindes inclusos" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;resize:vertical;" onfocus="this.style.borderColor='var(--sky)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--mid);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">Válida até</label>
+            <input id="of-validade" type="date" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;" onfocus="this.style.borderColor='var(--sky)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px;">
+          <button class="btn-ghost" onclick="fecharModalOferta()">Cancelar</button>
+          <button class="btn" onclick="salvarOferta()">Salvar oferta</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: RECURSOS ══ -->
+    <div class="page" id="page-recursos">
+
+      <div class="kpi-grid" style="margin-bottom:20px;">
+        <div class="kpi-card">
+          <div class="kpi-label">Total de Arquivos</div>
+          <div class="kpi-value" id="res-kpi-total">—</div>
+          <div class="kpi-delta neu">em todos os grupos</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Veículos</div>
+          <div class="kpi-value" id="res-kpi-veiculos" style="color:var(--sky)">—</div>
+          <div class="kpi-delta neu">auto-importados do catálogo</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Documentos</div>
+          <div class="kpi-value" id="res-kpi-docs">—</div>
+          <div class="kpi-delta neu">PDFs e arquivos</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Mídia</div>
+          <div class="kpi-value" id="res-kpi-midia">—</div>
+          <div class="kpi-delta neu">fotos, vídeos e áudios</div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="res-toolbar">
+        <div class="res-tabs" id="res-tabs">
+          <div class="res-tab active" onclick="filterRecursos('todos',this)">Todos</div>
+          <div class="res-tab" onclick="filterRecursos('veiculo',this)">🚗 Veículos</div>
+          <div class="res-tab" onclick="filterRecursos('documento',this)">📄 Documentos</div>
+          <div class="res-tab" onclick="filterRecursos('video',this)">🎬 Vídeos</div>
+          <div class="res-tab" onclick="filterRecursos('audio',this)">🎵 Áudios</div>
+          <div class="res-tab" onclick="filterRecursos('foto',this)">🖼 Fotos</div>
+        </div>
+        <div style="flex:1;"></div>
+        <label class="btn-primary" style="cursor:pointer;">
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Enviar Arquivo
+          <input type="file" multiple style="display:none;" onchange="uploadRecurso(this)">
+        </label>
+      </div>
+
+      <!-- Conteúdo -->
+      <div id="recursos-container"></div>
+
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+function navigate(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (el) el.classList.add('active');
+  const nomeDetalhe = document.getElementById('dh-name')?.textContent || 'Veículo';
+  const titles = {
+    overview:'Visão Geral', leads:'Leads ao Vivo', funil:'Funil de Vendas',
+    ranking:'Ranking de Vendedores', gestao:'Gestão de Vendedores',
+    veiculos:'Veículos', informacoes:'Informações', configia:'Configurar IA',
+    recursos:'Recursos', ofertas:'Ofertas & Benefícios', followup:'Follow-up', 'veiculo-detalhe': nomeDetalhe
+  };
+  if (page === 'recursos') renderRecursos('todos', null);
+  if (page === 'ofertas') renderOfertas('todos');
+  if (page === 'followup') fuInit();
+  if (page === 'gestao') { renderVendedores(); renderRodizioStatus(); }
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+}
+
+function setPeriod(label, el) {
+  document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleFilter(id) {
+  const all = document.querySelectorAll('.filter-dropdown');
+  all.forEach(d => { if (d.id !== id) d.classList.remove('open'); });
+  document.getElementById(id).classList.toggle('open');
+}
+
+function selectMonth(month, labelId, el) {
+  document.querySelectorAll('.month-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(labelId).textContent = month + ' 2026';
+  document.getElementById('month-filter').classList.remove('open');
+}
+
+function applyCustomRange() {
+  const from = document.getElementById('date-from').value;
+  const to = document.getElementById('date-to').value;
+  if (!from || !to) return;
+  const fmt = d => { const [y,m,dd] = d.split('-'); return `${dd}/${m}`; };
+  document.getElementById('custom-filter-label').textContent = fmt(from) + ' – ' + fmt(to);
+  document.getElementById('custom-filter').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.filter-btn') && !e.target.closest('.filter-dropdown')) {
+    document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+
+/* ════════ CATÁLOGO DE VEÍCULOS ════════ */
+
+const SEGMENTO_ICON = { Hatch:'🚗', SUV:'🚙', Sedan:'🚘', Pickup:'🛻', Elétrico:'⚡' };
+
+let catalogo = [
+  {
+    id:'m1', nome:'Polo', segmento:'Hatch', ativo:true,
+    versoes:[
+      { id:'v1', nome:'Track',       ano:'2025', cambio:'Manual',    combustivel:'Flex', motor:'1.0 MPI 84cv',  preco:'79.990',  cores:'Branco, Preto, Prata',        itens:'Direção hidráulica, Central multimídia 8", Ar-condicionado, Vidros elétricos dianteiros',                             obs:'Versão de entrada. Boa custo-benefício para quem busca econômico.',          fotos:[], ativo:true },
+      { id:'v2', nome:'Comfortline', ano:'2025', cambio:'Manual',    combustivel:'Flex', motor:'1.0 TSI 116cv', preco:'89.990',  cores:'Branco, Preto, Prata, Azul',  itens:'Direção elétrica, Central multimídia 10", Câmera de ré, Sensor de estacionamento, Ar digital',                        obs:'Versão intermediária mais vendida. Equilibra conforto e custo.',             fotos:[], ativo:true },
+      { id:'v3', nome:'Highline',    ano:'2025', cambio:'Automático',combustivel:'Flex', motor:'1.0 TSI 116cv', preco:'99.990',  cores:'Branco, Preto, Vermelho',     itens:'Tudo do Comfortline + Teto solar, Virtual Cockpit, Faróis full LED, App-Connect wireless',                          obs:'Versão top de linha. Destacar teto solar e Virtual Cockpit.',               fotos:[], ativo:true },
+    ]
+  },
+  {
+    id:'m2', nome:'Nivus', segmento:'SUV', ativo:true,
+    versoes:[
+      { id:'v4', nome:'Comfortline', ano:'2025', cambio:'Automático',combustivel:'Flex', motor:'1.0 TSI 150cv', preco:'109.990', cores:'Branco, Prata, Cinza, Vermelho',itens:'Teto bicolor, Virtual Cockpit, Central 10", Câmera 360°, Freios ABS, Controle de tração',                           obs:'SUV compacto mais novo da VW. Público jovem. Destacar câmera 360°.',         fotos:[], ativo:true },
+      { id:'v5', nome:'Highline',    ano:'2025', cambio:'Automático',combustivel:'Flex', motor:'1.0 TSI 150cv', preco:'119.990', cores:'Branco, Preto, Vermelho',     itens:'Tudo do Comfortline + Teto solar panorâmico, Bancos em couro, Piloto automático adaptativo',                      obs:'Versão top. Enfatizar teto solar panorâmico e bancos em couro.',            fotos:[], ativo:true },
+    ]
+  },
+  {
+    id:'m3', nome:'T-Cross', segmento:'SUV', ativo:true,
+    versoes:[
+      { id:'v6', nome:'Comfortline', ano:'2025', cambio:'Automático',combustivel:'Flex', motor:'1.0 TSI 116cv', preco:'119.990', cores:'Branco, Prata, Azul, Vermelho',itens:'SUV compacto, Bagageiro 373L, Sensor de estacionamento, App-Connect, Câmera de ré',                                  obs:'Ótima opção para famílias. Destacar espaço do porta-malas.',                fotos:[], ativo:true },
+    ]
+  }
+];
+
+let versaoEditandoId = null;
+
+function renderCatalogo() {
+  const wrap = document.getElementById('catalogo');
+  wrap.innerHTML = '';
+  catalogo.forEach(modelo => {
+    const div = document.createElement('div');
+    div.className = 'modelo-group open';
+    div.id = 'grupo-' + modelo.id;
+    if (!modelo.ativo) div.classList.add('inativo');
+    div.innerHTML = `
+      <div class="modelo-header" onclick="toggleModelo('${modelo.id}')">
+        <div class="modelo-icon">${SEGMENTO_ICON[modelo.segmento] || '🚗'}</div>
+        <div>
+          <div class="modelo-name">${modelo.nome}</div>
+          <div class="modelo-seg">${modelo.segmento} · Volkswagen</div>
+        </div>
+        <span class="modelo-count">${modelo.versoes.length} versão${modelo.versoes.length !== 1 ? 'ões' : ''}</span>
+        <div class="modelo-actions" onclick="event.stopPropagation()">
+          <label class="sw-wrap" onclick="toggleModeloAtivo('${modelo.id}')">
+            <div class="sw-track ${modelo.ativo ? 'on' : ''}"></div>
+            <span class="sw-label" style="color:${modelo.ativo ? '#16A34A' : 'var(--light)'};">${modelo.ativo ? 'Ativo' : 'Inativo'}</span>
+          </label>
+          <button class="btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="openVersaoModal('${modelo.id}')">+ Versão</button>
+          <button class="btn-ghost" style="font-size:11px;padding:4px 10px;color:var(--quente);" onclick="removerModelo('${modelo.id}')">Remover</button>
+        </div>
+        <svg class="modelo-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="versoes-list">
+        <div style="display:grid;grid-template-columns:1fr 72px 90px 90px 100px 90px auto;padding:8px 20px 8px;border-bottom:1px solid var(--border);background:var(--bg);">
+          <span style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--light);text-transform:uppercase;">Versão</span>
+          <span style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--light);text-transform:uppercase;">Ano</span>
+          <span style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--light);text-transform:uppercase;">Câmbio</span>
+          <span style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--light);text-transform:uppercase;">Comb.</span>
+          <span style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--light);text-transform:uppercase;">Motor</span>
+          <span style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--light);text-transform:uppercase;">Preço</span>
+          <span></span>
+        </div>
+        ${modelo.versoes.map(v => `
+          <div class="versao-row${v.ativo ? '' : ' inativo'}" onclick="abrirDetalhe('${v.id}')">
+            <div>
+              <div class="versao-name">${modelo.nome} ${v.nome}</div>
+              <div class="versao-sub">${v.cores ? v.cores.split(',').length + ' cores' : ''}</div>
+            </div>
+            <div style="font-size:13px;font-weight:600;color:var(--navy);">${v.ano}</div>
+            <div><span class="v-badge cambio">${v.cambio}</span></div>
+            <div><span class="v-badge comb">${v.combustivel}</span></div>
+            <div style="font-size:12px;color:var(--mid);">${v.motor}</div>
+            <div style="font-size:13px;font-weight:700;color:var(--navy);">R$ ${v.preco}</div>
+            <div class="versao-row-actions" onclick="event.stopPropagation()">
+              <label class="sw-wrap" onclick="toggleVersaoAtivo('${v.id}')">
+                <div class="sw-track ${v.ativo ? 'on' : ''}"></div>
+              </label>
+              <button class="btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="openVersaoModal(null,'${v.id}')">✏ Editar</button>
+              <button class="btn-ghost" style="font-size:11px;padding:4px 10px;color:var(--quente);" onclick="removerVersao('${v.id}')">✕</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+function toggleModelo(id) {
+  document.getElementById('grupo-' + id).classList.toggle('open');
+}
+
+function toggleModeloAtivo(id) {
+  const m = catalogo.find(m => m.id === id);
+  if (m) { m.ativo = !m.ativo; renderCatalogo(); }
+}
+
+function toggleVersaoAtivo(vid) {
+  catalogo.forEach(m => m.versoes.forEach(v => { if (v.id === vid) v.ativo = !v.ativo; }));
+  renderCatalogo();
+}
+
+function openModeloModal() {
+  document.getElementById('input-modelo-nome').value = '';
+  document.getElementById('modal-modelo').style.display = 'flex';
+}
+
+function salvarModelo() {
+  const nome = document.getElementById('input-modelo-nome').value.trim();
+  if (!nome) return;
+  const seg = document.getElementById('input-modelo-seg').value;
+  catalogo.push({ id: 'm' + Date.now(), nome, segmento: seg, versoes: [] });
+  renderCatalogo();
+  closeModal('modal-modelo');
+}
+
+function removerModelo(id) {
+  if (!confirm('Remover este modelo e todas as versões?')) return;
+  catalogo = catalogo.filter(m => m.id !== id);
+  renderCatalogo();
+}
+
+function openVersaoModal(modeloId, versaoId) {
+  versaoEditandoId = versaoId || null;
+  const select = document.getElementById('v-modelo');
+  select.innerHTML = '<option value="">Selecione…</option>';
+  catalogo.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.id; opt.textContent = m.nome;
+    if (m.id === modeloId) opt.selected = true;
+    select.appendChild(opt);
+  });
+
+  const fields = ['v-versao','v-ano','v-cambio','v-combustivel','v-motor','v-preco','v-cores','v-itens','v-obs'];
+  fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('v-fotos-preview').innerHTML = '';
+
+  if (versaoId) {
+    const v = encontrarVersao(versaoId);
+    if (v) {
+      const m = catalogo.find(m => m.versoes.includes(v));
+      if (m) document.getElementById('v-modelo').value = m.id;
+      document.getElementById('v-versao').value = v.nome;
+      document.getElementById('v-ano').value = v.ano;
+      document.getElementById('v-cambio').value = v.cambio;
+      document.getElementById('v-combustivel').value = v.combustivel;
+      document.getElementById('v-motor').value = v.motor;
+      document.getElementById('v-preco').value = v.preco;
+      document.getElementById('v-cores').value = v.cores;
+      document.getElementById('v-itens').value = v.itens;
+      document.getElementById('v-obs').value = v.obs;
+    }
+    document.getElementById('modal-versao-titulo').textContent = 'Editar Versão';
+  } else {
+    document.getElementById('modal-versao-titulo').textContent = 'Nova Versão';
+  }
+  document.getElementById('modal-versao').style.display = 'flex';
+}
+
+function salvarVersao() {
+  const modeloId = document.getElementById('v-modelo').value;
+  if (!modeloId) { alert('Selecione o modelo.'); return; }
+  const modelo = catalogo.find(m => m.id === modeloId);
+  const dados = {
+    nome: document.getElementById('v-versao').value || 'Versão',
+    ano: document.getElementById('v-ano').value || '2025',
+    cambio: document.getElementById('v-cambio').value,
+    combustivel: document.getElementById('v-combustivel').value,
+    motor: document.getElementById('v-motor').value,
+    preco: document.getElementById('v-preco').value,
+    cores: document.getElementById('v-cores').value,
+    itens: document.getElementById('v-itens').value,
+    obs: document.getElementById('v-obs').value,
+    fotos: []
+  };
+
+  if (versaoEditandoId) {
+    catalogo.forEach(m => {
+      const idx = m.versoes.findIndex(v => v.id === versaoEditandoId);
+      if (idx >= 0) { dados.id = versaoEditandoId; m.versoes[idx] = dados; }
+    });
+  } else {
+    dados.id = 'v' + Date.now();
+    modelo.versoes.push(dados);
+  }
+  renderCatalogo();
+  closeModal('modal-versao');
+}
+
+function removerVersao(id) {
+  catalogo.forEach(m => { m.versoes = m.versoes.filter(v => v.id !== id); });
+  renderCatalogo();
+}
+
+function encontrarVersao(id) {
+  for (const m of catalogo) {
+    const v = m.versoes.find(v => v.id === id);
+    if (v) return v;
+  }
+  return null;
+}
+
+let versaoAtualId = null;
+
+function abrirDetalhe(versaoId) {
+  versaoAtualId = versaoId;
+  const v = encontrarVersao(versaoId);
+  const m = catalogo.find(m => m.versoes.some(vv => vv.id === versaoId));
+  if (!v || !m) return;
+
+  document.getElementById('dh-icon').textContent = SEGMENTO_ICON[m.segmento] || '🚗';
+  document.getElementById('dh-modelo').textContent = 'Volkswagen ' + m.nome;
+  document.getElementById('dh-name').textContent = m.nome + ' ' + v.nome;
+  document.getElementById('dh-preco').textContent = v.preco ? 'R$ ' + v.preco : '—';
+
+  const tags = document.getElementById('dh-tags');
+  tags.innerHTML = [v.ano, v.cambio, v.combustivel, v.motor].filter(Boolean).map(t => `<span class="detail-hero-tag">${t}</span>`).join('');
+
+  document.getElementById('dh-specs').innerHTML = [
+    ['Modelo', m.nome + ' ' + v.nome],
+    ['Versão', v.nome],
+    ['Ano', v.ano],
+    ['Câmbio', v.cambio],
+    ['Combustível', v.combustivel],
+    ['Motor', v.motor || '—'],
+    ['Cores disponíveis', v.cores || '—'],
+  ].map(([k,val]) => `<div class="detail-field-row"><span class="detail-field-key">${k}</span><span class="detail-field-val">${val}</span></div>`).join('');
+
+  document.getElementById('dh-itens').innerHTML = v.itens
+    ? v.itens.split(',').map(i => `<div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0;"><span style="color:#10B981;flex-shrink:0;">✓</span><span>${i.trim()}</span></div>`).join('')
+    : '—';
+
+  document.getElementById('dh-obs').textContent = v.obs || '—';
+
+  document.getElementById('dh-midia').innerHTML = '<div class="foto-placeholder">📷</div>';
+
+  // Ofertas vinculadas (este veículo ou todos)
+  const dhOf = document.getElementById('dh-ofertas');
+  if (dhOf) {
+    const modelo = catalogo.find(m => m.versoes.some(vv => vv.id === versaoId));
+    const nomeModelo = modelo ? modelo.nome : '';
+    const ofLinked = ofertasData.filter(o => o.veiculoId === 'todos' || o.veiculoId === versaoId || o.veiculoNome === nomeModelo);
+    dhOf.innerHTML = ofLinked.length
+      ? ofLinked.map(o => `
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <span style="font-size:13px;font-weight:800;color:var(--navy);flex:1;">${o.titulo}</span>
+              <span class="oferta-tag ${o.tipo}">${o.tipo === 'taxa' ? '💳' : o.tipo === 'desconto' ? '💰' : o.tipo === 'pcd' ? '♿' : '⭐'} ${o.tipo}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              ${o.beneficios.map(b => `<div style="font-size:11px;color:var(--mid);display:flex;gap:6px;"><span style="color:var(--sky);">✦</span>${b}</div>`).join('')}
+            </div>
+            ${o.validade ? `<div style="font-size:10px;color:var(--light);margin-top:8px;">Válida até ${o.validade}</div>` : ''}
+          </div>`).join('')
+      : '<span style="font-size:12px;color:var(--light);">Nenhuma oferta vinculada a este veículo.</span>';
+  }
+
+  // Recursos vinculados
+  const linked = recursosData.filter(r => r.veiculoId === versaoId);
+  const dhRec = document.getElementById('dh-recursos');
+  dhRec.innerHTML = linked.length
+    ? linked.map(r => {
+        const meta = GRUPO_META[r.tipo] || { icon:'📄' };
+        return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:16px;">${meta.icon}</span>
+          <div style="min-width:0;">
+            <div style="font-size:12px;font-weight:600;color:var(--navy);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.nome}</div>
+            <div style="font-size:10px;color:var(--light);">${r.tamanho}</div>
+          </div>
+          <button onclick="desvincularRecurso('${r.id}')" style="background:none;border:none;color:var(--light);cursor:pointer;font-size:14px;padding:0 2px;margin-left:4px;" title="Desvincular">×</button>
+        </div>`;
+      }).join('')
+    : '<span style="font-size:12px;color:var(--light);">Nenhum recurso vinculado. Acesse Recursos e clique em 🔗 para vincular.</span>';
+
+  navigate('veiculo-detalhe', document.querySelector('.nav-item[onclick*=veiculos]'));
+}
+
+function editarVersaoAtual() {
+  if (versaoAtualId) openVersaoModal(null, versaoAtualId);
+}
+
+function addMidiaDetalhe(input) {
+  const div = document.getElementById('dh-midia');
+  Array.from(input.files).forEach(file => {
+    const url = URL.createObjectURL(file);
+    const img = document.createElement('img');
+    img.src = url; img.className = 'foto-thumb';
+    div.insertBefore(img, div.lastElementChild);
+  });
+}
+
+function previewFotos(input) {
+  const prev = document.getElementById('v-fotos-preview');
+  prev.innerHTML = '';
+  Array.from(input.files).forEach(file => {
+    const url = URL.createObjectURL(file);
+    const img = document.createElement('img');
+    img.src = url; img.style.cssText = 'width:80px;height:56px;border-radius:6px;object-fit:cover;border:1px solid var(--border);';
+    prev.appendChild(img);
+  });
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function addKnowledgeBlock() {
+  document.getElementById('new-block-placeholder').style.display = 'block';
+}
+function saveBlock() {
+  document.getElementById('new-block-placeholder').style.display = 'none';
+}
+
+renderCatalogo();
+
+function selectTone(el, tone) {
+  document.querySelectorAll('.tone-option[id^="tone-"]').forEach(o => o.classList.remove('active-tone'));
+  el.classList.add('active-tone');
+}
+function selectEmoji(el, val) {
+  document.querySelectorAll('.tone-option[id^="emoji-"]').forEach(o => o.classList.remove('active-tone'));
+  el.classList.add('active-tone');
+}
+function toggleSwitch(el) {
+  el.classList.toggle('active-toggle');
+}
+function saveWelcomeMsg() {
+  alert('Mensagem salva com sucesso!');
+}
+
+// ── LEADS DATA ──
+const leadsData = [
+  { id:0, nome:'João Silva', tel:'(65) 99812-3456', origem:'WhatsApp', interesse:'Novos', modelo:'Polo Track', modalidade:'Financiamento', status:'quente', vendedor:'Thiago', entrada:'18/04 08:14', ultContato:'há 12 min',
+    conversa:[
+      { de:'bot', texto:'Olá! Bem-vindo à Trescinco Volkswagen. 👋 Sou a Lara, assistente virtual. Como posso te ajudar hoje?', hora:'08:14' },
+      { de:'lead', texto:'Oi, tenho interesse no Polo Track 2025. Qual o preço?', hora:'08:15' },
+      { de:'bot', texto:'Ótima escolha! O Polo Track 2025 está a partir de R$ 79.990. Temos condições especiais de financiamento com entrada facilitada. Você já tem entrada disponível?', hora:'08:15' },
+      { de:'lead', texto:'Tenho uns R$ 15 mil de entrada.', hora:'08:17' },
+      { de:'bot', texto:'Com R$ 15.000 de entrada, o saldo financiado seria de R$ 64.990. Em 60x ficaria aproximadamente R$ 1.480/mês (sujeito à análise de crédito). Quer que eu te conecte com nosso consultor Thiago para uma simulação completa?', hora:'08:17' },
+      { de:'lead', texto:'Pode ser! Quero saber as condições detalhadas.', hora:'08:19' },
+      { de:'bot', texto:'Perfeito! Vou te direcionar para o Thiago agora. Ele entrará em contato em breve. Qualquer dúvida, estou aqui! 😊', hora:'08:19' },
+    ]
+  },
+  { id:1, nome:'Maria Souza', tel:'(65) 99654-7890', origem:'Instagram', interesse:'Usados', modelo:'T-Cross', modalidade:'À vista', status:'morno', vendedor:'Luciana', entrada:'18/04 09:02', ultContato:'há 28 min',
+    conversa:[
+      { de:'bot', texto:'Olá Maria! Seja bem-vinda à Trescinco Volkswagen. Como posso te ajudar?', hora:'09:02' },
+      { de:'lead', texto:'Oi! Vi no Instagram uma T-Cross seminova. Ainda disponível?', hora:'09:03' },
+      { de:'bot', texto:'Que ótimo! Temos algumas T-Cross seminovas disponíveis. Você tem preferência por ano ou versão?', hora:'09:03' },
+      { de:'lead', texto:'2022 ou 2023, qualquer versão. Quero comprar à vista.', hora:'09:05' },
+      { de:'bot', texto:'Temos uma T-Cross Highline 2022 em excelente estado, única dona, 32.000 km. Posso verificar o valor exato para você. Um momento!', hora:'09:06' },
+      { de:'lead', texto:'Ok, aguardo!', hora:'09:08' },
+      { de:'bot', texto:'O valor está sendo consultado com nossa equipe de usados. A consultora Luciana vai te passar todas as informações. Ela entrará em contato em breve!', hora:'09:10' },
+    ]
+  },
+  { id:2, nome:'Carlos Mendes', tel:'(65) 99321-6540', origem:'WhatsApp', interesse:'PCD', modelo:'Virtus', modalidade:'Financiamento', status:'quente', vendedor:'Oscar', entrada:'18/04 09:45', ultContato:'há 5 min',
+    conversa:[
+      { de:'bot', texto:'Olá Carlos! Bem-vindo à Trescinco Volkswagen. Como posso te ajudar?', hora:'09:45' },
+      { de:'lead', texto:'Oi! Quero saber sobre o desconto PCD no Virtus.', hora:'09:46' },
+      { de:'bot', texto:'Ótimo! O Virtus está com desconto PCD de até R$ 8.000. O modelo começa em R$ 89.990 e com o benefício PCD fica a partir de R$ 81.990. Você já tem o laudo/CID em mãos?', hora:'09:46' },
+      { de:'lead', texto:'Sim, tenho o laudo. Qual a documentação necessária?', hora:'09:49' },
+      { de:'bot', texto:'Para PCD você precisa: laudo médico, CID, CPF, RG e comprovante de residência. Nosso consultor Oscar pode te orientar melhor. Quer agendar uma visita?', hora:'09:50' },
+      { de:'lead', texto:'Quero sim! Pode ser amanhã de manhã?', hora:'09:52' },
+      { de:'bot', texto:'Vou verificar a agenda do Oscar para amanhã. Você prefere qual horário — 9h, 10h ou 11h?', hora:'09:52' },
+      { de:'lead', texto:'10h está ótimo.', hora:'09:53' },
+      { de:'bot', texto:'Perfeito! Oscar confirmará o agendamento para amanhã às 10h. Até lá! 😊', hora:'09:53' },
+    ]
+  },
+  { id:3, nome:'Ana Rodrigues', tel:'(65) 99487-2210', origem:'Facebook', interesse:'Consórcio', modelo:'Nivus', modalidade:'Consórcio', status:'frio', vendedor:'Wanderson', entrada:'18/04 10:11', ultContato:'há 42 min',
+    conversa:[
+      { de:'bot', texto:'Olá Ana! Trescinco Volkswagen, tudo bem? Como posso te ajudar?', hora:'10:11' },
+      { de:'lead', texto:'Oi, quero saber sobre consórcio do Nivus.', hora:'10:12' },
+      { de:'bot', texto:'Claro! O consórcio do Nivus tem cartas a partir de R$ 95.000 com parcelas reduzidas e sem juros. As assembleias são mensais. Quer saber mais sobre como funciona?', hora:'10:12' },
+      { de:'lead', texto:'Pode mandar mais informações? Vou ver com calma.', hora:'10:15' },
+      { de:'bot', texto:'Claro! Vou te enviar um material completo sobre o consórcio VW. Nosso consultor Wanderson também pode tirar suas dúvidas quando quiser. 😊', hora:'10:15' },
+    ]
+  },
+  { id:4, nome:'Roberto Lima', tel:'(65) 99763-0021', origem:'Usado Fácil', interesse:'Usados', modelo:'Saveiro', modalidade:'À vista', status:'vendido', vendedor:'Danielle', entrada:'18/04 07:30', ultContato:'há 2h',
+    conversa:[
+      { de:'bot', texto:'Olá Roberto! Seja bem-vindo à Trescinco. Como posso te ajudar?', hora:'07:30' },
+      { de:'lead', texto:'Oi! Vi uma Saveiro dupla no Usado Fácil. Código 4521.', hora:'07:31' },
+      { de:'bot', texto:'Boa! A Saveiro Dupla 2021 Robust, 1.6, 58.000 km, está disponível por R$ 82.500. Muito procurada! Tem interesse?', hora:'07:31' },
+      { de:'lead', texto:'Tenho! Consigo negociar?', hora:'07:33' },
+      { de:'bot', texto:'Nossos preços já são bem competitivos, mas a consultora Danielle pode analisar alguma condição especial. Posso te passar para ela?', hora:'07:33' },
+      { de:'lead', texto:'Sim!', hora:'07:34' },
+      { de:'bot', texto:'Perfeito! Danielle vai entrar em contato agora mesmo!', hora:'07:34' },
+      { de:'lead', texto:'Fechamos! Vou buscar na quinta.', hora:'08:45' },
+      { de:'bot', texto:'Parabéns pela aquisição, Roberto! 🎉 Danielle vai confirmar todos os detalhes da entrega. Seja bem-vindo à família Trescinco VW!', hora:'08:46' },
+    ]
+  },
+  { id:5, nome:'Fernanda Costa', tel:'(65) 99543-8812', origem:'WhatsApp', interesse:'Assinatura', modelo:'Polo Track', modalidade:'Assinatura', status:'morno', vendedor:'Filipe', entrada:'18/04 10:33', ultContato:'há 8 min',
+    conversa:[
+      { de:'bot', texto:'Olá Fernanda! Trescinco Volkswagen. Como posso te ajudar?', hora:'10:33' },
+      { de:'lead', texto:'Quero saber como funciona a assinatura do Polo.', hora:'10:34' },
+      { de:'bot', texto:'A assinatura VW inclui seguro, manutenção, IPVA e documentação — tudo numa mensalidade. O Polo Track sai a partir de R$ 1.890/mês em 24 meses. Tem interesse?', hora:'10:34' },
+      { de:'lead', texto:'Quero simular. Moro em Cuiabá, tem disponível?', hora:'10:37' },
+      { de:'bot', texto:'Sim! Atendemos Cuiabá. Nosso consultor Filipe vai fazer uma simulação personalizada para você. Posso te conectar com ele?', hora:'10:37' },
+      { de:'lead', texto:'Pode ser, mas quero pensar mais um pouco.', hora:'10:39' },
+      { de:'bot', texto:'Sem problemas! Filipe fica à disposição quando você quiser. Qualquer dúvida, estamos aqui! 😊', hora:'10:39' },
+    ]
+  },
+  { id:6, nome:'Paulo Ferreira', tel:'(65) 99211-4457', origem:'Instagram', interesse:'Novos', modelo:'T-Cross', modalidade:'Financiamento', status:'quente', vendedor:'Marcelo', entrada:'18/04 10:48', ultContato:'há 3 min',
+    conversa:[
+      { de:'bot', texto:'Olá Paulo! Bem-vindo à Trescinco Volkswagen. Como posso te ajudar?', hora:'10:48' },
+      { de:'lead', texto:'Oi! Quero a T-Cross. Qual a versão mais completa?', hora:'10:49' },
+      { de:'bot', texto:'A versão mais completa é a T-Cross Highline 1.4 TSI, com teto solar panorâmico, faróis LED, central multimídia 10" e ACC. Preço a partir de R$ 148.990.', hora:'10:49' },
+      { de:'lead', texto:'Tem essa cor prata?', hora:'10:51' },
+      { de:'bot', texto:'Estou verificando estoque! Temos a Highline em Prata Reflex disponível para pronta entrega. Quer agendar um test drive?', hora:'10:51' },
+      { de:'lead', texto:'Sim! Pode ser esse final de semana?', hora:'10:52' },
+      { de:'bot', texto:'Vou verificar a agenda! Nosso consultor Marcelo vai confirmar o horário do test drive. 🚗', hora:'10:52' },
+    ]
+  },
+  { id:7, nome:'Juliana Neves', tel:'(65) 99907-3341', origem:'WhatsApp', interesse:'Serviços', modelo:'—', modalidade:'—', status:'frio', vendedor:'Neilton', entrada:'18/04 11:02', ultContato:'agora',
+    conversa:[
+      { de:'bot', texto:'Olá Juliana! Trescinco Volkswagen, tudo bem? Como posso te ajudar?', hora:'11:02' },
+      { de:'lead', texto:'Oi! Preciso fazer revisão do meu Polo 2021. Como agendar?', hora:'11:02' },
+    ]
+  },
+];
+
+function renderLeads() {
+  const statusLabel = { quente:'Quente', morno:'Morno', frio:'Frio', vendido:'Vendido' };
+  document.getElementById('leads-tbody').innerHTML = leadsData.map((l, i) => `
+    <tr onclick="abrirHistorico(${i})">
+      <td class="bold">${l.nome}</td>
+      <td>${l.tel}</td>
+      <td>${l.origem}</td>
+      <td>${l.interesse}</td>
+      <td>${l.modelo}</td>
+      <td>${l.modalidade}</td>
+      <td><span class="badge ${l.status}"><span class="badge-dot"></span>${statusLabel[l.status]}</span></td>
+      <td>${l.vendedor}</td>
+      <td style="font-size:12px;color:var(--mid);">${l.entrada}</td>
+      <td>${l.ultContato}</td>
+    </tr>
+  `).join('');
+}
+
+function abrirHistorico(idx) {
+  const l = leadsData[idx];
+  const initials = l.nome.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+  const statusLabel = { quente:'Quente', morno:'Morno', frio:'Frio', vendido:'Vendido' };
+
+  document.getElementById('dh-avatar').textContent = initials;
+  document.getElementById('dh-lead-nome').textContent = l.nome;
+  document.getElementById('dh-lead-sub').textContent = l.tel + ' · ' + l.origem;
+  document.getElementById('dh-lead-badge').innerHTML =
+    `<span class="badge ${l.status}"><span class="badge-dot"></span>${statusLabel[l.status]}</span>`;
+
+  document.getElementById('dh-lead-strip').innerHTML = [
+    ['Interesse', l.interesse], ['Modelo', l.modelo],
+    ['Modalidade', l.modalidade], ['Vendedor', l.vendedor], ['Entrada', l.entrada]
+  ].map(([k,v]) => `
+    <div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--light);margin-bottom:2px;">${k}</div>
+      <div style="font-size:12px;font-weight:600;color:var(--navy);">${v}</div>
+    </div>`).join('');
+
+  const chat = document.getElementById('chat-area');
+  chat.innerHTML = '<div class="chat-day">18 de Abril de 2026</div>' +
+    l.conversa.map(m => `
+      <div class="chat-bubble ${m.de}">
+        ${m.de === 'bot' ? '<div style="font-size:10px;font-weight:700;color:var(--sky);margin-bottom:3px;">Lara IA</div>' : ''}
+        ${m.texto}
+        <div class="chat-meta">${m.hora}</div>
+      </div>`).join('');
+
+  setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 50);
+  document.getElementById('lead-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+function fecharHistorico() {
+  document.getElementById('lead-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+renderLeads();
+
+/* ════════ VENDEDORES ════════ */
+
+let vendedoresData = [
+  // Loja 1 — Cuiabá: 8 vendedores
+  { id:'vd1', nome:'Thiago',    loja_id:1, loja:'Loja 1 — Cuiabá', tel:'(65) 99100-0001', pos:1, ativo:true,  leadsHoje:18 },
+  { id:'vd2', nome:'Oscar',     loja_id:1, loja:'Loja 1 — Cuiabá', tel:'(65) 99100-0002', pos:2, ativo:true,  leadsHoje:11 },
+  { id:'vd3', nome:'Luciana',   loja_id:1, loja:'Loja 1 — Cuiabá', tel:'(65) 99100-0003', pos:3, ativo:true,  leadsHoje:14 },
+  { id:'vd4', nome:'Wanderson', loja_id:1, loja:'Loja 1 — Cuiabá', tel:'(65) 99100-0004', pos:4, ativo:true,  leadsHoje:9  },
+  { id:'vd5', nome:'Jordilton', loja_id:1, loja:'Loja 1 — Cuiabá', tel:'(65) 99100-0005', pos:5, ativo:false, leadsHoje:0  },
+  { id:'vd6', nome:'Danielle',  loja_id:1, loja:'Loja 1 — Cuiabá', tel:'(65) 99100-0006', pos:6, ativo:true,  leadsHoje:15 },
+  { id:'vd7', nome:'Marcelo',   loja_id:1, loja:'Loja 1 — Cuiabá', tel:'(65) 99100-0007', pos:7, ativo:true,  leadsHoje:12 },
+  { id:'vd8', nome:'Hugo',      loja_id:1, loja:'Loja 1 — Cuiabá', tel:'(65) 99100-0008', pos:8, ativo:true,  leadsHoje:7  },
+  // Loja 2: 1 vendedor
+  { id:'vd9', nome:'Carlos Costa', loja_id:2, loja:'Loja 2', tel:'(65) 99200-0001', pos:1, ativo:true, leadsHoje:23 },
+];
+
+// Rodízio: L1→L2→L1→L2... dentro da L1 rotaciona pelos ativos
+let rodizioLojaAtual = 1; // qual loja recebe o próximo lead
+let rodizioIdxL1 = 0;     // índice dentro dos ativos de Loja 1
+
+function getAtivosL1() { return vendedoresData.filter(v => v.loja_id === 1 && v.ativo).sort((a,b) => a.pos - b.pos); }
+function getProximoVendedor() {
+  if (rodizioLojaAtual === 1) {
+    const ativos = getAtivosL1();
+    return ativos[rodizioIdxL1 % ativos.length] || null;
+  }
+  return vendedoresData.find(v => v.loja_id === 2 && v.ativo) || null;
+}
+
+function avancarRodizio() {
+  if (rodizioLojaAtual === 1) {
+    const ativos = getAtivosL1();
+    rodizioIdxL1 = (rodizioIdxL1 + 1) % ativos.length;
+    rodizioLojaAtual = 2;
+  } else {
+    rodizioLojaAtual = 1;
+  }
+  renderVendedores();
+  renderRodizioStatus();
+}
+
+function renderVendedores() {
+  const proximo = getProximoVendedor();
+  document.getElementById('vendedores-tbody').innerHTML = vendedoresData.map(v => {
+    const isProx = proximo && v.id === proximo.id;
+    return `
+      <tr style="${!v.ativo ? 'opacity:.5;' : ''}">
+        <td class="bold">${v.nome}</td>
+        <td>${v.loja}</td>
+        <td>${v.tel}</td>
+        <td>${isProx
+          ? '<span class="rodizio-badge next">🔵 Próximo</span>'
+          : v.loja_id === 2
+            ? '<span class="rodizio-badge">Canal único L2</span>'
+            : `<span class="rodizio-badge">L1 · Pos ${v.pos}</span>`
+        }</td>
+        <td><span class="status-pill ${v.ativo ? 'on' : 'off'}"><span class="status-dot"></span>${v.ativo ? 'Ativo' : 'Inativo'}</span></td>
+        <td style="font-weight:700;color:${v.ativo ? 'var(--navy)' : 'var(--light)'};">${v.leadsHoje || '—'}</td>
+        <td><button class="btn-ghost" style="font-size:12px;" onclick="abrirEditVendedor('${v.id}')">✏ Editar</button></td>
+      </tr>`;
+  }).join('');
+}
+
+function renderRodizioStatus() {
+  const ativosL1 = getAtivosL1();
+  const proximo  = getProximoVendedor();
+  const l2vend   = vendedoresData.find(v => v.loja_id === 2 && v.ativo);
+
+  document.getElementById('rodizio-status').innerHTML = `
+    <!-- Sequência entre lojas -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);margin-bottom:10px;">Sequência entre lojas</div>
+      <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;gap:6px;">
+        ${[1,2,1,2,1,2].map((l,i) => {
+          const isCurrent = (i === 0 && rodizioLojaAtual === l) || (i === 1 && rodizioLojaAtual === l && i > 0);
+          const isNext = (rodizioLojaAtual === 1 && l === 2 && i === 1) || (rodizioLojaAtual === 2 && l === 1 && i === 2);
+          const isActive = i === 0;
+          return `<div style="padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;
+            ${isActive && rodizioLojaAtual === l ? 'background:#EFF6FF;border:2px solid #3B82F6;color:#1D4ED8;' :
+              isNext ? 'background:var(--bg);border:2px dashed var(--border);color:var(--mid);' :
+              'background:var(--bg);border:1px solid var(--border);color:var(--light);'}">
+            Loja ${l}${isActive && rodizioLojaAtual === l ? ' ← agora' : ''}
+          </div>
+          ${i < 5 ? '<span style="color:var(--light);font-size:16px;">→</span>' : ''}`;
+        }).join('')}
+        <span style="font-size:11px;color:var(--light);margin-left:4px;">…continua</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+      <!-- Fila Loja 1 -->
+      <div style="flex:1;min-width:320px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);margin-bottom:10px;">Fila Loja 1 — Cuiabá</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${ativosL1.map((v,i) => {
+            const isProx = proximo && v.id === proximo.id && rodizioLojaAtual === 1;
+            return `<div style="padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;
+              ${isProx ? 'background:#EFF6FF;border:2px solid #3B82F6;color:#1D4ED8;' :
+                'background:var(--bg);border:1px solid var(--border);color:var(--mid);'}">
+              ${v.nome}${isProx ? ' ← próximo' : ''}
+            </div>`;
+          }).join('')}
+          ${vendedoresData.filter(v => v.loja_id === 1 && !v.ativo).map(v =>
+            `<div style="background:#FEF2F2;border:1px solid #FECACA;color:#9CA3AF;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:line-through;">${v.nome}</div>`
+          ).join('')}
+        </div>
+      </div>
+
+      <!-- Loja 2 -->
+      <div style="border-left:1px solid var(--border);padding-left:24px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light);margin-bottom:10px;">Loja 2</div>
+        ${l2vend ? `<div style="padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;
+          ${proximo && l2vend.id === proximo.id ? 'background:#EFF6FF;border:2px solid #3B82F6;color:#1D4ED8;' :
+            'background:var(--bg);border:1px solid var(--border);color:var(--mid);'}">
+          ${l2vend.nome} (canal único)${proximo && l2vend.id === proximo.id ? ' ← próximo' : ''}
+        </div>` : '<span style="font-size:12px;color:var(--light);">Nenhum vendedor ativo</span>'}
+      </div>
+    </div>`;
+}
+
+let vendedorEditandoId = null;
+let vendStatusAtivo = true;
+
+function abrirEditVendedor(id) {
+  const v = vendedoresData.find(v => v.id === id);
+  if (!v) return;
+  vendedorEditandoId = id;
+  vendStatusAtivo = v.ativo;
+  document.getElementById('modal-vend-titulo').textContent = 'Editar Vendedor — ' + v.nome;
+  document.getElementById('vend-nome').value  = v.nome;
+  document.getElementById('vend-loja').value  = v.loja_id;
+  document.getElementById('vend-tel').value   = v.tel;
+  document.getElementById('vend-pos').value   = v.pos;
+  document.getElementById('vend-status-sw').className    = 'sw-track' + (v.ativo ? ' on' : '');
+  document.getElementById('vend-status-label').textContent = v.ativo ? 'Ativo' : 'Inativo';
+  document.getElementById('vend-status-label').style.color = v.ativo ? '#16A34A' : 'var(--light)';
+  document.getElementById('modal-vendedor').style.display = 'flex';
+}
+
+function toggleVendStatus() {
+  vendStatusAtivo = !vendStatusAtivo;
+  document.getElementById('vend-status-sw').className    = 'sw-track' + (vendStatusAtivo ? ' on' : '');
+  document.getElementById('vend-status-label').textContent = vendStatusAtivo ? 'Ativo' : 'Inativo';
+  document.getElementById('vend-status-label').style.color = vendStatusAtivo ? '#16A34A' : 'var(--light)';
+}
+
+function salvarVendedor() {
+  const v = vendedoresData.find(v => v.id === vendedorEditandoId);
+  if (!v) return;
+  const lid = parseInt(document.getElementById('vend-loja').value);
+  v.nome   = document.getElementById('vend-nome').value.trim() || v.nome;
+  v.loja_id= lid;
+  v.loja   = lid === 1 ? 'Loja 1 — Cuiabá' : 'Loja 2';
+  v.tel    = document.getElementById('vend-tel').value.trim();
+  v.pos    = parseInt(document.getElementById('vend-pos').value) || v.pos;
+  v.ativo  = vendStatusAtivo;
+  closeModal('modal-vendedor');
+  renderVendedores();
+  renderRodizioStatus();
+}
+
+renderVendedores();
+renderRodizioStatus();
+
+/* ════════ FOLLOW-UP ════════ */
+
+const fuCategorias = {
+  aniversariantes: {
+    icon:'🎂', label:'Aniversariantes', desc:'Aniversariantes do mês',
+    ultimoDisparo:'22/03/2026', taxa:'78%', totalEnviado:'31',
+    contatos:[
+      { id:'a1', nome:'João Silva',    tel:'(65) 99812-3456', info:'Aniversário: 22/04', modelo:'Polo Track' },
+      { id:'a2', nome:'Ana Lima',      tel:'(65) 99234-5678', info:'Aniversário: 25/04', modelo:'Nivus' },
+      { id:'a3', nome:'Carlos Braga',  tel:'(65) 99345-6789', info:'Aniversário: 30/04', modelo:'T-Cross' },
+      { id:'a4', nome:'Patrícia Reis', tel:'(65) 99456-7890', info:'Aniversário: 30/04', modelo:'Polo Track' },
+    ],
+    template:'Olá, {nome}! 🎂🎉\n\nHoje é um dia especial e a *Trescinco Volkswagen* quer celebrar com você!\n\nDesejamos um feliz aniversário cheio de realizações. Como presente, preparamos uma condição exclusiva para você neste mês especial. 🎁\n\nQualquer novidade, estamos aqui! 😊\n\n_Equipe Trescinco VW_',
+  },
+  posvendas: {
+    icon:'🤝', label:'Pós-vendas', desc:'Compradores recentes (90 dias)',
+    ultimoDisparo:'01/04/2026', taxa:'65%', totalEnviado:'18',
+    contatos:[
+      { id:'p1', nome:'Roberto Lima',   tel:'(65) 99763-0021', info:'Compra: 18/04 · Saveiro Robust', modelo:'Saveiro' },
+      { id:'p2', nome:'Fernanda Costa', tel:'(65) 99543-8812', info:'Compra: 10/04 · Polo Track',    modelo:'Polo Track' },
+      { id:'p3', nome:'Diego Alves',    tel:'(65) 99876-5432', info:'Compra: 28/03 · Nivus Highline', modelo:'Nivus' },
+    ],
+    template:'Olá, {nome}! 🙌\n\nEsperamos que esteja curtindo muito o seu *{modelo}*!\n\nEstamos entrando em contato para saber como foi sua experiência de compra na *Trescinco Volkswagen*. Sua opinião é muito importante para nós. ⭐\n\nTem alguma dúvida ou algo que possamos ajudar? Estamos à disposição!\n\n_Equipe Trescinco VW_',
+  },
+  ofertas: {
+    icon:'🏷️', label:'Ofertas', desc:'Promoções para leads e clientes',
+    ultimoDisparo:'15/04/2026', taxa:'82%', totalEnviado:'47',
+    contatos:[
+      { id:'o1', nome:'João Silva',    tel:'(65) 99812-3456', info:'Interesse: Polo Track', modelo:'Polo Track' },
+      { id:'o2', nome:'Maria Souza',   tel:'(65) 99654-7890', info:'Interesse: T-Cross',   modelo:'T-Cross' },
+      { id:'o3', nome:'Paulo Ferreira',tel:'(65) 99211-4457', info:'Interesse: T-Cross',   modelo:'T-Cross' },
+      { id:'o4', nome:'Ana Rodrigues', tel:'(65) 99487-2210', info:'Interesse: Nivus',     modelo:'Nivus' },
+      { id:'o5', nome:'Marcos Teles',  tel:'(65) 99321-1122', info:'Interesse: Polo',      modelo:'Polo' },
+    ],
+    template:'Olá, {nome}! 🚗✨\n\nA *Trescinco Volkswagen* preparou uma oferta especial para você!\n\n🔖 *Condições imperdíveis deste mês:*\n• Taxa de 0,99% a.m. no financiamento\n• Entrada facilitada a partir de 10%\n• IPVA 2026 pago pela loja\n• Brinde exclusivo na retirada 🎁\n\nEssas condições são por tempo limitado. Quer saber mais? Responda esta mensagem!\n\n_Equipe Trescinco VW_',
+  },
+  comunicados: {
+    icon:'📢', label:'Comunicados', desc:'Avisos para clientes e leads',
+    ultimoDisparo:'10/04/2026', taxa:'71%', totalEnviado:'62',
+    contatos:[
+      { id:'c1', nome:'João Silva',    tel:'(65) 99812-3456', info:'Lead ativo', modelo:'' },
+      { id:'c2', nome:'Maria Souza',   tel:'(65) 99654-7890', info:'Lead ativo', modelo:'' },
+      { id:'c3', nome:'Ana Lima',      tel:'(65) 99234-5678', info:'Cliente',    modelo:'' },
+      { id:'c4', nome:'Roberto Lima',  tel:'(65) 99763-0021', info:'Cliente',    modelo:'' },
+      { id:'c5', nome:'Paulo Ferreira',tel:'(65) 99211-4457', info:'Lead ativo', modelo:'' },
+      { id:'c6', nome:'Carlos Mendes', tel:'(65) 99321-6540', info:'Lead ativo', modelo:'' },
+    ],
+    template:'Olá, {nome}! 👋\n\nA *Trescinco Volkswagen* informa:\n\n📅 Nossa loja estará *aberta neste feriado* com horário especial:\n🕘 Das 9h às 14h — Loja 1 · Cuiabá\n\nAproveite para conhecer os lançamentos VW 2025 e verificar as condições especiais do mês!\n\nQualquer dúvida, estamos à disposição. 😊\n\n_Equipe Trescinco VW_',
+  },
+  endomarketing: {
+    icon:'🏢', label:'Endomarketing', desc:'Comunicados internos à equipe',
+    ultimoDisparo:'12/04/2026', taxa:'100%', totalEnviado:'6',
+    contatos:[
+      { id:'e1', nome:'Thiago',    tel:'(65) 99100-0001', info:'Vendedor · Loja 1',  modelo:'' },
+      { id:'e2', nome:'Danielle',  tel:'(65) 99100-0002', info:'Vendedora · Loja 1', modelo:'' },
+      { id:'e3', nome:'Luciana',   tel:'(65) 99100-0003', info:'Vendedora · Loja 1', modelo:'' },
+      { id:'e4', nome:'Marcelo',   tel:'(65) 99100-0004', info:'Vendedor · Loja 1',  modelo:'' },
+      { id:'e5', nome:'Oscar',     tel:'(65) 99100-0005', info:'Vendedor · Loja 1',  modelo:'' },
+      { id:'e6', nome:'Wanderson', tel:'(65) 99100-0006', info:'Vendedor · Loja 1',  modelo:'' },
+    ],
+    template:'📢 *Comunicado Interno — Trescinco VW*\n\nOlá, {nome}!\n\n*Meta de Abril* foi revisada:\n\n🎯 Meta individual: 6 vendas\n🏆 Bônus por superação: R$ 800\n📅 Prazo: 30/04/2026\n\nVamos juntos superar os resultados! Qualquer dúvida, fale com a gestão. 💪\n\nBoas vendas!\n\n_Gestão Trescinco VW_',
+  },
+};
+
+let fuCatAtiva = 'aniversariantes';
+let fuSelecionados = new Set();
+let fuSchedMode = 'agora';
+
+function fuInit() {
+  fuCatAtiva = 'aniversariantes';
+  fuSelecionados = new Set();
+  renderFuCats();
+  renderFuContatos();
+  fuAtualizaMeta();
+}
+
+function renderFuCats() {
+  document.getElementById('fu-cats').innerHTML = Object.entries(fuCategorias).map(([key, c]) => `
+    <div class="fu-cat${key === fuCatAtiva ? ' active' : ''}" onclick="fuSelectCat('${key}')">
+      <div class="fu-cat-icon">${c.icon}</div>
+      <div class="fu-cat-name">${c.label}</div>
+      <div class="fu-cat-desc">${c.desc}</div>
+      <div class="fu-cat-footer">
+        <div class="fu-cat-count">${c.contatos.length}</div>
+        <div class="fu-cat-last">abertura ${c.taxa}</div>
+      </div>
+    </div>`).join('');
+}
+
+function fuSelectCat(key) {
+  fuCatAtiva = key;
+  fuSelecionados = new Set();
+  document.getElementById('fu-chk-all').checked = false;
+  renderFuCats();
+  renderFuContatos();
+  fuAtualizaMeta();
+}
+
+function renderFuContatos(filtro = '') {
+  const cat = fuCategorias[fuCatAtiva];
+  document.getElementById('fu-template').value = cat.template;
+  document.getElementById('fu-contacts-title').textContent = `${cat.icon} ${cat.label} — Destinatários`;
+
+  const lista = cat.contatos.filter(c =>
+    !filtro || c.nome.toLowerCase().includes(filtro.toLowerCase()) || c.tel.includes(filtro)
+  );
+
+  document.getElementById('fu-contact-list').innerHTML = lista.length
+    ? lista.map(c => {
+        const initials = c.nome.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+        const sel = fuSelecionados.has(c.id);
+        return `
+          <div class="fu-contact-item${sel ? ' sel' : ''}" onclick="fuToggleContato('${c.id}')">
+            <div class="fu-chk"></div>
+            <div class="fu-av">${initials}</div>
+            <div>
+              <div class="fu-cn">${c.nome}</div>
+              <div class="fu-cs">${c.info}</div>
+            </div>
+            <div class="fu-tel">${c.tel}</div>
+          </div>`;
+      }).join('')
+    : '<div class="fu-empty-list">Nenhum contato encontrado.</div>';
+
+  const count = fuSelecionados.size;
+  document.getElementById('fu-sel-count').textContent = count ? `${count} selecionado${count > 1 ? 's' : ''}` : '';
+  const btn = document.getElementById('fu-send-btn');
+  btn.disabled = count === 0;
+  btn.textContent = count > 0
+    ? `Disparar para ${count} contato${count > 1 ? 's' : ''} via WhatsApp`
+    : 'Disparar via WhatsApp';
+  if (count > 0) btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:white;"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg> Disparar para ' + count + ' contato' + (count > 1 ? 's' : '') + ' via WhatsApp';
+}
+
+function fuToggleContato(id) {
+  if (fuSelecionados.has(id)) fuSelecionados.delete(id);
+  else fuSelecionados.add(id);
+  const cat = fuCategorias[fuCatAtiva];
+  document.getElementById('fu-chk-all').checked = fuSelecionados.size === cat.contatos.length;
+  renderFuContatos(document.getElementById('fu-search').value);
+}
+
+function fuSelectAll(checked) {
+  const cat = fuCategorias[fuCatAtiva];
+  if (checked) cat.contatos.forEach(c => fuSelecionados.add(c.id));
+  else fuSelecionados.clear();
+  renderFuContatos(document.getElementById('fu-search').value);
+}
+
+function fuSearch(val) {
+  renderFuContatos(val);
+}
+
+function fuAtualizaMeta() {
+  const cat = fuCategorias[fuCatAtiva];
+  document.getElementById('fu-meta-last').textContent    = cat.ultimoDisparo;
+  document.getElementById('fu-meta-taxa').textContent    = cat.taxa;
+  document.getElementById('fu-meta-total').textContent   = cat.totalEnviado;
+}
+
+function fuSchedOpt(mode) {
+  fuSchedMode = mode;
+  document.getElementById('fso-agora').classList.toggle('on', mode === 'agora');
+  document.getElementById('fso-agendar').classList.toggle('on', mode === 'agendar');
+  document.getElementById('fu-date-wrap').style.display = mode === 'agendar' ? 'block' : 'none';
+}
+
+function fuInsertVar(v) {
+  const ta = document.getElementById('fu-template');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  ta.value = ta.value.slice(0,s) + v + ta.value.slice(e);
+  ta.selectionStart = ta.selectionEnd = s + v.length;
+  ta.focus();
+}
+
+function fuDisparar() {
+  if (fuSelecionados.size === 0) return;
+  const cat = fuCategorias[fuCatAtiva];
+  const modo = fuSchedMode === 'agendar'
+    ? 'agendado para ' + (document.getElementById('fu-date-input').value || '?')
+    : 'imediatamente';
+  alert(`✅ Disparo ${modo}!\n\n${fuSelecionados.size} mensagem(ns) enviada(s) via WhatsApp Business API para a categoria "${cat.label}".`);
+}
+
+/* ════════ OFERTAS ════════ */
+
+let ofertasData = [
+  {
+    id:'of1', titulo:'Taxa 0,99% a.m. no Polo — Abril 2026',
+    veiculoId:'todos', veiculoNome:'Polo', tipo:'taxa',
+    beneficios:[
+      'Taxa de 0,99% ao mês — menor do ano',
+      'Parcelamento em até 60 meses',
+      'Sem entrada mínima obrigatória',
+      'Aprovação simplificada para negativados'
+    ],
+    validade:'30/04/2026', origem:'site'
+  },
+  {
+    id:'of2', titulo:'T-Cross com R$ 6.000 de desconto no emplacamento',
+    veiculoId:'todos', veiculoNome:'T-Cross', tipo:'desconto',
+    beneficios:[
+      'R$ 6.000 de desconto no emplacamento',
+      'IPVA 2026 pago pela concessionária',
+      '1ª revisão grátis (até 15.000 km)',
+      'Seguro antifurto cortesia por 1 ano'
+    ],
+    validade:'30/04/2026', origem:'site'
+  },
+  {
+    id:'of3', titulo:'PCD — Isenção total de impostos no Nivus',
+    veiculoId:'todos', veiculoNome:'Nivus', tipo:'pcd',
+    beneficios:[
+      'Isenção de IPI, ICMS, IOF e IPVA',
+      'Desconto médio de R$ 18.000 no preço final',
+      'Taxa de financiamento de 0,79% a.m.',
+      'Condições válidas para qualidade CID e deficiência auditiva'
+    ],
+    validade:'31/05/2026', origem:'site'
+  },
+  {
+    id:'of4', titulo:'Mês do Cliente — Revisão Grátis para todos os modelos',
+    veiculoId:'todos', veiculoNome:null, tipo:'destaque',
+    beneficios:[
+      'Revisão preventiva gratuita para qualquer modelo VW',
+      'Troca de óleo inclusa no pacote',
+      'Diagnóstico eletrônico sem custo',
+      'Válido para veículos até 5 anos de uso'
+    ],
+    validade:'30/04/2026', origem:'site'
+  },
+  {
+    id:'of5', titulo:'Polo Track — Entrada a partir de 10%',
+    veiculoId:'todos', veiculoNome:'Polo', tipo:'destaque',
+    beneficios:[
+      'Entrada a partir de 10% do valor do veículo',
+      'Restante em até 48x sem juros adicionais',
+      'Documentação inclusa no pacote',
+      'Emplacamento grátis no mês de abril'
+    ],
+    validade:'30/04/2026', origem:'manual'
+  },
+  {
+    id:'of6', titulo:'Seminovos — Garantia 1 ano + Revisão inclusa',
+    veiculoId:'todos', veiculoNome:null, tipo:'padrao',
+    beneficios:[
+      'Garantia de 1 ano em todos os seminovos certificados',
+      '1ª revisão grátis após a compra',
+      'Financiamento com taxa a partir de 1,19% a.m.',
+      'Laudo cautelar completo incluso'
+    ],
+    validade:'31/05/2026', origem:'manual'
+  }
+];
+
+let ofEditId = null;
+
+function renderOfertas(filtro) {
+  const grid = document.getElementById('oferta-grid');
+  if (!grid) return;
+  const mostrar = filtros_oferta(filtro || 'todos');
+  grid.innerHTML = mostrar.length
+    ? mostrar.map(o => renderOfertaCard(o)).join('')
+    : `<div style="text-align:center;padding:60px 20px;color:var(--light);">
+        <div style="font-size:36px;margin-bottom:12px;">🔍</div>
+        <div style="font-weight:600;">Nenhuma oferta nesta categoria</div>
+      </div>`;
+}
+
+function filtros_oferta(filtro) {
+  if (filtro === 'todos') return ofertasData;
+  if (filtro === 'pcd') return ofertasData.filter(o => o.tipo === 'pcd');
+  if (filtro === 'todos-veiculos') return ofertasData.filter(o => !o.veiculoNome);
+  if (filtro === 'novos') return ofertasData.filter(o => o.tipo !== 'pcd' && !o.titulo.toLowerCase().includes('semino'));
+  if (filtro === 'seminovos') return ofertasData.filter(o => o.titulo.toLowerCase().includes('semino') || (o.veiculoNome === null && o.tipo === 'padrao' && o.id === 'of6'));
+  return ofertasData;
+}
+
+function renderOfertaCard(o) {
+  const veiculoBadge = o.veiculoNome
+    ? `<span class="oferta-card-veiculo">${o.veiculoNome}</span>`
+    : `<span class="oferta-card-veiculo todos">Todos</span>`;
+  const tagLabel = { destaque:'⭐ Destaque', taxa:'💳 Taxa', desconto:'💰 Desconto', pcd:'♿ PCD', padrao:'📋 Padrão' };
+  const origemBadge = o.origem === 'site'
+    ? `<span class="oferta-site-badge">🌐 trescinco.com.br</span>` : '';
+  return `
+    <div class="oferta-card">
+      <div class="oferta-card-head">
+        <div class="oferta-card-titulo">${o.titulo}</div>
+        ${veiculoBadge}
+      </div>
+      <div class="oferta-card-body">
+        <div class="oferta-beneficios">
+          ${o.beneficios.map(b => `<div class="oferta-beneficio">${b}</div>`).join('')}
+        </div>
+      </div>
+      <div class="oferta-card-footer">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          ${origemBadge}
+          ${o.validade ? `<span class="oferta-validade">📅 Válida até ${o.validade}</span>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="oferta-tag ${o.tipo}">${tagLabel[o.tipo] || '📋'}</span>
+          <button onclick="editarOferta('${o.id}')" style="background:none;border:none;cursor:pointer;font-size:15px;color:var(--light);padding:2px 4px;" title="Editar">✏️</button>
+          <button onclick="excluirOferta('${o.id}')" style="background:none;border:none;cursor:pointer;font-size:15px;color:var(--light);padding:2px 4px;" title="Excluir">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function filtrarOfertas(filtro, el) {
+  document.querySelectorAll('#page-ofertas .res-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const grid = document.getElementById('oferta-grid');
+  if (!grid) return;
+  const mostrar = filtros_oferta(filtro);
+  grid.innerHTML = mostrar.length
+    ? mostrar.map(o => renderOfertaCard(o)).join('')
+    : `<div style="text-align:center;padding:60px 20px;color:var(--light);">
+        <div style="font-size:36px;margin-bottom:12px;">🔍</div>
+        <div style="font-weight:600;">Nenhuma oferta nesta categoria</div>
+      </div>`;
+}
+
+function abrirNovaOferta() {
+  ofEditId = null;
+  document.getElementById('of-titulo').value = '';
+  document.getElementById('of-beneficios').value = '';
+  document.getElementById('of-tipo').value = 'destaque';
+  document.getElementById('of-validade').value = '';
+  popularSelectVeiculos('of-veiculo', 'todos');
+  document.getElementById('modal-oferta').style.display = 'flex';
+}
+
+function editarOferta(id) {
+  const o = ofertasData.find(x => x.id === id);
+  if (!o) return;
+  ofEditId = id;
+  document.getElementById('of-titulo').value = o.titulo;
+  document.getElementById('of-beneficios').value = o.beneficios.join('\n');
+  document.getElementById('of-tipo').value = o.tipo;
+  document.getElementById('of-validade').value = o.validade ? o.validade.split('/').reverse().join('-') : '';
+  popularSelectVeiculos('of-veiculo', o.veiculoId || 'todos');
+  document.getElementById('modal-oferta').style.display = 'flex';
+}
+
+function popularSelectVeiculos(selectId, valorAtual) {
+  const sel = document.getElementById(selectId);
+  sel.innerHTML = '<option value="todos">🌐 Todos os veículos</option>';
+  catalogo.filter(m => m.ativo).forEach(m => {
+    m.versoes.filter(v => v.ativo).forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.id;
+      opt.textContent = `${m.nome} ${v.nome}`;
+      if (valorAtual === v.id) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  });
+  if (valorAtual === 'todos') sel.value = 'todos';
+}
+
+function fecharModalOferta() {
+  document.getElementById('modal-oferta').style.display = 'none';
+}
+
+function salvarOferta() {
+  const titulo = document.getElementById('of-titulo').value.trim();
+  const bensRaw = document.getElementById('of-beneficios').value.trim();
+  if (!titulo || !bensRaw) { alert('Preencha o título e pelo menos um benefício.'); return; }
+  const beneficios = bensRaw.split('\n').map(b => b.trim()).filter(Boolean);
+  const tipo = document.getElementById('of-tipo').value;
+  const vId = document.getElementById('of-veiculo').value;
+  const valRaw = document.getElementById('of-validade').value;
+  const validade = valRaw ? valRaw.split('-').reverse().join('/') : '';
+  const veiculoNome = vId === 'todos' ? null : (() => {
+    for (const m of catalogo) { const v = m.versoes.find(v => v.id === vId); if (v) return m.nome; } return null;
+  })();
+  if (ofEditId) {
+    const o = ofertasData.find(x => x.id === ofEditId);
+    if (o) { o.titulo = titulo; o.beneficios = beneficios; o.tipo = tipo; o.veiculoId = vId; o.veiculoNome = veiculoNome; o.validade = validade; }
+  } else {
+    ofertasData.unshift({ id:'of'+Date.now(), titulo, beneficios, tipo, veiculoId: vId, veiculoNome, validade, origem:'manual' });
+  }
+  fecharModalOferta();
+  renderOfertas('todos');
+  document.querySelectorAll('#page-ofertas .res-tab').forEach((t,i) => t.classList.toggle('active', i===0));
+}
+
+function excluirOferta(id) {
+  if (!confirm('Excluir esta oferta?')) return;
+  ofertasData = ofertasData.filter(o => o.id !== id);
+  const filtroAtivo = document.querySelector('#page-ofertas .res-tab.active')?.dataset?.filtro || 'todos';
+  filtrarOfertas(filtroAtivo, document.querySelector('#page-ofertas .res-tab.active'));
+}
+
+function importarOfertasSite() {
+  const btn = event.target;
+  btn.textContent = '⏳ Importando...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '🌐 Importar do site';
+    btn.disabled = false;
+    alert('✅ Ofertas sincronizadas com trescinco.com.br\n\n6 ofertas encontradas — base de conhecimento atualizada.');
+  }, 1800);
+}
+
+/* ════════ RECURSOS ════════ */
+
+let recursosData = [
+  { id:'rd1', nome:'Tabela de Preços VW — Abril 2026.pdf', tipo:'documento', tamanho:'2,1 MB', data:'15/04/2026', auto:false, veiculoId:null },
+  { id:'rd2', nome:'Manual do Proprietário — Polo.pdf',    tipo:'documento', tamanho:'8,4 MB', data:'10/03/2026', auto:false, veiculoId:null },
+  { id:'rd3', nome:'Condições Especiais PCD.pdf',          tipo:'documento', tamanho:'1,2 MB', data:'01/04/2026', auto:false, veiculoId:null },
+  { id:'rd4', nome:'Política de Garantia VW 2025.pdf',     tipo:'documento', tamanho:'3,8 MB', data:'20/01/2026', auto:false, veiculoId:null },
+  { id:'rv1', nome:'Comercial T-Cross — Pronto Entrega.mp4',      tipo:'video', tamanho:'45 MB',  data:'02/04/2026', auto:false, veiculoId:null },
+  { id:'rv2', nome:'Apresentação Nivus 2025 — SUV Compacto.mp4',  tipo:'video', tamanho:'32 MB',  data:'01/04/2026', auto:false, veiculoId:null },
+  { id:'rv3', nome:'Tour Virtual Loja 1 — Cuiabá.mp4',            tipo:'video', tamanho:'58 MB',  data:'10/02/2026', auto:false, veiculoId:null },
+  { id:'ra1', nome:'Podcast — Lançamento VW Linha 2025.mp3', tipo:'audio', tamanho:'12 MB', data:'20/03/2026', auto:false, veiculoId:null },
+  { id:'ra2', nome:'Áudio Institucional — Trescinco.mp3',    tipo:'audio', tamanho:'4,2 MB', data:'15/01/2026', auto:false, veiculoId:null },
+  { id:'rf1', nome:'Fachada Loja 1 — Cuiabá.jpg',    tipo:'foto', tamanho:'3,2 MB', data:'10/02/2026', auto:false, veiculoId:null },
+  { id:'rf2', nome:'Equipe Trescinco 2025.jpg',       tipo:'foto', tamanho:'2,8 MB', data:'10/02/2026', auto:false, veiculoId:null },
+  { id:'rf3', nome:'Salão de Exposição — Loja 1.jpg', tipo:'foto', tamanho:'4,1 MB', data:'10/02/2026', auto:false, veiculoId:null },
+  { id:'rf4', nome:'Evento de Lançamento Polo.jpg',   tipo:'foto', tamanho:'5,0 MB', data:'20/03/2026', auto:false, veiculoId:null },
+];
+
+const GRUPO_META = {
+  veiculo:   { label:'Veículos',    icon:'🚗', cor:'#EFF6FF', tag:'Auto-importado' },
+  documento: { label:'Documentos',  icon:'📄', cor:'#F0FDF4', tag:'PDF' },
+  video:     { label:'Vídeos',      icon:'🎬', cor:'#FFF7ED', tag:'Vídeo' },
+  audio:     { label:'Áudios',      icon:'🎵', cor:'#FDF4FF', tag:'Áudio' },
+  foto:      { label:'Fotos',       icon:'🖼', cor:'#FFF1F2', tag:'Foto' },
+};
+
+function getRecursosVeiculos() {
+  return catalogo.flatMap(modelo =>
+    modelo.versoes.map(v => ({
+      id: 'auto-' + v.id,
+      nome: `${modelo.nome} ${v.nome} — ${v.ano}`,
+      tipo: 'veiculo',
+      tamanho: v.preco ? 'R$ ' + v.preco : '—',
+      data: 'Auto-importado',
+      auto: true,
+      sub: `${modelo.segmento} · ${v.motor} · ${v.cambio}`,
+    }))
+  );
+}
+
+function getTodosRecursos() {
+  return [...getRecursosVeiculos(), ...recursosData];
+}
+
+function filterRecursos(tipo, tabEl) {
+  if (tabEl) {
+    document.querySelectorAll('.res-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+  }
+  renderRecursos(tipo, null);
+}
+
+function renderRecursos(filtro) {
+  const todos = getTodosRecursos();
+
+  // KPIs
+  const veics = todos.filter(r => r.tipo === 'veiculo').length;
+  const docs  = todos.filter(r => r.tipo === 'documento').length;
+  const midia = todos.filter(r => ['video','audio','foto'].includes(r.tipo)).length;
+  document.getElementById('res-kpi-total').textContent    = todos.length;
+  document.getElementById('res-kpi-veiculos').textContent = veics;
+  document.getElementById('res-kpi-docs').textContent     = docs;
+  document.getElementById('res-kpi-midia').textContent    = midia;
+
+  const container = document.getElementById('recursos-container');
+
+  if (filtro === 'todos') {
+    // Mostra todos os grupos com seções
+    container.innerHTML = Object.entries(GRUPO_META).map(([tipo, meta]) => {
+      const itens = todos.filter(r => r.tipo === tipo);
+      if (!itens.length) return '';
+      return `
+        <div class="res-section">
+          <div class="res-section-head">
+            <span class="res-section-icon">${meta.icon}</span>
+            <span class="res-section-title">${meta.label}</span>
+            <span class="res-section-count">${itens.length} ${itens.length === 1 ? 'item' : 'itens'}</span>
+          </div>
+          <div class="res-grid">${itens.map(r => renderCard(r, meta)).join('')}</div>
+        </div>`;
+    }).join('');
+  } else {
+    const meta  = GRUPO_META[filtro];
+    const itens = todos.filter(r => r.tipo === filtro);
+    container.innerHTML = `
+      <div class="res-drop-zone" onclick="document.querySelector('#page-recursos input[type=file]').click()">
+        <div style="font-size:28px;margin-bottom:8px;">${meta.icon}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--navy);">Arraste arquivos aqui ou clique para enviar</div>
+        <div style="font-size:11px;color:var(--light);margin-top:4px;">Formatos aceitos para ${meta.label.toLowerCase()}</div>
+      </div>
+      <div class="res-grid">
+        ${itens.length ? itens.map(r => renderCard(r, meta)).join('') : '<div class="res-empty">Nenhum arquivo neste grupo ainda.</div>'}
+      </div>`;
+  }
+}
+
+function renderCard(r, meta) {
+  const isAuto = r.auto;
+  const vinculado = !isAuto && r.veiculoId;
+  const vinculadoNome = vinculado
+    ? (() => { for (const m of catalogo) { const v = m.versoes.find(vv => vv.id === r.veiculoId); if (v) return m.nome + ' ' + v.nome; } return ''; })()
+    : '';
+
+  // Build vehicle options for select
+  const opts = catalogo.flatMap(m => m.versoes.map(v => `<option value="${v.id}">${m.nome} ${v.nome}</option>`)).join('');
+
+  return `
+    <div class="res-card" title="${r.nome}" id="rescard-${r.id}">
+      <div class="res-thumb ${r.tipo}" style="background:${meta.cor};">
+        <span style="font-size:30px;">${meta.icon}</span>
+      </div>
+      <div class="res-card-name">${r.nome}</div>
+      <div class="res-card-meta">${r.data}${r.tamanho && r.tamanho !== '—' ? ' · ' + r.tamanho : ''}</div>
+      <div class="res-card-footer" style="flex-direction:column;align-items:flex-start;gap:6px;">
+        ${isAuto
+          ? '<span class="res-auto-tag">Auto-importado</span>'
+          : `<span class="res-type-tag">${meta.tag}</span>`
+        }
+        ${!isAuto ? `
+          ${vinculado
+            ? `<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--sky);font-weight:600;">
+                🔗 ${vinculadoNome}
+                <button onclick="desvincularRecurso('${r.id}')" style="background:none;border:none;color:var(--light);cursor:pointer;font-size:12px;padding:0;" title="Desvincular">×</button>
+               </div>`
+            : `<div style="display:flex;align-items:center;gap:4px;">
+                <select onchange="vincularRecurso('${r.id}',this.value)" style="font-size:10px;border:1px solid var(--border);border-radius:4px;padding:2px 4px;color:var(--mid);max-width:100%;background:white;">
+                  <option value="">🔗 Vincular a veículo...</option>
+                  ${opts}
+                </select>
+               </div>`
+          }
+        ` : ''}
+      </div>
+    </div>`;
+}
+
+function vincularRecurso(resId, versaoId) {
+  if (!versaoId) return;
+  const r = recursosData.find(r => r.id === resId);
+  if (r) { r.veiculoId = versaoId; renderRecursos(document.querySelector('.res-tab.active')?.dataset?.tipo || 'todos'); }
+}
+function desvincularRecurso(resId) {
+  const r = recursosData.find(r => r.id === resId);
+  if (r) { r.veiculoId = null; renderRecursos(document.querySelector('.res-tab.active')?.dataset?.tipo || 'todos'); }
+}
+
+function uploadRecurso(input) {
+  const tipoMap = {
+    'pdf':'documento','doc':'documento','docx':'documento',
+    'mp4':'video','mov':'video','avi':'video',
+    'mp3':'audio','wav':'audio','m4a':'audio',
+    'jpg':'foto','jpeg':'foto','png':'foto','webp':'foto',
+  };
+  Array.from(input.files).forEach(file => {
+    const ext  = file.name.split('.').pop().toLowerCase();
+    const tipo = tipoMap[ext] || 'documento';
+    const kb   = file.size / 1024;
+    const tam  = kb > 1024 ? (kb/1024).toFixed(1) + ' MB' : kb.toFixed(0) + ' KB';
+    const hoje = new Date();
+    const data = `${String(hoje.getDate()).padStart(2,'0')}/${String(hoje.getMonth()+1).padStart(2,'0')}/${hoje.getFullYear()}`;
+    recursosData.unshift({ id:'u'+Date.now()+Math.random(), nome:file.name, tipo, tamanho:tam, data, auto:false });
+  });
+  // volta para aba correta
+  const activeTab = document.querySelector('.res-tab.active');
+  const filtro = activeTab ? activeTab.textContent.trim().replace(/^[^\w]+/,'').toLowerCase().split(' ')[0] : 'todos';
+  renderRecursos(filtro === 'todos' ? 'todos' : Object.keys(GRUPO_META).find(k => GRUPO_META[k].label.toLowerCase().startsWith(filtro)) || 'todos');
+  input.value = '';
+}
+</script>
+
+<!-- ══ LEAD DRAWER ══ -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="fecharHistorico()"></div>
+<div class="lead-drawer" id="lead-drawer">
+
+  <!-- Header -->
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;background:white;">
+    <button onclick="fecharHistorico()" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--light);display:flex;align-items:center;border-radius:6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='none'">
+      <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div id="dh-avatar" style="width:38px;height:38px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:14px;flex-shrink:0;"></div>
+    <div style="flex:1;min-width:0;">
+      <div id="dh-lead-nome" style="font-size:14px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+      <div id="dh-lead-sub" style="font-size:11px;color:var(--light);"></div>
+    </div>
+    <div id="dh-lead-badge"></div>
+  </div>
+
+  <!-- Info strip -->
+  <div id="dh-lead-strip" style="padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;gap:20px;flex-wrap:wrap;flex-shrink:0;"></div>
+
+  <!-- Chat -->
+  <div class="chat-area" id="chat-area"></div>
+
+</div>
+</body>
+</html>

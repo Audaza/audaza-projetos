@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposta Comercial — Pacote Completo Trescinco VW</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+:root {
+  --vw-navy:   #001E50;
+  --vw-sky:    #00B0F0;
+  --vw-sky-bg: #E0F5FD;
+  --ink:       #111827;
+  --ink-mid:   #374151;
+  --ink-light: #6B7280;
+  --rule:      #CBD5E1;
+  --surface:   #F1F5F9;
+  --surface2:  #E2E8F0;
+  --white:     #FFFFFF;
+  --gold:      #C07820;
+  --gold-bg:   rgba(232,160,32,.1);
+  --green:     #1A7A40;
+  --green-bg:  rgba(34,160,80,.1);
+}
+
+html { font-size: 15px; }
+
+body { font-family: 'Inter', system-ui, sans-serif; background: #CBD5E1 !important; color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+.doc { max-width: 920px; margin: 48px auto; background: #FFFFFF !important; box-shadow: 0 8px 80px rgba(0,0,0,.18); }
+
+/* ══ COVER ══ */
+.cover {
+  background: #001E50 !important;
+  min-height: 620px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.cover-geo { position: absolute; inset: 0; pointer-events: none; }
+.cover-geo svg { width: 100%; height: 100%; }
+
+.cover-inner { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; padding: 52px 68px; flex: 1; }
+
+.cover-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; }
+
+.vw-wordmark { display: flex; align-items: center; gap: 14px; }
+.vw-wordmark svg { width: 48px; height: 48px; }
+.vw-wordmark-text .eyebrow { font-size: 9px; font-weight: 600; letter-spacing: 3.5px; text-transform: uppercase; color: rgba(255,255,255,.7); margin-bottom: 5px; }
+.vw-wordmark-text .brand   { font-size: 18px; font-weight: 800; color: white; }
+
+.cover-badge {
+  background: linear-gradient(135deg, #E8A020, #C07820);
+  color: white;
+  font-size: 9px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase;
+  padding: 8px 18px; border-radius: 2px;
+}
+
+.cover-headline { margin-top: auto; }
+.cover-kicker {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--vw-sky); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.cover-kicker::before { content: ''; display: block; width: 28px; height: 2px; background: var(--vw-sky); }
+
+.cover-title { font-size: 46px; font-weight: 900; color: white; line-height: 1.05; letter-spacing: -1.5px; margin-bottom: 24px; }
+.cover-title em { color: #00B0F0; font-style: normal; }
+
+.cover-price-box {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 6px;
+  padding: 24px 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+.cover-price-item {}
+.cover-price-lbl { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 6px; }
+.cover-price-val { font-size: 38px; font-weight: 900; color: white; letter-spacing: -2px; line-height: 1; }
+.cover-price-val.sky   { color: var(--vw-sky); }
+.cover-price-val.gold  { color: #E8A020; }
+.cover-price-val.cross { text-decoration: line-through; color: rgba(255,255,255,.35); font-size: 28px; }
+.cover-price-unit { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 4px; }
+
+.cover-price-divider { width: 1px; background: rgba(255,255,255,.1); align-self: stretch; }
+
+.cover-footer { display: flex; border-top: 1px solid rgba(255,255,255,.08); padding-top: 28px; gap: 0; }
+.cover-meta { flex: 1; padding-right: 32px; border-right: 1px solid rgba(255,255,255,.08); margin-right: 32px; }
+.cover-meta:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+.cover-meta .lbl { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,.55); margin-bottom: 6px; }
+.cover-meta .val { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.9); }
+
+/* ══ STRIPE ══ */
+.stripe { height: 4px; background: linear-gradient(90deg, var(--vw-sky) 0%, var(--vw-navy) 60%); }
+
+/* ══ SAVINGS BANNER ══ */
+.savings-banner {
+  background: linear-gradient(135deg, #1A7A40, #0F5A2E) !important;
+  padding: 32px 68px;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.savings-item { text-align: center; flex: 1; }
+.savings-val  { font-size: 32px; font-weight: 900; color: white; letter-spacing: -1.5px; line-height: 1; }
+.savings-lbl  { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,.65); margin-top: 6px; }
+.savings-divider { width: 1px; background: rgba(255,255,255,.15); align-self: stretch; min-height: 48px; }
+
+/* ══ EXEC SUMMARY ══ */
+.exec-wrap { background: var(--surface); border-bottom: 1px solid var(--rule); padding: 52px 68px; display: flex; gap: 52px; align-items: flex-start; }
+.exec-left { flex: 0 0 auto; }
+.exec-tag { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--vw-sky); margin-bottom: 16px; }
+.exec-title { font-size: 26px; font-weight: 800; color: var(--vw-navy); line-height: 1.15; letter-spacing: -.5px; max-width: 200px; }
+.exec-divider { width: 1px; background: var(--rule); align-self: stretch; }
+.exec-right { flex: 1; }
+.exec-body { font-size: 14px; color: var(--ink-mid); line-height: 1.9; }
+.exec-body strong { color: var(--vw-navy); font-weight: 700; }
+
+/* ══ BODY ══ */
+.body { padding: 72px 68px; }
+.section { margin-bottom: 72px; }
+.sec-head { margin-bottom: 36px; display: flex; align-items: flex-end; padding-bottom: 20px; border-bottom: 1px solid var(--rule); }
+.sec-num   { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--vw-sky); margin-bottom: 8px; }
+.sec-title { font-size: 22px; font-weight: 800; color: var(--vw-navy); letter-spacing: -.4px; line-height: 1; }
+.sec-intro { font-size: 13.5px; color: var(--ink-light); line-height: 1.75; margin-bottom: 28px; }
+
+/* ══ PACKAGE CARDS ══ */
+.package-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.pkg-card {
+  border-radius: 6px;
+  background: white;
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: box-shadow .15s;
+}
+.pkg-card:hover { box-shadow: 0 4px 24px rgba(0,30,80,.1); }
+.pkg-card.full  { grid-column: 1 / -1; }
+
+.pkg-card-accent {
+  height: 3px;
+  background: linear-gradient(90deg, var(--vw-sky) 0%, var(--vw-navy) 100%);
+}
+.pkg-card.gold-accent .pkg-card-accent {
+  background: linear-gradient(90deg, #E8A020 0%, #C07820 100%);
+}
+
+.pkg-card-inner { padding: 24px 26px; flex: 1; display: flex; flex-direction: column; }
+
+.pkg-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.pkg-card-icon-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.pkg-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pkg-icon.navy   { background: var(--vw-navy); }
+.pkg-icon.sky    { background: var(--vw-sky); }
+.pkg-icon.green  { background: var(--green); }
+.pkg-icon.gold   { background: var(--gold); }
+.pkg-icon svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.pkg-num-badge {
+  font-size: 10px; font-weight: 800; letter-spacing: 1px;
+  color: var(--ink-light);
+  background: var(--surface2);
+  padding: 3px 9px; border-radius: 2px;
+  white-space: nowrap;
+}
+
+.pkg-value-badge {
+  font-size: 12px; font-weight: 800;
+  color: var(--vw-navy);
+  white-space: nowrap;
+  text-align: right;
+  flex-shrink: 0;
+}
+.pkg-value-badge .val-lbl { font-size: 9px; font-weight: 600; color: var(--ink-light); display: block; margin-bottom: 2px; letter-spacing: 1px; text-transform: uppercase; }
+.pkg-value-badge .val-num { font-size: 15px; font-weight: 900; color: var(--vw-navy); letter-spacing: -.5px; }
+.pkg-value-badge .val-num.gold { color: var(--gold); }
+
+.pkg-name    { font-size: 14px; font-weight: 800; color: var(--vw-navy); margin-bottom: 4px; line-height: 1.2; }
+.pkg-tagline { font-size: 11.5px; color: var(--ink-light); margin-bottom: 14px; line-height: 1.4; }
+.pkg-desc    { font-size: 12.5px; color: var(--ink-mid); line-height: 1.75; flex: 1; }
+
+.pkg-features { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 16px; }
+
+.feat-pill {
+  font-size: 10px; font-weight: 600;
+  color: var(--vw-navy);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 3px 10px; border-radius: 20px;
+}
+.feat-pill.gold { color: var(--gold); background: var(--gold-bg); border-color: rgba(232,160,32,.25); }
+
+/* ══ PRICING TABLE ══ */
+.pricing-wrap {
+  background: var(--surface);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+}
+
+.pricing-head {
+  background: var(--vw-navy);
+  display: grid;
+  grid-template-columns: 1fr 180px 180px;
+  padding: 12px 24px;
+  gap: 0;
+}
+.pricing-head span { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.7); }
+.pricing-head span:not(:first-child) { text-align: right; }
+
+.pricing-row {
+  display: grid;
+  grid-template-columns: 1fr 180px 180px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--rule);
+  align-items: center;
+  gap: 0;
+}
+.pricing-row:last-child { border-bottom: none; }
+.pricing-row:nth-child(even) { background: white; }
+
+.pricing-row .item-name { font-size: 13px; font-weight: 600; color: var(--ink-mid); }
+.pricing-row .item-real { font-size: 13px; font-weight: 700; color: var(--ink-light); text-decoration: line-through; text-align: right; }
+.pricing-row .item-offer { font-size: 13px; font-weight: 700; color: var(--vw-navy); text-align: right; }
+.pricing-row .item-offer.free { color: var(--green); }
+
+.pricing-total {
+  display: grid;
+  grid-template-columns: 1fr 180px 180px;
+  padding: 20px 24px;
+  background: var(--vw-navy);
+  align-items: center;
+  gap: 0;
+}
+.pricing-total .total-label { font-size: 12px; font-weight: 800; color: rgba(255,255,255,.9); text-transform: uppercase; letter-spacing: 1px; }
+.pricing-total .total-real   { font-size: 14px; font-weight: 700; color: rgba(255,255,255,.35); text-decoration: line-through; text-align: right; }
+.pricing-total .total-offer  { font-size: 28px; font-weight: 900; color: var(--vw-sky); letter-spacing: -1.5px; text-align: right; }
+
+/* ══ IMPL BANNER ══ */
+.impl-banner {
+  background: linear-gradient(135deg, #E8A020, #C07820) !important;
+  border-radius: 4px;
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.impl-icon {
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.impl-icon svg { width: 28px; height: 28px; stroke: white; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.impl-text { flex: 1; }
+.impl-title { font-size: 20px; font-weight: 900; color: white; letter-spacing: -.5px; margin-bottom: 6px; }
+.impl-desc  { font-size: 13px; color: rgba(255,255,255,.85); line-height: 1.65; }
+
+.impl-value { text-align: right; flex-shrink: 0; }
+.impl-val-cross { font-size: 18px; font-weight: 700; color: rgba(255,255,255,.45); text-decoration: line-through; margin-bottom: 4px; }
+.impl-val-free  { font-size: 42px; font-weight: 900; color: white; letter-spacing: -3px; line-height: 1; }
+.impl-val-unit  { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 4px; }
+
+/* ══ TIMELINE ══ */
+.timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
+.timeline::before { content: ''; position: absolute; left: 23px; top: 24px; bottom: 24px; width: 2px; background: linear-gradient(180deg, var(--vw-sky) 0%, var(--vw-navy) 100%); }
+
+.tl-item { display: flex; gap: 24px; align-items: flex-start; padding: 0 0 3px 0; }
+.tl-dot  { width: 48px; height: 48px; flex-shrink: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
+.tl-dot-inner { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.tl-dot-inner svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tl-content { background: var(--surface); border-radius: 3px; padding: 16px 22px; flex: 1; margin-bottom: 3px; border-left: 3px solid transparent; }
+.tl-content.on { border-left-color: var(--vw-sky); }
+.tl-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-light); margin-bottom: 4px; }
+.tl-name  { font-size: 14px; font-weight: 700; color: var(--vw-navy); margin-bottom: 3px; }
+.tl-desc  { font-size: 12px; color: var(--ink-light); line-height: 1.5; }
+
+/* ══ CTA ══ */
+.cta-block {
+  background: #001E50 !important;
+  border-radius: 4px;
+  padding: 52px 48px;
+  text-align: center;
+}
+.cta-label  { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--vw-sky); margin-bottom: 16px; }
+.cta-title  { font-size: 34px; font-weight: 900; color: white; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px; }
+.cta-title em { color: var(--vw-sky); font-style: normal; }
+.cta-desc   { font-size: 14px; color: rgba(255,255,255,.75); line-height: 1.75; max-width: 480px; margin: 0 auto 36px; }
+
+.cta-price-row { display: flex; justify-content: center; align-items: flex-end; gap: 32px; margin-bottom: 36px; }
+
+.cta-price-old {
+  text-align: center;
+  padding-bottom: 8px;
+}
+.cta-price-old .lbl { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 6px; }
+.cta-price-old .val { font-size: 22px; font-weight: 700; color: rgba(255,255,255,.3); text-decoration: line-through; }
+
+.cta-arrow { font-size: 24px; color: rgba(255,255,255,.3); padding-bottom: 8px; }
+
+.cta-price-new { text-align: center; }
+.cta-price-new .lbl { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--vw-sky); margin-bottom: 6px; }
+.cta-price-new .val { font-size: 52px; font-weight: 900; color: white; letter-spacing: -3px; line-height: 1; }
+.cta-price-new .unit { font-size: 13px; color: rgba(255,255,255,.5); margin-top: 6px; }
+
+.cta-impl { font-size: 13px; font-weight: 700; color: #4ADE80; margin-bottom: 36px; }
+
+.cta-items { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+.cta-item-pill {
+  font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.8);
+  padding: 6px 16px; border-radius: 2px;
+}
+.cta-item-pill.sky { background: rgba(0,176,240,.15); border-color: rgba(0,176,240,.3); color: var(--vw-sky); }
+
+.cta-contacts { display: flex; justify-content: center; gap: 32px; }
+.cta-contact .lbl { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 6px; }
+.cta-contact .val { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.85); }
+
+/* ══ FOOTER ══ */
+.footer { background: var(--vw-navy); padding: 32px 68px; display: flex; justify-content: space-between; align-items: center; border-top: 3px solid var(--vw-sky); }
+.footer-brand { font-size: 13px; font-weight: 800; color: white; margin-bottom: 3px; }
+.footer-sub   { font-size: 11px; color: rgba(255,255,255,.35); }
+.footer-right { font-size: 11px; color: rgba(255,255,255,.3); text-align: right; line-height: 1.7; }
+
+@media print { body { background: white; } .doc { box-shadow: none; margin: 0; max-width: 100%; } }
+</style>
+</head>
+<body>
+<div class="doc">
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="cover-geo">
+    <svg viewBox="0 0 920 620" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="780" cy="-80" r="520" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      <circle cx="780" cy="-80" r="360" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+      <circle cx="780" cy="-80" r="240" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+      <circle cx="780" cy="-80" r="130" stroke="rgba(0,176,240,0.3)" stroke-width="1.5"/>
+      <line x1="0" y1="620" x2="920" y2="0" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <rect x="580" y="180" width="460" height="460" rx="2" stroke="rgba(232,160,32,0.2)" stroke-width="1" fill="none"/>
+      <rect x="620" y="220" width="380" height="380" rx="2" stroke="rgba(232,160,32,0.1)" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+
+  <div class="cover-inner">
+    <div class="cover-topbar">
+      <div class="vw-wordmark">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+          <circle cx="50" cy="50" r="36" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <text x="50" y="63" text-anchor="middle" font-family="Inter, Arial Black, sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="-1">VW</text>
+        </svg>
+        <div class="vw-wordmark-text">
+          <div class="eyebrow">Trescinco</div>
+          <div class="brand">Volkswagen</div>
+        </div>
+      </div>
+      <div class="cover-badge">Oferta Especial</div>
+    </div>
+
+    <div class="cover-headline">
+      <div class="cover-kicker">Pacote Completo de Automação e IA</div>
+      <div class="cover-title">Ecossistema<br>integrado de <em>IA</em><br>Trescinco</div>
+    </div>
+
+    <div class="cover-footer">
+      <div class="cover-meta">
+        <div class="lbl">Cliente</div>
+        <div class="val">Trescinco Volkswagen</div>
+      </div>
+      <div class="cover-meta">
+        <div class="lbl">Data</div>
+        <div class="val">Abril de 2026</div>
+      </div>
+      <div class="cover-meta">
+        <div class="lbl">Versão</div>
+        <div class="val">1.0 — Confidencial</div>
+      </div>
+      <div class="cover-meta">
+        <div class="lbl">Validade da oferta</div>
+        <div class="val">30 dias</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stripe"></div>
+
+<!-- ══ EXEC SUMMARY ══ -->
+<div class="exec-wrap">
+  <div class="exec-left">
+    <div class="exec-tag">Visão Geral</div>
+    <div class="exec-title">Por que este pacote</div>
+  </div>
+  <div class="exec-divider"></div>
+  <div class="exec-right">
+    <div class="exec-body">
+      Este pacote reúne <strong>todas as soluções de inteligência artificial e automação</strong> que a Trescinco Volkswagen precisa para operar com mais eficiência, captar e converter mais leads e dar ao time de gestão <strong>visibilidade total do negócio em tempo real</strong>. Em vez de contratar cada solução separadamente, a Trescinco recebe tudo integrado.
+    </div>
+  </div>
+</div>
+
+<!-- ══ BODY ══ -->
+<div class="body">
+
+  <!-- 01 O QUE ESTÁ INCLUÍDO -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">01</div>
+        <div class="sec-title">O que está incluído no pacote</div>
+      </div>
+    </div>
+
+    <div class="package-grid">
+
+      <!-- 1. Atendimento IA -->
+      <div class="pkg-card">
+        <div class="pkg-card-accent"></div>
+        <div class="pkg-card-inner">
+          <div class="pkg-card-top">
+            <div class="pkg-card-icon-wrap">
+              <div class="pkg-icon navy">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.979-1.404A9.953 9.953 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+              </div>
+              <span class="pkg-num-badge">01</span>
+            </div>
+          </div>
+          <div class="pkg-name">Atendimento IA Automático ao Cliente</div>
+          <div class="pkg-tagline">Bot inteligente 24h via WhatsApp Business API oficial do Meta</div>
+          <div class="pkg-desc">A IA responde clientes automaticamente a qualquer hora, identifica o interesse (novos, usados, PCD, consórcio, pós-venda), classifica a temperatura do lead (frio → quente) e distribui em rodízio automático entre as duas lojas e 23 vendedores.</div>
+          <div class="pkg-features">
+            <span class="feat-pill">Atendimento 24h</span>
+            <span class="feat-pill">Classificação de interesse</span>
+            <span class="feat-pill">Temperatura do lead</span>
+            <span class="feat-pill">Rodízio automático</span>
+            <span class="feat-pill">API oficial Meta</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Assistente IA Gerencial -->
+      <div class="pkg-card">
+        <div class="pkg-card-accent"></div>
+        <div class="pkg-card-inner">
+          <div class="pkg-card-top">
+            <div class="pkg-card-icon-wrap">
+              <div class="pkg-icon sky">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14M15.54 8.46a5 5 0 010 7.07M8.46 8.46a5 5 0 000 7.07"/></svg>
+              </div>
+              <span class="pkg-num-badge">02</span>
+            </div>
+          </div>
+          <div class="pkg-name">Assistente de IA Gerencial</div>
+          <div class="pkg-tagline">Comandos no WhatsApp para relatórios, fotos e gestão instantânea</div>
+          <div class="pkg-desc">Gestores digitam <strong style="font-family:'JetBrains Mono',monospace;color:#6C3CE1;font-size:11.5px">@numerotrescinco</strong> e recebem em segundos: relatório de leads do dia, desempenho de vendedor, fotos de veículo por modelo ou cor, estoque atualizado e alertas automáticos de leads sem retorno.</div>
+          <div class="pkg-features">
+            <span class="feat-pill">Relatório de leads</span>
+            <span class="feat-pill">Fotos do estoque</span>
+            <span class="feat-pill">Desempenho da equipe</span>
+            <span class="feat-pill">Alertas proativos</span>
+            <span class="feat-pill">Linguagem natural</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Dashboard -->
+      <div class="pkg-card">
+        <div class="pkg-card-accent"></div>
+        <div class="pkg-card-inner">
+          <div class="pkg-card-top">
+            <div class="pkg-card-icon-wrap">
+              <div class="pkg-icon navy">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              </div>
+              <span class="pkg-num-badge">03</span>
+            </div>
+          </div>
+          <div class="pkg-name">Dashboard Gerencial Online</div>
+          <div class="pkg-tagline">Painel de controle em tempo real acessível pelo navegador</div>
+          <div class="pkg-desc">Painel online com funil de vendas, leads ao vivo, ranking de vendedores, taxa de conversão por período e gestão da equipe. Alimentado automaticamente pelo Supabase a cada nova interação — sem atualizar manualmente.</div>
+          <div class="pkg-features">
+            <span class="feat-pill">Funil de vendas</span>
+            <span class="feat-pill">Leads ao vivo</span>
+            <span class="feat-pill">Ranking vendedores</span>
+            <span class="feat-pill">Taxa de conversão</span>
+            <span class="feat-pill">Gestão da equipe</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Disparo -->
+      <div class="pkg-card">
+        <div class="pkg-card-accent"></div>
+        <div class="pkg-card-inner">
+          <div class="pkg-card-top">
+            <div class="pkg-card-icon-wrap">
+              <div class="pkg-icon green">
+                <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </div>
+              <span class="pkg-num-badge">04</span>
+            </div>
+          </div>
+          <div class="pkg-name">Disparo de Mensagens via API — Follow up e pós-venda</div>
+          <div class="pkg-tagline">Envio em massa ou segmentado pelo canal oficial do WhatsApp</div>
+          <div class="pkg-desc">Plataforma de disparo de mensagens para a base de clientes e leads — campanhas, ofertas, lançamentos e lembretes enviados pelo número oficial da Trescinco sem risco de bloqueio. Suporte a texto, imagem e template aprovado pelo Meta.</div>
+          <div class="pkg-features">
+            <span class="feat-pill">Disparo em massa</span>
+            <span class="feat-pill">Segmentação por interesse</span>
+            <span class="feat-pill">Imagens e templates</span>
+            <span class="feat-pill">Follow up automático</span>
+            <span class="feat-pill">Sem risco de bloqueio</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. CRM com IA — full width -->
+      <div class="pkg-card full">
+        <div class="pkg-card-accent" style="background:linear-gradient(90deg,#6C3CE1,#001E50)"></div>
+        <div class="pkg-card-inner">
+          <div class="pkg-card-top" style="margin-bottom:16px;">
+            <div class="pkg-card-icon-wrap">
+              <div class="pkg-icon" style="background:#6C3CE1;">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+              </div>
+              <span class="pkg-num-badge">05</span>
+            </div>
+          </div>
+          <div class="pkg-name">CRM com IA — Identificação de Oportunidades</div>
+          <div class="pkg-tagline">A IA monitora o histórico de leads e alerta sobre oportunidades que o time pode estar perdendo</div>
+          <div class="pkg-desc" style="margin-bottom:16px;">O sistema analisa automaticamente o comportamento dos leads ao longo do tempo e identifica oportunidades em risco de esfriamento. Exemplo: lead que perguntou sobre um veículo há 10 dias e não voltou a interagir recebe um alerta automático para o vendedor retomar o contato com a abordagem certa no momento certo — sem depender de memória ou planilha.</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+            <div style="background:var(--surface);border-radius:4px;padding:14px 16px;border-left:3px solid #6C3CE1;">
+              <div style="font-size:10px;font-weight:700;color:#6C3CE1;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Alerta de reengajamento</div>
+              <div style="font-size:12px;color:var(--ink-mid);line-height:1.5;">Lead sem resposta há X dias recebe alerta automático para o vendedor retomar o contato</div>
+            </div>
+            <div style="background:var(--surface);border-radius:4px;padding:14px 16px;border-left:3px solid #6C3CE1;">
+              <div style="font-size:10px;font-weight:700;color:#6C3CE1;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Padrão de interesse</div>
+              <div style="font-size:12px;color:var(--ink-mid);line-height:1.5;">Identifica o modelo de veículo e o perfil de compra com base no histórico de conversas do cliente</div>
+            </div>
+            <div style="background:var(--surface);border-radius:4px;padding:14px 16px;border-left:3px solid #6C3CE1;">
+              <div style="font-size:10px;font-weight:700;color:#6C3CE1;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Score de oportunidade</div>
+              <div style="font-size:12px;color:var(--ink-mid);line-height:1.5;">Prioriza leads com maior chance de conversão</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Automações — full width -->
+      <div class="pkg-card full gold-accent">
+        <div class="pkg-card-accent"></div>
+        <div class="pkg-card-inner" style="flex-direction:row;gap:32px;align-items:flex-start;">
+          <div style="flex:1;">
+            <div class="pkg-card-top" style="margin-bottom:12px;">
+              <div class="pkg-card-icon-wrap">
+                <div class="pkg-icon gold">
+                  <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+                <span class="pkg-num-badge" style="background:var(--gold-bg);color:var(--gold);">+ Extra</span>
+              </div>
+            </div>
+            <div class="pkg-name">3 Automações Adicionais Personalizadas</div>
+            <div class="pkg-tagline">Fluxos automáticos construídos para as necessidades específicas da Trescinco</div>
+            <div class="pkg-desc">Três automações desenvolvidas sob medida com a equipe. Exemplos do que pode ser automatizado: envio de parabéns de aniversário para clientes com oferta personalizada, reagendamento automático de revisão com base na data de compra, nutrição de leads frios com sequência de mensagens programadas e integração com Instagram e Facebook para captação de leads das redes sociais.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 02 CRONOGRAMA -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">02</div>
+        <div class="sec-title">Cronograma de implementação</div>
+      </div>
+    </div>
+    <p class="sec-intro">Da assinatura à operação completa em até 21 dias úteis.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot">
+          <div class="tl-dot-inner" style="background:var(--vw-sky)">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+        </div>
+        <div class="tl-content on">
+          <div class="tl-label">Semana 1 — Dias 1 a 5</div>
+          <div class="tl-name">Kickoff e configuração base</div>
+          <div class="tl-desc">Reunião de alinhamento, coleta de acessos (Meta Business, WhatsApp), cadastro de vendedores, definição das 3 automações adicionais e configuração do banco de dados Supabase.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">
+          <div class="tl-dot-inner" style="background:var(--vw-navy)">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+        </div>
+        <div class="tl-content on">
+          <div class="tl-label">Semana 2 — Dias 6 a 10</div>
+          <div class="tl-name">IA de atendimento + assistente gerencial</div>
+          <div class="tl-desc">Configuração e treinamento da IA de atendimento ao cliente, fluxos de qualificação e rodízio. Implementação do assistente gerencial com todos os comandos e alertas proativos.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">
+          <div class="tl-dot-inner" style="background:var(--vw-navy)">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+        </div>
+        <div class="tl-content on">
+          <div class="tl-label">Semana 3 — Dias 11 a 15</div>
+          <div class="tl-name">Dashboard + disparo de mensagens</div>
+          <div class="tl-desc">Configuração do dashboard gerencial online, integração com o banco de dados em tempo real. Configuração da plataforma de disparo e aprovação de templates no Meta.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">
+          <div class="tl-dot-inner" style="background:var(--gold)">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+        </div>
+        <div class="tl-content on">
+          <div class="tl-label">Semana 4 — Dias 16 a 21</div>
+          <div class="tl-name">3 automações + testes + go-live</div>
+          <div class="tl-desc">Desenvolvimento e configuração das 3 automações personalizadas. Testes completos de todos os sistemas integrados. Go-live com suporte dedicado nos primeiros 7 dias de operação.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 COMPARATIVO DE VALORES -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">02</div>
+        <div class="sec-title">Comparativo de valores</div>
+      </div>
+    </div>
+
+    <div class="pricing-wrap">
+      <div class="pricing-head">
+        <span>Solução</span>
+        <span>Valor de tabela</span>
+        <span>Valor da oferta</span>
+      </div>
+
+      <div class="pricing-row">
+        <div class="item-name">Atendimento IA Automático ao Cliente</div>
+        <div class="item-real">R$ 5.000/mês</div>
+        <div class="item-offer">Incluso</div>
+      </div>
+      <div class="pricing-row">
+        <div class="item-name">Assistente de IA Gerencial</div>
+        <div class="item-real">R$ 1.500/mês</div>
+        <div class="item-offer">Incluso</div>
+      </div>
+      <div class="pricing-row">
+        <div class="item-name">Dashboard Gerencial Online</div>
+        <div class="item-real">R$ 1.500/mês</div>
+        <div class="item-offer">Incluso</div>
+      </div>
+      <div class="pricing-row">
+        <div class="item-name">Disparo de Mensagens via API — Follow up e pós-venda</div>
+        <div class="item-real">R$ 1.500/mês</div>
+        <div class="item-offer">Incluso</div>
+      </div>
+      <div class="pricing-row">
+        <div class="item-name">CRM com IA — Identificação de Oportunidades</div>
+        <div class="item-real">R$ 1.500/mês</div>
+        <div class="item-offer">Incluso</div>
+      </div>
+      <div class="pricing-row">
+        <div class="item-name">Automação Adicional #1</div>
+        <div class="item-real">R$ 1.500/mês</div>
+        <div class="item-offer">Incluso</div>
+      </div>
+      <div class="pricing-row">
+        <div class="item-name">Automação Adicional #2</div>
+        <div class="item-real">R$ 1.500/mês</div>
+        <div class="item-offer">Incluso</div>
+      </div>
+      <div class="pricing-row">
+        <div class="item-name">Automação Adicional #3</div>
+        <div class="item-real">R$ 1.500/mês</div>
+        <div class="item-offer">Incluso</div>
+      </div>
+      <div class="pricing-row">
+        <div class="item-name">Implementação e configuração</div>
+        <div class="item-real">R$ 7.750</div>
+        <div class="item-offer free">R$ 0 — Gratuito</div>
+      </div>
+
+      <div class="pricing-total" style="grid-template-columns:1fr auto;gap:24px;align-items:center;">
+        <div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;">Valor de tabela</div>
+          <div style="font-size:26px;font-weight:900;color:rgba(255,255,255,.35);text-decoration:line-through;letter-spacing:-1px;line-height:1;">R$ 15.500<span style="font-size:14px;font-weight:600;">/mês</span></div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--vw-sky);margin-bottom:8px;">Sua oferta</div>
+          <div style="font-size:42px;font-weight:900;color:white;letter-spacing:-2.5px;line-height:1;">R$ 8.900<span style="font-size:18px;font-weight:600;color:rgba(255,255,255,.6);">/mês</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="impl-banner" style="background: linear-gradient(135deg, #0077B6, #0096C7) !important;">
+      <div class="impl-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="impl-text">
+        <div class="impl-title">Implementação 100% gratuita nesta oferta</div>
+        <div class="impl-desc">O custo de implementação — configuração de todos os sistemas, integrações, treinamento da IA e testes — corresponde a 50% do valor total de tabela (R$ 7.750). Nesta oferta especial, esse valor é totalmente zerado. A Trescinco começa a operar sem nenhum investimento inicial.</div>
+      </div>
+      <div class="impl-value">
+        <div class="impl-val-cross">R$ 7.750</div>
+        <div class="impl-val-free">R$ 0</div>
+        <div class="impl-val-unit">implementação inclusa</div>
+      </div>
+    </div>
+
+    <!-- SAVINGS HIGHLIGHTS -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;">
+      <div style="background:var(--surface);border-radius:4px;padding:22px 20px;border-top:3px solid var(--green);text-align:center;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:10px;">Economia mensal</div>
+        <div style="font-size:28px;font-weight:900;color:var(--vw-navy);letter-spacing:-1.5px;line-height:1;margin-bottom:6px;">R$ 6.600</div>
+        <div style="font-size:11px;color:var(--ink-light);line-height:1.5;">por mês vs. valor de tabela</div>
+      </div>
+      <div style="background:var(--surface);border-radius:4px;padding:22px 20px;border-top:3px solid var(--vw-sky);text-align:center;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#0070A0;margin-bottom:10px;">Implementação</div>
+        <div style="font-size:28px;font-weight:900;color:var(--vw-navy);letter-spacing:-1.5px;line-height:1;margin-bottom:6px;">R$ 0</div>
+        <div style="font-size:11px;color:var(--ink-light);line-height:1.5;">R$ 7.750 inclusos sem custo</div>
+      </div>
+      <div style="background:var(--surface);border-radius:4px;padding:22px 20px;border-top:3px solid var(--gold);text-align:center;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">Economia 1º ano</div>
+        <div style="font-size:28px;font-weight:900;color:var(--vw-navy);letter-spacing:-1.5px;line-height:1;margin-bottom:6px;">R$ 86.950</div>
+        <div style="font-size:11px;color:var(--ink-light);line-height:1.5;">soma de todas as economias</div>
+      </div>
+      <div style="background:var(--vw-navy);border-radius:4px;padding:22px 20px;border-top:3px solid var(--vw-sky);text-align:center;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--vw-sky);margin-bottom:10px;">Soluções no pacote</div>
+        <div style="font-size:28px;font-weight:900;color:white;letter-spacing:-1.5px;line-height:1;margin-bottom:6px;">7 entregas</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.5;">tudo integrado e operando junto</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 CTA -->
+  <div class="section" style="margin-bottom:0">
+    <div class="cta-block">
+      <div class="cta-price-row">
+        <div class="cta-price-old">
+          <div class="lbl">Valor normal</div>
+          <div class="val">R$ 15.500/mês</div>
+        </div>
+        <div class="cta-arrow">→</div>
+        <div class="cta-price-new">
+          <div class="lbl">Sua oferta</div>
+          <div class="val">R$ 8.900</div>
+          <div class="unit">por mês · implementação inclusa</div>
+        </div>
+      </div>
+
+      <div class="cta-impl">✓ Implementação R$ 0 · ✓ Contrato de 6 meses · ✓ Suporte incluso</div>
+
+      <div class="cta-items">
+        <span class="cta-item-pill sky">Dashboard Gerencial</span>
+        <span class="cta-item-pill sky">Assistente IA Gerencial</span>
+        <span class="cta-item-pill sky">Atendimento IA 24h</span>
+        <span class="cta-item-pill sky">Disparo via API</span>
+        <span class="cta-item-pill sky">3 Automações Personalizadas</span>
+      </div>
+
+      <div class="cta-contacts">
+        <div class="cta-contact">
+          <div class="lbl">Audaza Digital</div>
+          <div class="val">audazadigital.com.br</div>
+        </div>
+        <div class="cta-contact">
+          <div class="lbl">WhatsApp</div>
+          <div class="val">(65) 9 9999-9999</div>
+        </div>
+        <div class="cta-contact">
+          <div class="lbl">E-mail</div>
+          <div class="val">contato@audazadigital.com.br</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div>
+    <div class="footer-brand">Trescinco Volkswagen</div>
+    <div class="footer-sub">Pacote Completo de Automação e IA · Proposta Comercial v1.0</div>
+  </div>
+  <div class="footer-right">Abril de 2026 · Confidencial<br>Oferta válida por 30 dias</div>
+</div>
+
+</div>
+</body>
+</html>

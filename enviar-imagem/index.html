@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Replica — Audaza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --bg:          #070707;
+  --s1:          #0e0e0e;
+  --s2:          #151515;
+  --s3:          #1d1d1d;
+  --s4:          #242424;
+  --border:      #222222;
+  --border-2:    #2e2e2e;
+  --text:        #eeebe3;
+  --muted:       #525252;
+  --dim:         #2e2e2e;
+  --accent:      #e8961e;
+  --accent-glow: rgba(232,150,30,0.18);
+  --accent-dim:  rgba(232,150,30,0.08);
+  --blue:        #4b7bff;
+  --blue-dim:    rgba(75,123,255,0.1);
+  --blue-glow:   rgba(75,123,255,0.2);
+  --green:       #2dd4a0;
+  --red:         #f16b6b;
+  --radius:      12px;
+  --radius-sm:   8px;
+  --radius-lg:   18px;
+  --font-head:   'Bricolage Grotesque', sans-serif;
+  --font-body:   'DM Sans', sans-serif;
+  --font-mono:   'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* noise texture overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── LAYOUT ───────────────────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 260px 1fr 360px;
+  grid-template-rows: 52px 1fr;
+  height: 100vh;
+  position: relative; z-index: 1;
+}
+
+/* ── HEADER ───────────────────────────────────────────────────── */
+header {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(7,7,7,0.85);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.logo {
+  font-family: var(--font-head);
+  font-size: 15px; font-weight: 700; letter-spacing: -0.3px;
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-mark {
+  width: 22px; height: 22px;
+  background: var(--accent); border-radius: 5px;
+  display: grid; place-items: center;
+}
+.logo-mark svg { width: 12px; height: 12px; fill: #000; }
+.logo-name { color: var(--text); }
+.logo-sub { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 2px; }
+
+.steps {
+  display: flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 11px;
+}
+.step {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 20px;
+  color: var(--muted); transition: all 0.3s;
+}
+.step.active { background: var(--blue-dim); color: var(--blue); }
+.step.done   { color: var(--green); }
+.step-num {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--s3); display: grid; place-items: center;
+  font-size: 9px; font-weight: 500;
+}
+.step.active .step-num { background: var(--blue); color: #fff; }
+.step.done .step-num { background: var(--green); color: #000; }
+.step-sep { width: 20px; height: 1px; background: var(--border); }
+
+.header-right { display: flex; align-items: center; gap: 8px; }
+#status-pill {
+  display: none; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 11px; font-family: var(--font-mono);
+  background: var(--s2); border: 1px solid var(--border);
+  color: var(--muted);
+}
+#status-pill.visible { display: flex; }
+#status-pill .pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted); animation: pulse 1.5s ease-in-out infinite;
+}
+#status-pill.loading .pulse { background: var(--blue); }
+#status-pill.ok .pulse { background: var(--green); animation: none; }
+#status-pill.err .pulse { background: var(--red); animation: none; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── LIBRARY SIDEBAR ──────────────────────────────────────────── */
+.sidebar {
+  border-right: 1px solid var(--border);
+  background: var(--s1);
+  overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--s4); border-radius: 4px; }
+
+.sidebar-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; background: var(--s1); z-index: 2;
+}
+.sidebar-title { font-family: var(--font-head); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lib-badge {
+  font-size: 10px; font-family: var(--font-mono); color: var(--muted);
+  background: var(--s3); padding: 2px 7px; border-radius: 10px;
+}
+
+.lib-empty-state {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px; text-align: center; gap: 8px;
+}
+.lib-empty-icon { font-size: 28px; opacity: 0.3; }
+.lib-empty-text { font-size: 12px; color: var(--dim); line-height: 1.5; }
+
+.lib-grid-wrap { padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+.lib-thumb {
+  aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden;
+  cursor: pointer; position: relative;
+  border: 2px solid transparent; transition: all 0.15s;
+  background: var(--s3);
+}
+.lib-thumb:hover { border-color: var(--s4); transform: scale(1.03); }
+.lib-thumb.active { border-color: var(--accent); }
+.lib-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lib-thumb-name {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.85));
+  padding: 10px 5px 4px; font-size: 9px; color: #aaa;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lib-del-btn {
+  position: absolute; top: 3px; right: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(0,0,0,0.7); border: none; color: var(--red);
+  font-size: 9px; cursor: pointer; display: none;
+  align-items: center; justify-content: center;
+}
+.lib-thumb:hover .lib-del-btn { display: flex; }
+
+.sidebar-actions { padding: 12px; border-top: 1px solid var(--border); margin-top: auto; }
+#saveLibBtn {
+  width: 100%; padding: 8px; background: var(--s3); border: 1px solid var(--border-2);
+  color: var(--muted); font-size: 12px; font-family: var(--font-body);
+  border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s;
+}
+#saveLibBtn:hover:not(:disabled) { background: var(--s4); color: var(--text); }
+#saveLibBtn:disabled { opacity: 0.3; cursor: default; }
+
+/* ── CENTER WORKSPACE ─────────────────────────────────────────── */
+.workspace {
+  background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 32px 28px; overflow-y: auto; gap: 20px;
+}
+.workspace::-webkit-scrollbar { width: 4px; }
+.workspace::-webkit-scrollbar-thumb { background: var(--s4); border-radius: 4px; }
+
+/* upload zone */
+.upload-zone {
+  width: 100%; max-width: 600px;
+  border: 1.5px dashed var(--border-2); border-radius: var(--radius-lg);
+  padding: 48px 32px; text-align: center;
+  cursor: pointer; position: relative; transition: all 0.2s;
+  background: linear-gradient(145deg, var(--s1) 0%, var(--bg) 100%);
+}
+.upload-zone:hover {
+  border-color: var(--accent);
+  background: linear-gradient(145deg, var(--s2) 0%, var(--s1) 100%);
+}
+.upload-zone.drag-over { border-color: var(--accent); background: var(--accent-dim); }
+.upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.upload-icon-wrap {
+  width: 56px; height: 56px; border-radius: 14px;
+  background: var(--s2); border: 1px solid var(--border-2);
+  display: grid; place-items: center; margin: 0 auto 16px;
+}
+.upload-icon-wrap svg { width: 24px; height: 24px; stroke: var(--accent); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.upload-title { font-family: var(--font-head); font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.upload-sub { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.upload-formats { margin-top: 14px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.fmt-tag {
+  font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+  background: var(--s3); border: 1px solid var(--border); padding: 3px 8px; border-radius: 5px;
+}
+
+/* image viewer */
+.image-viewer { width: 100%; max-width: 600px; display: none; }
+.image-viewer.visible { display: block; }
+
+.viewer-label {
+  font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+  letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.viewer-label button {
+  background: none; border: none; color: var(--muted); font-size: 11px;
+  cursor: pointer; font-family: var(--font-mono);
+  padding: 2px 6px; border-radius: 4px; transition: all 0.15s;
+}
+.viewer-label button:hover { background: var(--s2); color: var(--text); }
+
+.img-frame {
+  border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); position: relative;
+  background: var(--s1);
+}
+.img-frame img { width: 100%; display: block; max-height: 400px; object-fit: contain; }
+
+/* scan animation */
+.scan-overlay {
+  position: absolute; inset: 0; pointer-events: none; display: none;
+  overflow: hidden; border-radius: var(--radius);
+}
+.scan-overlay.active { display: block; }
+.scan-line {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blue), var(--blue), transparent);
+  box-shadow: 0 0 20px 4px var(--blue-glow);
+  animation: scan-move 1.8s ease-in-out infinite;
+}
+.scan-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(75,123,255,0.04) 50%, transparent 100%);
+  animation: scan-bg-move 1.8s ease-in-out infinite;
+}
+@keyframes scan-move {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+@keyframes scan-bg-move {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.scan-label {
+  position: absolute; bottom: 10px; left: 0; right: 0; text-align: center;
+  font-family: var(--font-mono); font-size: 10px; color: var(--blue);
+  display: none;
+}
+.scan-overlay.active .scan-label { display: block; }
+
+/* result comparison */
+.comparison { width: 100%; max-width: 600px; display: none; gap: 12px; }
+.comparison.visible { display: grid; grid-template-columns: 1fr 1fr; }
+.comp-panel {}
+.comp-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.comp-img-frame { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--s1); }
+.comp-img-frame img { width: 100%; display: block; }
+.comp-result-frame { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--blue); background: var(--s1); box-shadow: 0 0 24px rgba(75,123,255,0.12); }
+.comp-result-frame img { width: 100%; display: block; }
+
+/* generation loading */
+.gen-loading {
+  width: 100%; max-width: 600px; display: none;
+  flex-direction: column; align-items: center; gap: 16px; padding: 48px 0;
+}
+.gen-loading.visible { display: flex; }
+.gen-ring {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 2px solid var(--border-2);
+  border-top-color: var(--blue);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.gen-text { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.6; }
+.gen-text strong { color: var(--text); display: block; margin-bottom: 4px; }
+
+/* result actions */
+.result-actions-bar {
+  width: 100%; max-width: 600px; display: none; gap: 8px;
+}
+.result-actions-bar.visible { display: flex; }
+.btn-download {
+  flex: 1; padding: 10px; background: var(--blue); color: #fff;
+  border: none; border-radius: var(--radius-sm); font-family: var(--font-body);
+  font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+}
+.btn-download:hover { background: #3d6fff; }
+.btn-sm {
+  padding: 10px 14px; background: var(--s2); color: var(--muted);
+  border: 1px solid var(--border-2); border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 12px; cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-sm:hover { background: var(--s3); color: var(--text); }
+
+/* ── CONTROLS PANEL ───────────────────────────────────────────── */
+.controls {
+  border-left: 1px solid var(--border);
+  background: var(--s1);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.controls-header {
+  padding: 16px 20px 14px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.controls-title { font-family: var(--font-head); font-size: 14px; font-weight: 600; }
+.controls-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.controls-body {
+  flex: 1; overflow-y: auto; padding: 16px 20px;
+}
+.controls-body::-webkit-scrollbar { width: 4px; }
+.controls-body::-webkit-scrollbar-thumb { background: var(--s4); border-radius: 4px; }
+
+/* empty state for controls */
+.ctrl-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; text-align: center; gap: 10px; padding: 32px;
+}
+.ctrl-empty-icon {
+  width: 48px; height: 48px; border-radius: 12px; background: var(--s2); border: 1px solid var(--border);
+  display: grid; place-items: center; font-size: 22px; margin-bottom: 4px;
+}
+.ctrl-empty-title { font-family: var(--font-head); font-size: 14px; font-weight: 600; }
+.ctrl-empty-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* section groups */
+.ctrl-section { margin-bottom: 24px; }
+.ctrl-section:last-child { margin-bottom: 0; }
+.section-head {
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: 10px;
+}
+.section-icon { font-size: 13px; }
+.section-name {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted);
+}
+.section-count {
+  margin-left: auto; font-size: 10px; font-family: var(--font-mono);
+  background: var(--s3); padding: 1px 6px; border-radius: 8px; color: var(--muted);
+}
+
+/* field items */
+.field-item {
+  margin-bottom: 8px; opacity: 0; transform: translateY(6px);
+  animation: field-in 0.25s ease forwards;
+}
+@keyframes field-in { to { opacity: 1; transform: translateY(0); } }
+
+.field-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.field-name { font-size: 11px; color: var(--muted); }
+.field-pos { font-size: 10px; font-family: var(--font-mono); color: var(--dim); }
+.changed-badge {
+  font-size: 9px; font-family: var(--font-mono); color: var(--accent);
+  background: var(--accent-dim); padding: 1px 6px; border-radius: 8px;
+  display: none;
+}
+
+.field-wrap { position: relative; }
+.field-input {
+  width: 100%; background: var(--s2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text); font-family: var(--font-body);
+  font-size: 13px; padding: 8px 10px;
+  transition: border-color 0.2s, background 0.2s; resize: vertical;
+}
+.field-input::placeholder { color: var(--dim); }
+.field-input:focus { outline: none; border-color: var(--border-2); background: var(--s3); }
+.field-input.modified {
+  border-color: var(--accent); background: rgba(232,150,30,0.05);
+  padding-left: 8px;
+  border-left: 3px solid var(--accent);
+}
+.field-input.modified:focus { border-color: var(--accent); }
+.field-original-val {
+  font-size: 10px; color: var(--dim); margin-top: 3px; font-family: var(--font-mono);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* toggle rows */
+.tog-row {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  cursor: pointer; user-select: none; border-bottom: 1px solid var(--border);
+}
+.tog-row:last-child { border-bottom: none; }
+input[type="checkbox"].hidden { display: none; }
+.tog {
+  flex-shrink: 0; width: 30px; height: 17px; border-radius: 9px;
+  background: var(--s4); position: relative; transition: background 0.2s;
+}
+.tog::after {
+  content:''; position: absolute; width: 11px; height: 11px;
+  background: var(--muted); border-radius: 50%; top: 3px; left: 3px;
+  transition: all 0.2s;
+}
+.hidden:checked + .tog { background: var(--blue); }
+.hidden:checked + .tog::after { transform: translateX(13px); background: #fff; }
+.tog-label { font-size: 12px; color: var(--text); flex: 1; }
+.tog-desc { font-size: 11px; color: var(--muted); }
+
+/* color preview chips */
+.color-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.color-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 8px 4px 4px; border-radius: 20px;
+  background: var(--s2); border: 1px solid var(--border); font-size: 11px; color: var(--muted);
+}
+.chip-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+.chip-label { font-family: var(--font-mono); font-size: 10px; }
+
+.sub-field-wrap { margin-top: 8px; display: none; }
+.sub-field-wrap.open { display: block; }
+
+/* ── MODE SWITCHER ── */
+.mode-switcher {
+  display: flex; background: var(--s3); border-radius: 8px; padding: 3px;
+  margin-bottom: 16px;
+}
+.mode-btn {
+  flex: 1; padding: 7px 10px; border-radius: 6px; border: none;
+  background: none; color: var(--muted); cursor: pointer;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.mode-btn:hover { color: var(--text); }
+.mode-btn.active { background: var(--s1); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+.mode-btn-icon { font-size: 12px; line-height: 1; }
+
+/* ── MODELAR FORM ── */
+.m-input {
+  width: 100%; background: var(--s2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text); font-family: var(--font-body);
+  font-size: 12px; padding: 8px 10px; transition: border-color 0.2s, background 0.2s;
+}
+.m-input::placeholder { color: var(--dim); }
+.m-input:focus { outline: none; border-color: var(--border-2); background: var(--s3); }
+.m-input.filled { border-color: var(--blue); background: var(--blue-dim); }
+textarea.m-input { resize: vertical; min-height: 60px; }
+.m-stack { display: flex; flex-direction: column; gap: 6px; }
+.m-required-tag {
+  margin-left: auto; font-size: 9px; font-family: var(--font-mono);
+  color: var(--accent); background: var(--accent-dim); padding: 1px 6px; border-radius: 8px;
+}
+
+/* ── FORMAT SELECTOR ── */
+.format-selector { display: flex; gap: 6px; }
+.fmt-opt {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 10px 4px; border-radius: 8px; border: 1.5px solid var(--border);
+  cursor: pointer; transition: all 0.15s; background: var(--s2); user-select: none;
+}
+.fmt-opt:hover { border-color: var(--border-2); background: var(--s3); }
+.fmt-opt.sel { border-color: var(--blue); background: var(--blue-dim); }
+.fmt-thumb { background: var(--s4); border-radius: 2px; transition: background 0.15s; }
+.fmt-opt.sel .fmt-thumb { background: var(--blue); opacity: 0.7; }
+.fmt-story  .fmt-thumb { width: 16px; height: 28px; }
+.fmt-feed   .fmt-thumb { width: 22px; height: 22px; }
+.fmt-yt     .fmt-thumb { width: 32px; height: 18px; }
+.fmt-name { font-family: var(--font-mono); font-size: 9px; color: var(--muted); text-align: center; line-height: 1.3; }
+.fmt-opt.sel .fmt-name { color: var(--blue); }
+
+/* ── COMPACT TEXT FIELDS ── */
+.texts-grid { display: flex; flex-direction: column; }
+.text-row {
+  display: grid; grid-template-columns: 68px 1fr;
+  align-items: center; gap: 6px;
+  padding: 3px 0; border-bottom: 1px solid var(--border);
+  opacity: 0; animation: field-in 0.2s ease forwards;
+}
+.text-row:last-child { border-bottom: none; }
+.text-row-label {
+  font-size: 10px; color: var(--muted); font-family: var(--font-mono);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 2px 0; cursor: default;
+}
+.text-row-input {
+  background: transparent; border: none; color: var(--text);
+  font-size: 12px; font-family: var(--font-body);
+  padding: 5px 7px; border-radius: 5px; width: 100%;
+  transition: all 0.15s;
+}
+.text-row-input:focus { outline: none; background: var(--s3); }
+.text-row-input.modified { background: var(--accent-dim); color: var(--accent); }
+
+/* ── LOGO UPLOAD ── */
+.logo-block { padding: 6px 0; border-bottom: 1px solid var(--border); }
+.logo-block:last-child { border-bottom: none; }
+.logo-row { display: flex; align-items: center; gap: 8px; }
+.logo-info { flex: 1; min-width: 0; }
+.logo-info-name { font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.logo-info-desc { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.logo-sub { margin-top: 6px; display: none; }
+.logo-sub.open { display: block; }
+.logo-upload-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 10px; background: var(--s3);
+  border: 1px dashed var(--border-2); border-radius: 6px;
+  cursor: pointer; font-size: 11px; color: var(--muted);
+  position: relative; width: 100%; transition: all 0.15s; font-family: var(--font-body);
+}
+.logo-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
+.logo-upload-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.logo-preview-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.logo-prev-img { width: 36px; height: 36px; object-fit: contain; border-radius: 4px; background: var(--s4); border: 1px solid var(--border); }
+.logo-prev-name { font-size: 10px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.logo-clear { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px 4px; }
+.logo-clear:hover { color: var(--red); }
+
+/* ── PESSOA / MODELO ── */
+.pessoa-detected-card {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
+  opacity: 0; animation: field-in 0.25s ease forwards;
+}
+.pessoa-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--s3); border: 1px solid var(--border-2);
+  display: grid; place-items: center; font-size: 16px; flex-shrink: 0; margin-top: 1px;
+}
+.pessoa-card-body { flex: 1; min-width: 0; }
+.pessoa-card-tag {
+  font-size: 9px; font-family: var(--font-mono); color: var(--green);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px;
+}
+.pessoa-card-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.pessoa-none-label {
+  font-size: 11px; color: var(--dim); padding: 4px 0 10px; font-style: italic;
+}
+.pessoa-sub-wrap { margin-top: 10px; display: none; }
+.pessoa-sub-wrap.open { display: block; }
+.pessoa-upload-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 10px; background: var(--s3);
+  border: 1px dashed var(--border-2); border-radius: 6px;
+  cursor: pointer; font-size: 11px; color: var(--muted);
+  position: relative; width: 100%; transition: all 0.15s;
+  font-family: var(--font-body); margin-bottom: 8px;
+}
+.pessoa-upload-btn:hover { border-color: var(--blue); color: var(--blue); }
+.pessoa-upload-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.pessoa-foto-preview {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  padding: 6px 10px; background: var(--s2); border: 1px solid var(--border); border-radius: 6px;
+}
+.pessoa-prev-img { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid var(--border-2); }
+.pessoa-prev-name { font-size: 10px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pessoa-clear { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px 4px; }
+.pessoa-clear:hover { color: var(--red); }
+.pessoa-desc-textarea {
+  width: 100%; background: var(--s2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text); font-family: var(--font-body);
+  font-size: 12px; padding: 8px 10px; resize: vertical; min-height: 72px;
+  transition: border-color 0.2s;
+}
+.pessoa-desc-textarea::placeholder { color: var(--dim); }
+.pessoa-desc-textarea:focus { outline: none; border-color: var(--border-2); background: var(--s3); }
+.pessoa-desc-textarea.modified { border-color: var(--blue); background: var(--blue-dim); }
+.pessoa-hint {
+  font-size: 10px; color: var(--dim); margin-top: 5px; line-height: 1.5;
+  font-family: var(--font-mono);
+}
+
+/* changes summary */
+.changes-summary {
+  background: var(--s2); border: 1px solid var(--border-2);
+  border-radius: var(--radius); padding: 12px; margin-bottom: 16px;
+  display: none;
+}
+.changes-summary.has-changes { display: block; }
+.summary-title {
+  font-family: var(--font-mono); font-size: 10px; color: var(--accent);
+  letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px;
+}
+.summary-item {
+  font-size: 11px; color: var(--muted); padding: 3px 0;
+  border-bottom: 1px solid var(--border); display: flex; gap: 6px; align-items: flex-start;
+}
+.summary-item:last-child { border-bottom: none; }
+.summary-arrow { color: var(--accent); flex-shrink: 0; }
+
+/* generate button */
+.controls-footer { padding: 16px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+#gerarBtn {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, #1a56ff 0%, #4b7bff 100%);
+  color: #fff; border: none; border-radius: var(--radius);
+  font-family: var(--font-head); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; letter-spacing: -0.2px;
+  position: relative; overflow: hidden;
+}
+#gerarBtn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  opacity: 0; transition: opacity 0.2s;
+}
+#gerarBtn:hover:not(:disabled)::after { opacity: 1; }
+#gerarBtn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(75,123,255,0.3); }
+#gerarBtn:disabled { opacity: 0.35; cursor: default; transform: none; box-shadow: none; }
+
+/* toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--s3); border: 1px solid var(--border-2);
+  padding: 10px 16px; border-radius: 30px;
+  font-size: 13px; font-family: var(--font-body); color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 999; pointer-events: none; white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.toast.err .toast-dot { background: var(--red); }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 12 12"><path d="M6 1L11 10H1L6 1Z"/></svg>
+      </div>
+      <span class="logo-name">Replica</span>
+      <span class="logo-sub">by Audaza</span>
+    </div>
+
+    <div class="steps">
+      <div class="step active" id="step1"><div class="step-num">1</div><span>Referência</span></div>
+      <div class="step-sep"></div>
+      <div class="step" id="step2"><div class="step-num">2</div><span>Personalizar</span></div>
+      <div class="step-sep"></div>
+      <div class="step" id="step3"><div class="step-num">3</div><span>Gerar</span></div>
+    </div>
+
+    <div class="header-right">
+      <div id="status-pill">
+        <div class="pulse"></div>
+        <span id="status-text">Pronto</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── SIDEBAR BIBLIOTECA ── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Biblioteca</span>
+      <span class="lib-badge" id="libBadge">0</span>
+    </div>
+    <div id="libEmpty" class="lib-empty-state">
+      <div class="lib-empty-icon">📁</div>
+      <p class="lib-empty-text">Suas imagens salvas aparecerão aqui.</p>
+    </div>
+    <div class="lib-grid-wrap" id="libGrid"></div>
+    <div class="sidebar-actions">
+      <button id="saveLibBtn" disabled>+ Salvar na biblioteca</button>
+    </div>
+  </aside>
+
+  <!-- ── WORKSPACE (centro) ── -->
+  <main class="workspace" id="workspace">
+
+    <!-- upload zone -->
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/*" />
+      <div class="upload-icon-wrap">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>
+      <div class="upload-title">Solte a imagem aqui</div>
+      <p class="upload-sub">ou clique para escolher do computador</p>
+      <div class="upload-formats">
+        <span class="fmt-tag">JPG</span>
+        <span class="fmt-tag">PNG</span>
+        <span class="fmt-tag">WEBP</span>
+      </div>
+    </div>
+
+    <!-- image viewer (com scan overlay) -->
+    <div class="image-viewer" id="imageViewer">
+      <div class="viewer-label">
+        <span id="imgFilename">—</span>
+        <button id="changeImgBtn">↩ trocar imagem</button>
+      </div>
+      <div class="img-frame" id="imgFrame">
+        <img id="refImg" alt="Referência" />
+        <div class="scan-overlay" id="scanOverlay">
+          <div class="scan-bg"></div>
+          <div class="scan-line"></div>
+          <div class="scan-label">Analisando com GPT-4o…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- geração em progresso -->
+    <div class="gen-loading" id="genLoading">
+      <div class="gen-ring"></div>
+      <div class="gen-text">
+        <strong>Gerando com gpt-image-2</strong>
+        Aplicando personalizações com máxima fidelidade.<br/>Isso pode levar até 1 minuto.
+      </div>
+    </div>
+
+    <!-- comparação resultado -->
+    <div class="comparison" id="comparison">
+      <div class="comp-panel">
+        <div class="comp-label">Original</div>
+        <div class="comp-img-frame"><img id="compOriginal" alt="Original" /></div>
+      </div>
+      <div class="comp-panel">
+        <div class="comp-label" style="color:var(--blue)">Resultado</div>
+        <div class="comp-result-frame"><img id="compResult" alt="Resultado" /></div>
+      </div>
+    </div>
+
+    <!-- ações do resultado -->
+    <div class="result-actions-bar" id="resultActionsBar">
+      <button class="btn-download" id="downloadBtn">⬇ Baixar imagem</button>
+      <button class="btn-sm" id="saveResultBtn">+ Biblioteca</button>
+      <button class="btn-sm" id="novaGeracaoBtn">↩ Nova edição</button>
+    </div>
+
+  </main>
+
+  <!-- ── CONTROLS PANEL ── -->
+  <aside class="controls">
+    <div class="controls-header">
+      <div class="controls-title">Personalização</div>
+      <div class="controls-sub" id="controlsSub">Selecione uma imagem para começar</div>
+    </div>
+
+    <div class="controls-body" id="controlsBody">
+      <!-- empty state -->
+      <div class="ctrl-empty" id="ctrlEmpty">
+        <div class="ctrl-empty-icon">✦</div>
+        <div class="ctrl-empty-title">Nenhuma imagem</div>
+        <div class="ctrl-empty-sub">Suba uma imagem de referência e a IA detectará automaticamente os campos editáveis.</div>
+      </div>
+
+      <!-- painel compartilhado (após análise) -->
+      <div id="sharedPanel" style="display:none">
+
+        <!-- mode switcher -->
+        <div class="mode-switcher">
+          <button class="mode-btn active" id="btnClonar" onclick="setMode('clonar')">
+            <span class="mode-btn-icon">⧉</span>Clonar
+          </button>
+          <button class="mode-btn" id="btnModelar" onclick="setMode('modelar')">
+            <span class="mode-btn-icon">✦</span>Modelar
+          </button>
+        </div>
+
+        <!-- proporção (compartilhada) -->
+        <div class="ctrl-section" id="secFormato">
+          <div class="section-head">
+            <span class="section-icon">📐</span>
+            <span class="section-name">Proporção</span>
+          </div>
+          <div class="format-selector">
+            <div class="fmt-opt fmt-story sel" data-fmt="story" onclick="selectFormato(this)">
+              <div class="fmt-thumb"></div>
+              <div class="fmt-name">Story<br/>1024×1536</div>
+            </div>
+            <div class="fmt-opt fmt-feed" data-fmt="feed" onclick="selectFormato(this)">
+              <div class="fmt-thumb"></div>
+              <div class="fmt-name">Feed<br/>1024×1024</div>
+            </div>
+            <div class="fmt-opt fmt-yt" data-fmt="youtube" onclick="selectFormato(this)">
+              <div class="fmt-thumb"></div>
+              <div class="fmt-name">YouTube<br/>1536×1024</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ CLONAR ══ -->
+        <div id="dynamicForm" style="display:block">
+
+        <!-- textos -->
+        <div class="ctrl-section" id="secTextos" style="display:none">
+          <div class="section-head">
+            <span class="section-icon">✍️</span>
+            <span class="section-name">Textos</span>
+            <span class="section-count" id="countTextos">0</span>
+          </div>
+          <div id="textosContainer"></div>
+        </div>
+
+        <!-- logos -->
+        <div class="ctrl-section" id="secLogos" style="display:none">
+          <div class="section-head">
+            <span class="section-icon">🏷️</span>
+            <span class="section-name">Logos & Marcas</span>
+          </div>
+          <div id="logosContainer"></div>
+        </div>
+
+        <!-- cores -->
+        <div class="ctrl-section" id="secCores" style="display:none">
+          <div class="section-head">
+            <span class="section-icon">🎨</span>
+            <span class="section-name">Cores</span>
+          </div>
+          <div id="coresContainer"></div>
+          <label class="tog-row" style="margin-top:8px;border-top:1px solid var(--border);padding-top:10px">
+            <input type="checkbox" class="hidden" id="chkCor" />
+            <span class="tog"></span>
+            <span class="tog-label">Alterar paleta de cores</span>
+          </label>
+          <div class="sub-field-wrap" id="corWrap">
+            <input class="field-input" id="inputCor" placeholder="Ex: azul marinho, #ff6600, verde esmeralda…" />
+          </div>
+        </div>
+
+        <!-- estilo -->
+        <div class="ctrl-section" id="secEstilo" style="display:none">
+          <div class="section-head">
+            <span class="section-icon">✨</span>
+            <span class="section-name">Estilo visual</span>
+          </div>
+          <div class="field-item">
+            <div class="field-meta"><span class="field-name">Estilo detectado — edite se quiser alterar</span></div>
+            <div class="field-wrap">
+              <input class="field-input" id="inputEstilo" placeholder="Estilo visual…" />
+            </div>
+          </div>
+        </div>
+
+        <!-- pessoa -->
+        <div class="ctrl-section" id="secPessoa" style="display:none">
+          <div class="section-head">
+            <span class="section-icon">👤</span>
+            <span class="section-name">Modelo / Profissional</span>
+          </div>
+
+          <!-- card quando detectado -->
+          <div id="pessoaDetectedCard" style="display:none">
+            <div class="pessoa-detected-card">
+              <div class="pessoa-avatar">🧑</div>
+              <div class="pessoa-card-body">
+                <div class="pessoa-card-tag">✓ Detectado</div>
+                <div class="pessoa-card-desc" id="pessoaDesc"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- label quando não detectado -->
+          <div id="pessoaNoneLabel" class="pessoa-none-label" style="display:none">
+            Nenhuma pessoa detectada na imagem.
+          </div>
+
+          <label class="tog-row">
+            <input type="checkbox" class="hidden" id="chkPessoa" />
+            <span class="tog"></span>
+            <span class="tog-label">Substituir modelo</span>
+          </label>
+
+          <div class="pessoa-sub-wrap" id="pessoaWrap">
+            <!-- upload foto de referência -->
+            <label class="pessoa-upload-btn" id="pessoaUploadBtn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Enviar foto do novo modelo (opcional)</span>
+              <input type="file" id="pessoaFotoInput" accept="image/*" />
+            </label>
+            <div class="pessoa-foto-preview" id="pessoaFotoPreview" style="display:none">
+              <img class="pessoa-prev-img" id="pessoaFotoImg" />
+              <span class="pessoa-prev-name" id="pessoaFotoName"></span>
+              <button class="pessoa-clear" id="pessoaFotoClear">✕</button>
+            </div>
+
+            <!-- descrição textual -->
+            <textarea class="pessoa-desc-textarea" id="inputPessoa"
+              placeholder="Descreva o novo modelo: gênero, faixa etária, aparência, roupa, expressão, etnia…&#10;Ex: mulher jovem, ~30 anos, cabelo liso preto, jaleco branco, sorrindo, profissional de saúde"></textarea>
+            <div class="pessoa-hint">Quanto mais detalhe, melhor o resultado</div>
+          </div>
+        </div>
+
+        <!-- resumo de alterações -->
+        <div class="changes-summary" id="changesSummary">
+          <div class="summary-title">Alterações marcadas</div>
+          <div id="summaryList"></div>
+        </div>
+        </div><!-- /dynamicForm -->
+
+        <!-- ══ MODELAR ══ -->
+        <div id="modelarForm" style="display:none">
+
+          <!-- Propósito -->
+          <div class="ctrl-section">
+            <div class="section-head">
+              <span class="section-icon">🎯</span>
+              <span class="section-name">Propósito</span>
+              <span class="m-required-tag">obrigatório</span>
+            </div>
+            <input class="m-input" id="mPurpose" placeholder="Ex: vaga de eletricista, promoção de plano, evento…" />
+          </div>
+
+          <!-- Empresa -->
+          <div class="ctrl-section">
+            <div class="section-head">
+              <span class="section-icon">🏢</span>
+              <span class="section-name">Empresa / Marca</span>
+            </div>
+            <input class="m-input" id="mEmpresa" placeholder="Nome da empresa ou produto…" />
+          </div>
+
+          <!-- Conteúdo -->
+          <div class="ctrl-section">
+            <div class="section-head">
+              <span class="section-icon">✍️</span>
+              <span class="section-name">Conteúdo</span>
+            </div>
+            <div class="m-stack">
+              <input class="m-input" id="mTitulo" placeholder="Título / Headline principal…" />
+              <textarea class="m-input" id="mTextos" rows="3" placeholder="Subtítulo, detalhes, requisitos, informações complementares…"></textarea>
+            </div>
+          </div>
+
+          <!-- Modelo -->
+          <div class="ctrl-section">
+            <div class="section-head">
+              <span class="section-icon">👤</span>
+              <span class="section-name">Modelo / Profissional</span>
+            </div>
+            <label class="pessoa-upload-btn" id="mPessoaUploadBtn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Enviar foto do modelo (opcional)</span>
+              <input type="file" id="mPessoaFotoInput" accept="image/*" />
+            </label>
+            <div class="pessoa-foto-preview" id="mPessoaFotoPreview" style="display:none">
+              <img class="pessoa-prev-img" id="mPessoaFotoImg" />
+              <span class="pessoa-prev-name" id="mPessoaFotoName"></span>
+              <button class="pessoa-clear" id="mPessoaFotoClear">✕</button>
+            </div>
+            <textarea class="m-input" id="mPessoa" rows="2" style="margin-top:6px" placeholder="Descreva o modelo: gênero, idade, aparência, roupa, expressão, etnia…"></textarea>
+          </div>
+
+          <!-- Paleta -->
+          <div class="ctrl-section">
+            <div class="section-head">
+              <span class="section-icon">🎨</span>
+              <span class="section-name">Paleta de cores</span>
+            </div>
+            <label class="tog-row">
+              <input type="checkbox" class="hidden" id="mManterCores" checked />
+              <span class="tog"></span>
+              <span class="tog-label">Manter paleta da referência</span>
+            </label>
+            <div class="sub-field-wrap" id="mCorWrap">
+              <input class="m-input" id="mCor" placeholder="Ex: verde e dourado, tons terrosos, #ff6600…" />
+            </div>
+          </div>
+
+          <!-- Extras -->
+          <div class="ctrl-section">
+            <div class="section-head">
+              <span class="section-icon">⚙️</span>
+              <span class="section-name">Instruções extras</span>
+            </div>
+            <textarea class="m-input" id="mExtra" rows="2" placeholder="Qualquer detalhe adicional sobre o resultado…"></textarea>
+          </div>
+
+        </div><!-- /modelarForm -->
+
+      </div><!-- /sharedPanel -->
+    </div><!-- /controls-body -->
+
+    <div class="controls-footer">
+      <button id="gerarBtn" disabled>Gerar imagem</button>
+    </div>
+  </aside>
+
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg">—</span>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────
+const WH_ANALISE = 'https://audaza.app.n8n.cloud/webhook/analisar-imagem';
+const WH_GERACAO = 'https://audaza.app.n8n.cloud/webhook/receber-imagem';
+const WH_MODELAR = 'https://audaza.app.n8n.cloud/webhook/modelar-imagem';
+const LIB_KEY    = 'audaza_image_library';
+
+// ── STATE ───────────────────────────────────────────────────────
+let currentDataUrl  = null;
+let currentFile     = null;
+let analysisData    = null;
+let lastResultUrl   = null;
+let lastResultName  = 'gerada.png';
+let estilo_original = '';
+let selectedFormato = 'story';
+let logosNovas      = {};
+let pessoaFoto      = null;
+let currentMode     = 'clonar';
+let mPessoaFoto     = null;
+
+// ── REFS ────────────────────────────────────────────────────────
+const uploadZone    = document.getElementById('uploadZone');
+const fileInput     = document.getElementById('fileInput');
+const imageViewer   = document.getElementById('imageViewer');
+const imgFilename   = document.getElementById('imgFilename');
+const refImg        = document.getElementById('refImg');
+const scanOverlay   = document.getElementById('scanOverlay');
+const changeImgBtn  = document.getElementById('changeImgBtn');
+const genLoading    = document.getElementById('genLoading');
+const comparison    = document.getElementById('comparison');
+const compOriginal  = document.getElementById('compOriginal');
+const compResult    = document.getElementById('compResult');
+const resultActions = document.getElementById('resultActionsBar');
+const ctrlEmpty     = document.getElementById('ctrlEmpty');
+const dynamicForm   = document.getElementById('dynamicForm');
+const controlsSub   = document.getElementById('controlsSub');
+const gerarBtn      = document.getElementById('gerarBtn');
+const downloadBtn   = document.getElementById('downloadBtn');
+const saveResultBtn = document.getElementById('saveResultBtn');
+const novaGeracaoBtn= document.getElementById('novaGeracaoBtn');
+const saveLibBtn    = document.getElementById('saveLibBtn');
+
+// toggles with sub-fields
+document.getElementById('chkCor').addEventListener('change', e => {
+  document.getElementById('corWrap').classList.toggle('open', e.target.checked);
+  updateSummary();
+});
+document.getElementById('chkPessoa').addEventListener('change', e => {
+  document.getElementById('pessoaWrap').classList.toggle('open', e.target.checked);
+  updateSummary();
+});
+document.getElementById('inputPessoa').addEventListener('input', () => {
+  document.getElementById('inputPessoa').classList.toggle('modified', !!document.getElementById('inputPessoa').value.trim());
+  updateSummary();
+});
+
+// pessoa foto upload
+document.getElementById('pessoaFotoInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pessoaFoto = ev.target.result;
+    document.getElementById('pessoaFotoImg').src = ev.target.result;
+    document.getElementById('pessoaFotoName').textContent = file.name;
+    document.getElementById('pessoaFotoPreview').style.display = 'flex';
+    document.getElementById('pessoaUploadBtn').querySelector('span').textContent = 'Trocar foto do modelo';
+    updateSummary();
+  };
+  reader.readAsDataURL(file);
+});
+document.getElementById('pessoaFotoClear').addEventListener('click', () => {
+  pessoaFoto = null;
+  document.getElementById('pessoaFotoPreview').style.display = 'none';
+  document.getElementById('pessoaUploadBtn').querySelector('span').textContent = 'Enviar foto do novo modelo (opcional)';
+  document.getElementById('pessoaFotoInput').value = '';
+  updateSummary();
+});
+
+// Modelar — pessoa foto
+document.getElementById('mPessoaFotoInput').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    mPessoaFoto = ev.target.result;
+    document.getElementById('mPessoaFotoImg').src = ev.target.result;
+    document.getElementById('mPessoaFotoName').textContent = file.name;
+    document.getElementById('mPessoaFotoPreview').style.display = 'flex';
+    document.getElementById('mPessoaUploadBtn').querySelector('span').textContent = 'Trocar foto do modelo';
+  };
+  reader.readAsDataURL(file);
+});
+document.getElementById('mPessoaFotoClear').addEventListener('click', () => {
+  mPessoaFoto = null;
+  document.getElementById('mPessoaFotoPreview').style.display = 'none';
+  document.getElementById('mPessoaUploadBtn').querySelector('span').textContent = 'Enviar foto do modelo (opcional)';
+  document.getElementById('mPessoaFotoInput').value = '';
+});
+document.getElementById('mManterCores').addEventListener('change', e => {
+  document.getElementById('mCorWrap').classList.toggle('open', !e.target.checked);
+});
+
+// ── MODE ─────────────────────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btnClonar').classList.toggle('active', mode === 'clonar');
+  document.getElementById('btnModelar').classList.toggle('active', mode === 'modelar');
+  document.getElementById('dynamicForm').style.display  = mode === 'clonar'  ? 'block' : 'none';
+  document.getElementById('modelarForm').style.display  = mode === 'modelar' ? 'block' : 'none';
+  gerarBtn.disabled = !currentDataUrl;
+}
+
+// ── STEPS ───────────────────────────────────────────────────────
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('step'+i);
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  });
+}
+
+// ── STATUS PILL ─────────────────────────────────────────────────
+function setStatus(msg, type='') {
+  const pill = document.getElementById('status-pill');
+  const txt  = document.getElementById('status-text');
+  pill.className = 'status-pill visible' + (type ? ' '+type : '');
+  pill.classList.add('visible');
+  txt.textContent = msg;
+  if (!msg) pill.classList.remove('visible');
+}
+
+// ── TOAST ───────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, isErr=false) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  el.className = 'toast show' + (isErr ? ' err' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── UPLOAD ──────────────────────────────────────────────────────
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) processFile(file);
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) processFile(fileInput.files[0]); });
+changeImgBtn.addEventListener('click', () => { resetToUpload(); });
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    currentDataUrl = e.target.result;
+    currentFile = file;
+    showImageViewer(e.target.result, file.name);
+    saveLibBtn.disabled = false;
+    triggerAnalysis();
+  };
+  reader.readAsDataURL(file);
+}
+
+function showImageViewer(dataUrl, name) {
+  uploadZone.style.display = 'none';
+  imageViewer.classList.add('visible');
+  refImg.src = dataUrl;
+  imgFilename.textContent = name;
+  comparison.classList.remove('visible');
+  resultActions.classList.remove('visible');
+  genLoading.classList.remove('visible');
+  setStep(1);
+}
+
+function resetToUpload() {
+  uploadZone.style.display = '';
+  imageViewer.classList.remove('visible');
+  comparison.classList.remove('visible');
+  resultActions.classList.remove('visible');
+  genLoading.classList.remove('visible');
+  scanOverlay.classList.remove('active');
+  document.getElementById('sharedPanel').style.display = 'none';
+  ctrlEmpty.style.display = 'flex';
+  controlsSub.textContent = 'Selecione uma imagem para começar';
+  currentMode = 'clonar'; mPessoaFoto = null;
+  gerarBtn.disabled = true;
+  saveLibBtn.disabled = true;
+  analysisData = null;
+  currentDataUrl = null; currentFile = null;
+  setStep(1); setStatus('');
+  fileInput.value = '';
+}
+
+// ── ANÁLISE ─────────────────────────────────────────────────────
+async function triggerAnalysis() {
+  dynamicForm.style.display = 'none';
+  ctrlEmpty.style.display = 'none';
+  controlsSub.textContent = 'Analisando imagem…';
+  scanOverlay.classList.add('active');
+  setStatus('Analisando com GPT-4o…', 'loading');
+  gerarBtn.disabled = true;
+  setStep(2);
+
+  try {
+    const res = await fetch(WH_ANALISE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: currentDataUrl }),
+      signal: AbortSignal.timeout(60000)
+    });
+    const text = await res.text();
+    if (!text.trim()) throw new Error('Resposta vazia da análise.');
+    let data;
+    try { data = JSON.parse(text); } catch { throw new Error('JSON inválido: ' + text.slice(0,80)); }
+
+    analysisData = data;
+    scanOverlay.classList.remove('active');
+    renderForm(data);
+    setStatus('Análise completa', 'ok');
+    controlsSub.textContent = 'Edite os campos e clique em Gerar';
+    setTimeout(() => setStatus(''), 3000);
+
+  } catch(e) {
+    scanOverlay.classList.remove('active');
+    ctrlEmpty.style.display = 'flex';
+    ctrlEmpty.querySelector('.ctrl-empty-title').textContent = 'Erro na análise';
+    ctrlEmpty.querySelector('.ctrl-empty-sub').textContent = e.message;
+    setStatus('Erro na análise', 'err');
+    toast('Erro: ' + e.message, true);
+  }
+}
+
+// ── RENDER FORM ─────────────────────────────────────────────────
+function renderForm(data) {
+  document.getElementById('sharedPanel').style.display = 'block';
+  setMode('clonar');
+
+  // TEXTOS — compact grid
+  const textos = data.textos || [];
+  const secTextos = document.getElementById('secTextos');
+  const textosContainer = document.getElementById('textosContainer');
+  textosContainer.innerHTML = '';
+  if (textos.length > 0) {
+    secTextos.style.display = 'block';
+    document.getElementById('countTextos').textContent = textos.length;
+    const grid = document.createElement('div');
+    grid.className = 'texts-grid';
+    textos.forEach((t, i) => {
+      const row = document.createElement('div');
+      row.className = 'text-row';
+      row.style.animationDelay = (i * 40) + 'ms';
+      row.innerHTML = `
+        <div class="text-row-label" title="${esc(t.label)}">${esc(t.label)}</div>
+        <input class="text-row-input" id="txt_${t.id}"
+          data-id="${t.id}" data-original="${esc(t.valor)}" data-label="${esc(t.label)}" data-pos="${esc(t.posicao||'')}"
+          value="${esc(t.valor)}" placeholder="${esc(t.valor)}" />
+      `;
+      const inp = row.querySelector('input');
+      inp.addEventListener('input', () => {
+        inp.classList.toggle('modified', inp.value.trim() !== inp.dataset.original.trim());
+        updateSummary();
+      });
+      grid.appendChild(row);
+    });
+    textosContainer.appendChild(grid);
+  } else { secTextos.style.display = 'none'; }
+
+  // LOGOS — blocks with upload
+  logosNovas = {};
+  const logos = data.logos || [];
+  const secLogos = document.getElementById('secLogos');
+  const logosContainer = document.getElementById('logosContainer');
+  logosContainer.innerHTML = '';
+  if (logos.length > 0) {
+    secLogos.style.display = 'block';
+    logos.forEach((l, i) => {
+      const block = document.createElement('div');
+      block.className = 'logo-block';
+      block.style.animationDelay = (i * 40) + 'ms';
+      block.innerHTML = `
+        <div class="logo-row">
+          <div class="logo-info">
+            <div class="logo-info-name">${esc(l.label)}</div>
+            <div class="logo-info-desc">${esc(l.descricao || '')}${l.posicao ? ' · ' + esc(l.posicao) : ''}</div>
+          </div>
+        </div>
+        <div class="logo-sub open">
+          <label class="logo-upload-btn" id="logobtn_${l.id}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Enviar nova logo</span>
+            <input type="file" accept="image/*" data-logo-id="${l.id}" />
+          </label>
+          <div class="logo-preview-row" id="logoprev_${l.id}" style="display:none">
+            <img class="logo-prev-img" id="logoimg_${l.id}" />
+            <span class="logo-prev-name" id="logoname_${l.id}"></span>
+            <button class="logo-clear" data-logo-id="${l.id}" title="Remover">✕</button>
+          </div>
+        </div>
+      `;
+      const fileInput = block.querySelector('input[type="file"]');
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          logosNovas[l.id] = ev.target.result;
+          document.getElementById('logoimg_'+l.id).src = ev.target.result;
+          document.getElementById('logoname_'+l.id).textContent = file.name;
+          document.getElementById('logoprev_'+l.id).style.display = 'flex';
+          document.getElementById('logobtn_'+l.id).querySelector('span').textContent = 'Trocar logo';
+          updateSummary();
+        };
+        reader.readAsDataURL(file);
+      });
+      block.querySelector('.logo-clear').addEventListener('click', () => {
+        delete logosNovas[l.id];
+        document.getElementById('logoprev_'+l.id).style.display = 'none';
+        document.getElementById('logobtn_'+l.id).querySelector('span').textContent = 'Enviar nova logo';
+        fileInput.value = '';
+        updateSummary();
+      });
+      logosContainer.appendChild(block);
+    });
+  } else { secLogos.style.display = 'none'; }
+
+  // CORES
+  const cores = data.cores || {};
+  const secCores = document.getElementById('secCores');
+  const coresContainer = document.getElementById('coresContainer');
+  coresContainer.innerHTML = '';
+  const coreKeys = Object.keys(cores).filter(k => cores[k]);
+  if (coreKeys.length > 0) {
+    secCores.style.display = 'block';
+    const chips = document.createElement('div');
+    chips.className = 'color-chips';
+    const labels = { primaria:'Primária', secundaria:'Secundária', fundo:'Fundo' };
+    coreKeys.forEach(k => {
+      chips.innerHTML += `<div class="color-chip"><div class="chip-dot" style="background:${cores[k]}"></div><span class="chip-label">${labels[k]||k} ${cores[k]}</span></div>`;
+    });
+    coresContainer.appendChild(chips);
+  } else { secCores.style.display = 'none'; }
+
+  // ESTILO
+  if (data.estilo) {
+    document.getElementById('secEstilo').style.display = 'block';
+    document.getElementById('inputEstilo').value = data.estilo;
+    estilo_original = data.estilo;
+  } else { document.getElementById('secEstilo').style.display = 'none'; }
+
+  // PESSOA — sempre visível
+  document.getElementById('secPessoa').style.display = 'block';
+  pessoaFoto = null;
+  document.getElementById('pessoaFotoPreview').style.display = 'none';
+  document.getElementById('pessoaFotoInput').value = '';
+  document.getElementById('pessoaUploadBtn').querySelector('span').textContent = 'Enviar foto do novo modelo (opcional)';
+  document.getElementById('chkPessoa').checked = false;
+  document.getElementById('pessoaWrap').classList.remove('open');
+  document.getElementById('inputPessoa').value = '';
+  document.getElementById('inputPessoa').classList.remove('modified');
+  if (data.tem_pessoa && data.descricao_pessoa) {
+    document.getElementById('pessoaDetectedCard').style.display = 'block';
+    document.getElementById('pessoaNoneLabel').style.display = 'none';
+    document.getElementById('pessoaDesc').textContent = data.descricao_pessoa;
+  } else {
+    document.getElementById('pessoaDetectedCard').style.display = 'none';
+    document.getElementById('pessoaNoneLabel').style.display = 'block';
+  }
+
+  gerarBtn.disabled = false;
+  setStep(2);
+  updateSummary();
+}
+
+// ── SUMMARY ─────────────────────────────────────────────────────
+function updateSummary() {
+  const items = [];
+
+  // formato
+  const fmtLabels = { story: 'Story 9:16', feed: 'Feed 1:1', youtube: 'YouTube 16:9' };
+  items.push(`Formato: ${fmtLabels[selectedFormato] || selectedFormato}`);
+
+  // textos compactos
+  document.querySelectorAll('#textosContainer .text-row-input').forEach(inp => {
+    if (inp.value.trim() !== inp.dataset.original.trim()) {
+      items.push(`"${inp.dataset.original.slice(0,18)}" → "${inp.value.slice(0,18)}"`);
+    }
+  });
+
+  // logos novas
+  Object.keys(logosNovas).forEach(id => {
+    const nameEl = document.getElementById('logoname_'+id);
+    const name = nameEl ? nameEl.textContent : 'logo';
+    items.push(`Nova logo: ${name}`);
+  });
+
+  if (document.getElementById('chkCor').checked) {
+    const v = document.getElementById('inputCor').value.trim();
+    if (v) items.push(`Cor → ${v}`);
+  }
+
+  const est = document.getElementById('inputEstilo').value.trim();
+  if (est && est !== estilo_original) items.push(`Estilo → ${est.slice(0,30)}`);
+
+  if (document.getElementById('chkPessoa').checked) {
+    const v = document.getElementById('inputPessoa').value.trim();
+    if (pessoaFoto) items.push('Foto do modelo: enviada');
+    if (v) items.push(`Modelo → ${v.slice(0,28)}`);
+  }
+
+  const box = document.getElementById('changesSummary');
+  const list = document.getElementById('summaryList');
+  box.classList.add('has-changes');
+  list.innerHTML = items.map(i => `<div class="summary-item"><span class="summary-arrow">›</span><span>${i}</span></div>`).join('');
+}
+
+// ── GERAR ────────────────────────────────────────────────────────
+gerarBtn.addEventListener('click', async () => {
+  if (!currentDataUrl) return;
+  gerarBtn.disabled = true;
+  imageViewer.classList.remove('visible');
+  comparison.classList.remove('visible');
+  resultActions.classList.remove('visible');
+  genLoading.classList.add('visible');
+  setStatus('Gerando…', 'loading');
+  setStep(3);
+
+  // ── MODELAR ──
+  if (currentMode === 'modelar') {
+    const proposito = document.getElementById('mPurpose').value.trim();
+    if (!proposito) {
+      toast('Informe o propósito da nova peça', true);
+      gerarBtn.disabled = false; genLoading.classList.remove('visible');
+      imageViewer.classList.add('visible'); setStep(2); return;
+    }
+    genLoading.querySelector('strong').textContent = 'Modelando com gpt-image-2';
+    genLoading.querySelector('.gen-text').lastChild.textContent = 'Criando nova peça baseada no estilo da referência.';
+    const mData = {
+      proposito,
+      empresa:      document.getElementById('mEmpresa').value.trim(),
+      titulo:       document.getElementById('mTitulo').value.trim(),
+      textos:       document.getElementById('mTextos').value.trim(),
+      pessoa:       document.getElementById('mPessoa').value.trim(),
+      pessoa_foto:  mPessoaFoto,
+      manter_cores: document.getElementById('mManterCores').checked,
+      cor:          document.getElementById('mCor').value.trim(),
+      extra:        document.getElementById('mExtra').value.trim()
+    };
+    try {
+      const res = await fetch(WH_MODELAR, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: currentDataUrl, formato: selectedFormato, analise: analysisData, modelar: mData }),
+        signal: AbortSignal.timeout(180000)
+      });
+      if (!res.ok) { const t = await res.text(); throw new Error('Erro n8n: ' + t.slice(0,120)); }
+      const blob = await res.blob();
+      if (!blob || blob.size < 1000) throw new Error('Imagem não retornada pelo servidor.');
+      const imageUrl = URL.createObjectURL(blob);
+      lastResultUrl  = imageUrl;
+      lastResultName = `modelar_${selectedFormato}_${Date.now()}.png`;
+      genLoading.classList.remove('visible');
+      compOriginal.src = currentDataUrl; compResult.src = imageUrl;
+      comparison.classList.add('visible'); resultActions.classList.add('visible');
+      setStatus('Modelagem completa', 'ok'); toast('✓ Nova peça gerada!');
+      setTimeout(() => setStatus(''), 4000);
+    } catch(e) {
+      genLoading.classList.remove('visible'); imageViewer.classList.add('visible');
+      setStatus('Erro na modelagem', 'err'); toast(e.message, true);
+      gerarBtn.disabled = false; setStep(2);
+    }
+    return;
+  }
+
+  // ── CLONAR ──
+  const textos = [];
+  document.querySelectorAll('#textosContainer .text-row-input').forEach(inp => {
+    textos.push({ id: inp.dataset.id, label: inp.dataset.label, posicao: inp.dataset.pos, valor_original: inp.dataset.original, valor_novo: inp.value.trim() });
+  });
+
+  const mudarPessoa = document.getElementById('chkPessoa').checked;
+  const changes = {
+    textos,
+    logos_novas: logosNovas,
+    mudar_cor:   document.getElementById('chkCor').checked,
+    cor_desejada: document.getElementById('inputCor').value.trim(),
+    estilo_personalizado: (() => { const v = document.getElementById('inputEstilo').value.trim(); return v !== estilo_original ? v : ''; })(),
+    mudar_pessoa: mudarPessoa,
+    descricao_pessoa_nova: document.getElementById('inputPessoa').value.trim(),
+    pessoa_foto: mudarPessoa ? pessoaFoto : null
+  };
+
+  // Gerar máscara de edição para preservar gradientes e estrutura
+  const changedTextoIds = new Set();
+  document.querySelectorAll('#textosContainer .text-row-input').forEach(inp => {
+    if (inp.value.trim() !== inp.dataset.original.trim()) changedTextoIds.add(inp.dataset.id);
+  });
+  const maskDataUrl = await createEditMask(analysisData, changedTextoIds, mudarPessoa);
+
+  try {
+    const res = await fetch(WH_GERACAO, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: currentDataUrl, formato: selectedFormato, changes, mask: maskDataUrl }),
+      signal: AbortSignal.timeout(180000)
+    });
+
+    if (!res.ok) { const t = await res.text(); throw new Error('Erro n8n: ' + t.slice(0,120)); }
+    const blob = await res.blob();
+    if (!blob || blob.size < 1000) throw new Error('Imagem não retornada pelo servidor.');
+    const imageUrl = URL.createObjectURL(blob);
+
+    // Overlay de logos com pixels exatos
+    const finalUrl = await applyLogoOverlay(imageUrl, currentDataUrl, analysisData?.logos || []);
+    const fmtNames = { story: 'story_1024x1536', feed: 'feed_1024x1024', youtube: 'youtube_1536x1024' };
+    lastResultUrl  = finalUrl;
+    lastResultName = `replica_${fmtNames[selectedFormato] || selectedFormato}_${Date.now()}.png`;
+
+    // show comparison
+    genLoading.classList.remove('visible');
+    compOriginal.src = currentDataUrl;
+    compResult.src   = finalUrl;
+    comparison.classList.add('visible');
+    resultActions.classList.add('visible');
+
+    setStatus('Geração completa', 'ok');
+    toast('✓ Imagem gerada com sucesso!');
+    setTimeout(() => setStatus(''), 4000);
+
+  } catch(e) {
+    genLoading.classList.remove('visible');
+    imageViewer.classList.add('visible');
+    setStatus('Erro na geração', 'err');
+    toast(e.message, true);
+    gerarBtn.disabled = false;
+    setStep(2);
+  }
+});
+
+// ── DOWNLOAD ────────────────────────────────────────────────────
+downloadBtn.addEventListener('click', async () => {
+  if (!lastResultUrl) return;
+  try {
+    if (lastResultUrl.startsWith('data:')) {
+      const a = document.createElement('a'); a.href = lastResultUrl; a.download = lastResultName; a.click();
+    } else {
+      const res = await fetch(lastResultUrl);
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = lastResultName; a.click();
+    }
+  } catch { window.open(lastResultUrl, '_blank'); }
+});
+
+saveResultBtn.addEventListener('click', async () => {
+  if (!lastResultUrl) return;
+  try {
+    let dataUrl = lastResultUrl;
+    if (!dataUrl.startsWith('data:')) {
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      dataUrl = await blobToDataUrl(blob);
+    }
+    addToLib({ name: lastResultName, dataUrl, size: 0, type: 'image/png' });
+    toast('✓ Salvo na biblioteca!');
+  } catch { toast('Erro ao salvar', true); }
+});
+
+novaGeracaoBtn.addEventListener('click', () => {
+  comparison.classList.remove('visible');
+  resultActions.classList.remove('visible');
+  imageViewer.classList.add('visible');
+  setStep(2);
+  gerarBtn.disabled = false;
+  setStatus('');
+});
+
+function blobToDataUrl(blob) {
+  return new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(blob); });
+}
+
+// ── BIBLIOTECA ──────────────────────────────────────────────────
+function loadLib() { return JSON.parse(localStorage.getItem(LIB_KEY) || '[]'); }
+function saveLib(lib) { localStorage.setItem(LIB_KEY, JSON.stringify(lib)); }
+
+function renderLib() {
+  const lib = loadLib();
+  document.getElementById('libBadge').textContent = lib.length;
+  document.getElementById('libEmpty').style.display = lib.length === 0 ? 'flex' : 'none';
+  const grid = document.getElementById('libGrid');
+  grid.innerHTML = '';
+  if (lib.length === 0) return;
+  lib.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'lib-thumb';
+    el.innerHTML = `<img src="${item.dataUrl}" alt="${item.name}"/><div class="lib-thumb-name">${item.name}</div><button class="lib-del-btn">✕</button>`;
+    el.querySelector('img').addEventListener('click', () => pickFromLib(item, el));
+    el.querySelector('.lib-del-btn').addEventListener('click', ev => { ev.stopPropagation(); removeFromLib(i); });
+    grid.appendChild(el);
+  });
+}
+
+function addToLib(item) {
+  const lib = loadLib();
+  if (!lib.find(i => i.dataUrl === item.dataUrl)) { lib.push(item); saveLib(lib); renderLib(); }
+}
+
+function removeFromLib(i) {
+  const lib = loadLib(); lib.splice(i,1); saveLib(lib); renderLib();
+}
+
+function pickFromLib(item, el) {
+  document.querySelectorAll('.lib-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentDataUrl = item.dataUrl;
+  currentFile = { name: item.name, size: item.size, type: item.type };
+  showImageViewer(item.dataUrl, item.name);
+  saveLibBtn.disabled = true;
+  triggerAnalysis();
+}
+
+saveLibBtn.addEventListener('click', () => {
+  if (!currentFile || !currentDataUrl) return;
+  addToLib({ name: currentFile.name || 'imagem', size: currentFile.size || 0, type: currentFile.type, dataUrl: currentDataUrl });
+  toast('✓ Salvo na biblioteca!');
+});
+
+// ── OVERLAY DE LOGOS (copia pixels exatos da referência) ────────
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function applyLogoOverlay(generatedDataUrl, referenceDataUrl, logos) {
+  if (!logos || logos.length === 0) return generatedDataUrl;
+  const hasLogoWithBbox = logos.some(l => l.bbox);
+  if (!hasLogoWithBbox) return generatedDataUrl;
+
+  try {
+    const genImg = await loadImage(generatedDataUrl);
+    const refImg = await loadImage(referenceDataUrl);
+
+    const canvas = document.createElement('canvas');
+    canvas.width  = genImg.width;
+    canvas.height = genImg.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(genImg, 0, 0);
+
+    for (const logo of logos) {
+      if (!logo.bbox) continue;
+
+      const { x, y, w, h } = logo.bbox;
+      const dx = Math.round(x * canvas.width);
+      const dy = Math.round(y * canvas.height);
+      const dw = Math.round(w * canvas.width);
+      const dh = Math.round(h * canvas.height);
+
+      if (logosNovas[logo.id]) {
+        // Nova logo: desenha centrada no bbox
+        const newLogoImg = await loadImage(logosNovas[logo.id]);
+        const cx = dx + dw / 2;
+        const cy = dy + dh / 2;
+        const scale = Math.min(dw / newLogoImg.width, dh / newLogoImg.height);
+        const fw = newLogoImg.width * scale;
+        const fh = newLogoImg.height * scale;
+        ctx.drawImage(newLogoImg, cx - fw / 2, cy - fh / 2, fw, fh);
+      } else {
+        // Sem nova logo: restaura pixels originais da imagem de referência
+        const srcX = Math.round(x * refImg.width);
+        const srcY = Math.round(y * refImg.height);
+        const srcW = Math.round(w * refImg.width);
+        const srcH = Math.round(h * refImg.height);
+        ctx.drawImage(refImg, srcX, srcY, srcW, srcH, dx, dy, dw, dh);
+      }
+    }
+
+    return canvas.toDataURL('image/png');
+  } catch (e) {
+    console.warn('Logo overlay falhou:', e);
+    return generatedDataUrl;
+  }
+}
+
+// ── MÁSCARA DE EDIÇÃO (transparent = edit, opaque = preserve) ───
+async function createEditMask(analysisData, changedTextoIds, mudarPessoa) {
+  if (!currentDataUrl || !analysisData) return null;
+  const hasSpecific = changedTextoIds.size > 0 || (mudarPessoa && analysisData.pessoa_bbox);
+  if (!hasSpecific) return null;
+
+  try {
+    const img = await loadImage(currentDataUrl);
+    const cv = document.createElement('canvas');
+    cv.width = img.width; cv.height = img.height;
+    const ctx = cv.getContext('2d');
+
+    // Tudo opaco = modelo preserva (logos, gradientes, shapes, estrutura)
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+
+    // Apenas textos alterados e pessoa ficam transparentes (modelo edita só aí)
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(255,255,255,1)';
+
+    const pad = 0.008; // margem mínima para não invadir texto adjacente
+
+    (analysisData.textos || []).forEach(t => {
+      if (!changedTextoIds.has(t.id) || !t.bbox) return;
+      const {x, y, w, h} = t.bbox;
+      ctx.fillRect(
+        Math.max(0, (x - pad)) * cv.width,
+        Math.max(0, (y - pad)) * cv.height,
+        Math.min(cv.width, (w + pad * 2) * cv.width),
+        Math.min(cv.height, (h + pad * 2) * cv.height)
+      );
+    });
+
+    if (mudarPessoa && analysisData.pessoa_bbox) {
+      const {x, y, w, h} = analysisData.pessoa_bbox;
+      const p = 0.025;
+      ctx.fillRect(
+        Math.max(0, (x - p)) * cv.width,
+        Math.max(0, (y - p)) * cv.height,
+        Math.min(cv.width, (w + p * 2) * cv.width),
+        Math.min(cv.height, (h + p * 2) * cv.height)
+      );
+    }
+
+    return cv.toDataURL('image/png');
+  } catch(e) {
+    console.warn('createEditMask falhou:', e);
+    return null;
+  }
+}
+
+// ── RESIZE PARA FORMATO SOCIAL ──────────────────────────────────
+function resizeToSocialFormat(src, format) {
+  return new Promise((resolve) => {
+    // Tamanhos finais corretos para redes sociais
+    const targets = { story: { w: 1080, h: 1920 }, feed: { w: 1080, h: 1080 }, youtube: { w: 1920, h: 1080 } };
+    const t = targets[format] || targets.feed;
+    const img = new Image();
+    img.onload = () => {
+      // "cover": escala para cobrir o alvo e corta o excesso centralizado
+      const scale = Math.max(t.w / img.width, t.h / img.height);
+      const sw = img.width * scale;
+      const sh = img.height * scale;
+      const canvas = document.createElement('canvas');
+      canvas.width = t.w; canvas.height = t.h;
+      canvas.getContext('2d').drawImage(img, (t.w - sw) / 2, (t.h - sh) / 2, sw, sh);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = () => resolve(src); // fallback: retorna original se falhar
+    img.src = src;
+  });
+}
+
+// ── FORMATO ─────────────────────────────────────────────────────
+function selectFormato(el) {
+  document.querySelectorAll('.fmt-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedFormato = el.dataset.fmt;
+  updateSummary();
+}
+
+// ── UTILS ────────────────────────────────────────────────────────
+function esc(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// init
+renderLib();
+</script>
+</body>
+</html>

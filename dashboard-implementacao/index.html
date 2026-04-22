@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Implementação — Audaza Digital</title>
+    <style>
+        /* =============================================
+           VARIÁVEIS GLOBAIS
+           ============================================= */
+        :root {
+            --bg-page: #F1F5F9;
+            --bg-card: #FFFFFF;
+            --bg-header: #0F172A;
+            --bg-stats: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+            --border: #E2E8F0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+            --radius: 14px;
+            --radius-sm: 8px;
+        }
+
+        /* =============================================
+           RESET E BASE
+           ============================================= */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* =============================================
+           CABEÇALHO
+           ============================================= */
+        .header {
+            background: var(--bg-header);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            height: 68px;
+        }
+
+        /* Logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .logo-text {
+            color: #FFFFFF;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .logo-sub {
+            color: #64748B;
+            font-size: 0.68rem;
+            font-weight: 400;
+            display: block;
+        }
+
+        .header-divider {
+            width: 1px;
+            height: 28px;
+            background: #1E293B;
+            flex-shrink: 0;
+        }
+
+        /* Nome do cliente (editável) */
+        .client-block {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .client-label {
+            color: #475569;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .client-name {
+            color: #FFFFFF;
+            font-size: 1.05rem;
+            font-weight: 600;
+            outline: none;
+            background: transparent;
+            border: none;
+            padding: 2px 6px;
+            margin-left: -6px;
+            border-radius: 6px;
+            cursor: text;
+            transition: background 0.15s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .client-name:hover,
+        .client-name:focus {
+            background: #1E293B;
+        }
+
+        .client-name:focus {
+            white-space: normal;
+        }
+
+        /* Data */
+        .header-date {
+            color: #475569;
+            font-size: 0.78rem;
+            text-align: right;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .header-date-day {
+            color: #94A3B8;
+            font-size: 0.68rem;
+        }
+
+        /* Progresso no header */
+        .header-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .progress-info {
+            text-align: right;
+        }
+
+        .progress-info-label {
+            color: #475569;
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .progress-info-value {
+            color: #FFFFFF;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 46px;
+            height: 46px;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring .ring-bg {
+            fill: none;
+            stroke: #1E293B;
+            stroke-width: 4;
+        }
+
+        .progress-ring .ring-fill {
+            fill: none;
+            stroke: url(#progressGradient);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 119.38;
+            stroke-dashoffset: 119.38;
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* =============================================
+           BARRA DE PROGRESSO GLOBAL
+           ============================================= */
+        .global-bar {
+            height: 2px;
+            background: #1E293B;
+        }
+
+        .global-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366F1, #8B5CF6, #EC4899);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+
+        /* =============================================
+           BARRA DE ESTATÍSTICAS
+           ============================================= */
+        .stats-bar {
+            background: var(--bg-stats);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-bar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            height: 58px;
+            align-items: center;
+            gap: 0;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 1.5rem 0 0;
+            margin-right: 1.5rem;
+            border-right: 1px solid var(--border);
+        }
+
+        .stat:last-child {
+            border-right: none;
+        }
+
+        .stat:first-child {
+            padding-left: 0;
+        }
+
+        .stat-icon {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .stat-body {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .stat-value {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* =============================================
+           CONTEÚDO PRINCIPAL
+           ============================================= */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Título de seção */
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .section-heading::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* =============================================
+           GRADE DE FASES
+           ============================================= */
+        .phases-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        /* =============================================
+           CARD DE FASE
+           ============================================= */
+        .phase-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .phase-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .phase-card.is-complete {
+            border-color: #A7F3D0;
+        }
+
+        /* Topo colorido do card */
+        .phase-top-bar {
+            height: 3px;
+        }
+
+        /* Cabeçalho do card */
+        .phase-card-header {
+            padding: 1rem 1.1rem 0.85rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .phase-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .phase-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .phase-num {
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .phase-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin-top: 1px;
+        }
+
+        .phase-desc {
+            font-size: 0.73rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Badge de status */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 0.67rem;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .status-pill .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .status-pill.pending {
+            background: #F1F5F9;
+            color: #64748B;
+        }
+
+        .status-pill.pending .dot { background: #94A3B8; }
+
+        .status-pill.active {
+            background: #FEF9C3;
+            color: #854D0E;
+        }
+
+        .status-pill.active .dot { background: #EAB308; }
+
+        .status-pill.done {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-pill.done .dot { background: #10B981; }
+
+        /* Progresso do card */
+        .phase-progress {
+            padding: 0 1.1rem 0.85rem;
+        }
+
+        .phase-progress-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+
+        .phase-progress-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .phase-progress-count {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .progress-track {
+            height: 5px;
+            background: var(--border);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 0%;
+        }
+
+        /* Separador */
+        .phase-sep {
+            height: 1px;
+            background: var(--border);
+            margin: 0 1.1rem;
+        }
+
+        /* Lista de tarefas */
+        .task-list {
+            padding: 0.6rem 0.85rem 0.85rem;
+        }
+
+        .task-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            padding: 0.35rem 0.3rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.12s;
+            user-select: none;
+        }
+
+        .task-row:hover {
+            background: #F8FAFC;
+        }
+
+        .task-row:active {
+            background: #F1F5F9;
+        }
+
+        /* Checkbox visual */
+        .task-check {
+            width: 17px;
+            height: 17px;
+            border: 1.5px solid #CBD5E1;
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.18s;
+            background: #fff;
+        }
+
+        .task-row.is-done .task-check {
+            background: #10B981;
+            border-color: #10B981;
+        }
+
+        .task-check-mark {
+            display: none;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .task-row.is-done .task-check-mark {
+            display: block;
+        }
+
+        /* Texto da tarefa */
+        .task-label {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            line-height: 1.45;
+            transition: color 0.18s;
+        }
+
+        .task-row.is-done .task-label {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            text-decoration-color: #CBD5E1;
+        }
+
+        /* =============================================
+           ÁREA DE OBSERVAÇÕES
+           ============================================= */
+        .notes-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .notes-card-header {
+            padding: 0.9rem 1.25rem;
+            background: #FAFAFA;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notes-card-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .notes-card-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 110px;
+            border: none;
+            outline: none;
+            padding: 1rem 1.25rem;
+            font-family: inherit;
+            font-size: 0.83rem;
+            color: var(--text-primary);
+            resize: vertical;
+            background: transparent;
+            line-height: 1.65;
+        }
+
+        .notes-textarea::placeholder {
+            color: #C0CCDA;
+        }
+
+        /* =============================================
+           BOTÃO RESETAR
+           ============================================= */
+        .reset-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .btn-reset {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 7px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .btn-reset:hover {
+            background: #FEF2F2;
+            border-color: #FECACA;
+            color: #DC2626;
+        }
+
+        /* =============================================
+           RODAPÉ
+           ============================================= */
+        .footer {
+            text-align: center;
+            padding: 1.5rem 2rem;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* =============================================
+           RESPONSIVIDADE
+           ============================================= */
+        @media (max-width: 1100px) {
+            .phases-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .phases-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main {
+                padding: 1rem;
+            }
+
+            .header-inner {
+                gap: 0.75rem;
+                padding: 0;
+            }
+
+            .header-date,
+            .header-divider {
+                display: none;
+            }
+
+            .stats-bar-inner {
+                padding: 0 1rem;
+                overflow-x: auto;
+                gap: 0;
+            }
+
+            .stat {
+                flex-shrink: 0;
+            }
+        }
+
+        /* =============================================
+           IMPRESSÃO
+           ============================================= */
+        @media print {
+            .header { position: static; }
+            .btn-reset { display: none; }
+            .phase-card:hover { transform: none; box-shadow: var(--shadow-sm); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SVG Gradiente para o anel de progresso -->
+<svg width="0" height="0" style="position:absolute">
+    <defs>
+        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#6366F1"/>
+            <stop offset="100%" style="stop-color:#8B5CF6"/>
+        </linearGradient>
+    </defs>
+</svg>
+
+<!-- =============================================
+     CABEÇALHO
+     ============================================= -->
+<header class="header">
+    <div class="header-inner">
+
+        <!-- Logo -->
+        <div class="logo">
+            <div class="logo-icon">🚀</div>
+            <div>
+                <div class="logo-text">Audaza Digital</div>
+                <span class="logo-sub">Painel de Implementação</span>
+            </div>
+        </div>
+
+        <div class="header-divider"></div>
+
+        <!-- Nome do cliente (editável) -->
+        <div class="client-block">
+            <div class="client-label">Cliente</div>
+            <div class="client-name" id="clientName" contenteditable="true" spellcheck="false">Nome do Cliente</div>
+        </div>
+
+        <!-- Data -->
+        <div class="header-date" id="headerDate"></div>
+
+        <!-- Progresso geral -->
+        <div class="header-progress">
+            <div class="progress-info">
+                <div class="progress-info-label">Progresso</div>
+                <div class="progress-info-value" id="progressValue">0%</div>
+            </div>
+            <div class="progress-ring">
+                <svg width="46" height="46" viewBox="0 0 46 46">
+                    <circle class="ring-bg" cx="23" cy="23" r="19"/>
+                    <circle class="ring-fill" cx="23" cy="23" r="19" id="progressRing"/>
+                </svg>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+<!-- Barra de progresso global -->
+<div class="global-bar">
+    <div class="global-bar-fill" id="globalBarFill"></div>
+</div>
+
+<!-- =============================================
+     ESTATÍSTICAS
+     ============================================= -->
+<div class="stats-bar">
+    <div class="stats-bar-inner">
+        <div class="stat">
+            <span class="stat-icon">📋</span>
+            <div class="stat-body">
+                <span class="stat-value" id="statTotal">—</span>
+                <span class="stat-label">Total de tarefas</span>
+            </div>
+        </div>
+        <div class="stat">
+            <span class="stat-icon">✅</span>
+            <div class="stat-body">
+                <span class="stat-value" id="statDone">—</span>
+                <span class="stat-label">Concluídas</span>
+            </div>
+        </div>
+        <div class="stat">
+            <span class="stat-icon">⏳</span>
+            <div class="stat-body">
+                <span class="stat-value" id="statPending">—</span>
+                <span class="stat-label">Pendentes</span>
+            </div>
+        </div>
+        <div class="stat">
+            <span class="stat-icon">🏁</span>
+            <div class="stat-body">
+                <span class="stat-value" id="statPhases">—</span>
+                <span class="stat-label">Fases concluídas</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =============================================
+     CONTEÚDO PRINCIPAL
+     ============================================= -->
+<main class="main">
+
+    <!-- Botão resetar -->
+    <div class="reset-bar">
+        <button class="btn-reset" onclick="resetAll()">
+            🗑️ Resetar tudo
+        </button>
+    </div>
+
+    <!-- Título da seção -->
+    <div class="section-heading">📌 Etapas de Implementação</div>
+
+    <!-- Grade de fases (renderizada pelo JS) -->
+    <div class="phases-grid" id="phasesGrid"></div>
+
+    <!-- Seção de observações -->
+    <div class="section-heading">📝 Observações e Anotações</div>
+
+    <div class="notes-card">
+        <div class="notes-card-header">
+            <span>📝</span>
+            <span class="notes-card-title">Observações importantes</span>
+            <span class="notes-card-hint">Salvo automaticamente</span>
+        </div>
+        <textarea
+            class="notes-textarea"
+            id="notesArea"
+            placeholder="Adicione observações sobre o cliente, pendências, acordos ou qualquer informação importante para a equipe...">
+        </textarea>
+    </div>
+
+</main>
+
+<!-- =============================================
+     RODAPÉ
+     ============================================= -->
+<footer class="footer">
+    Audaza Digital · Painel de Implementação de Clientes · <span id="footerYear"></span>
+</footer>
+
+
+<!-- =============================================
+     JAVASCRIPT — LÓGICA DO PAINEL
+     ============================================= -->
+<script>
+
+/* -----------------------------------------------
+   DADOS: Fases e Tarefas (baseado no ClickUp)
+   ----------------------------------------------- */
+const PHASES = [
+    {
+        id: 1,
+        name: "Onboarding",
+        icon: "🤝",
+        description: "Boas-vindas e formalização do cliente",
+        color: "#6366F1",
+        tasks: [
+            "💬 Reunião de alinhamento — Call de início de projeto",
+            "⚙️ Criar grupo de comunicação no WhatsApp",
+            "🗂️ Criar pasta no Google Drive",
+            "💰 Receber pagamento inicial da prestação de serviço",
+            "🔒 Assinar contrato de prestação de serviço",
+            "📝 Briefing para início de projeto",
+            "🔑 Coletar acessos importantes",
+            "🎯 Definir metas e objetivos",
+            "🎬 Solicitar materiais antigos",
+            "🎨 Solicitar identidade visual",
+        ]
+    },
+    {
+        id: 2,
+        name: "Configurações Técnicas",
+        icon: "⚙️",
+        description: "Verificação e setup das ferramentas",
+        color: "#3B82F6",
+        tasks: [
+            "Conferir conta de anúncio",
+            "Conferir BM e permissões",
+            "Conferir página e Instagram",
+            "Configurar pixel/eventos",
+            "Revisar rastreamento",
+            "Revisar links e páginas",
+            "Revisar WhatsApp",
+            "Criar públicos",
+            "Padronizar nomenclaturas",
+        ]
+    },
+    {
+        id: 3,
+        name: "Pesquisa e Análise",
+        icon: "🔍",
+        description: "Estudo do mercado e do cliente",
+        color: "#14B8A6",
+        tasks: [
+            "Analisar perfil e presença digital",
+            "Analisar oferta principal",
+            "Analisar público e região",
+            "Analisar campanhas anteriores",
+            "Pesquisa de 10 criativos vencedores",
+        ]
+    },
+    {
+        id: 4,
+        name: "Planejamento",
+        icon: "📋",
+        description: "Estruturação da estratégia de campanhas",
+        color: "#F59E0B",
+        tasks: [
+            "Definir objetivo das campanhas",
+            "Definir estratégia inicial",
+            "Definir verba",
+            "🚀 Definir orçamento mensal para anúncios",
+            "Definir campanhas de captação",
+            "Definir campanhas de remarketing",
+            "Aprovar campanha com líderes do projeto",
+        ]
+    },
+    {
+        id: 5,
+        name: "Lançamento",
+        icon: "🚀",
+        description: "Ativação das primeiras campanhas",
+        color: "#10B981",
+        tasks: [
+            "🚀 Vincular primeira campanha de anúncios",
+            "Verificar volume e qualidade inicial de leads/mensagens",
+            "Verificar custo por resultado",
+            "Verificar investimento diário",
+            "Verificar leads/mensagens",
+        ]
+    },
+    {
+        id: 6,
+        name: "Monitoramento e Otimização",
+        icon: "📊",
+        description: "Acompanhamento contínuo e ajustes",
+        color: "#EF4444",
+        tasks: [
+            "Verificar desempenho das campanhas ativas",
+            "Identificar campanhas sem entrega ou com reprovação",
+            "Pausar anúncios fracos",
+            "Ajustar orçamento, públicos, copy e criativos",
+            "Subir novos testes e reforçar campanhas vencedoras",
+            "Identificar escala ou pausa das campanhas",
+            "Escalar anúncios vencedores",
+            "Analisar sugestões de melhorias do META ADS",
+        ]
+    },
+    {
+        id: 7,
+        name: "Sucesso do Cliente",
+        icon: "⭐",
+        description: "Relacionamento e entrega de valor contínuo",
+        color: "#8B5CF6",
+        tasks: [
+            "Cobrar materiais, ofertas e pendências do cliente",
+            "Reunião de alinhamento (semanal)",
+            "Relatório de desempenho",
+            "Atendimento e suporte via grupo de WhatsApp",
+            "Envio de sugestões de criativos",
+            "Sugerir melhorias no atendimento, na página e na operação",
+        ]
+    },
+];
+
+/* -----------------------------------------------
+   ESTADO: ler e salvar no navegador
+   ----------------------------------------------- */
+function loadState() {
+    try {
+        return JSON.parse(localStorage.getItem('imp_state') || '{}');
+    } catch {
+        return {};
+    }
+}
+
+function saveState(state) {
+    localStorage.setItem('imp_state', JSON.stringify(state));
+}
+
+function taskKey(phaseId, taskIdx) {
+    return `p${phaseId}_t${taskIdx}`;
+}
+
+/* -----------------------------------------------
+   RENDERIZAÇÃO: montar os cards de fase
+   ----------------------------------------------- */
+function renderPhases() {
+    const state = loadState();
+    const grid = document.getElementById('phasesGrid');
+    grid.innerHTML = '';
+
+    PHASES.forEach(phase => {
+        const total = phase.tasks.length;
+        const done = phase.tasks.reduce((acc, _, i) => acc + (state[taskKey(phase.id, i)] ? 1 : 0), 0);
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        const isComplete = done === total && total > 0;
+
+        // Status badge
+        let statusClass, statusLabel;
+        if (done === 0) {
+            statusClass = 'pending'; statusLabel = 'Não iniciado';
+        } else if (isComplete) {
+            statusClass = 'done'; statusLabel = 'Concluído';
+        } else {
+            statusClass = 'active'; statusLabel = 'Em andamento';
+        }
+
+        // Tarefas
+        const tasksHTML = phase.tasks.map((task, i) => {
+            const checked = !!state[taskKey(phase.id, i)];
+            return `
+                <div class="task-row${checked ? ' is-done' : ''}"
+                     onclick="toggleTask(${phase.id}, ${i})">
+                    <div class="task-check">
+                        <span class="task-check-mark">✓</span>
+                    </div>
+                    <span class="task-label">${task}</span>
+                </div>`;
+        }).join('');
+
+        // Card completo
+        const card = document.createElement('div');
+        card.className = `phase-card${isComplete ? ' is-complete' : ''}`;
+        card.innerHTML = `
+            <div class="phase-top-bar" style="background:${phase.color}"></div>
+            <div class="phase-card-header">
+                <div class="phase-icon" style="background:${phase.color}18">
+                    ${phase.icon}
+                </div>
+                <div class="phase-meta">
+                    <div class="phase-num">Fase ${phase.id}</div>
+                    <div class="phase-title">${phase.name}</div>
+                    <div class="phase-desc">${phase.description}</div>
+                </div>
+                <div class="status-pill ${statusClass}">
+                    <span class="dot"></span>
+                    ${statusLabel}
+                </div>
+            </div>
+            <div class="phase-progress">
+                <div class="phase-progress-meta">
+                    <span class="phase-progress-label">Progresso da fase</span>
+                    <span class="phase-progress-count">${done} de ${total} tarefas</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar-fill"
+                         style="width:${pct}%;background:${phase.color}">
+                    </div>
+                </div>
+            </div>
+            <div class="phase-sep"></div>
+            <div class="task-list">
+                ${tasksHTML}
+            </div>
+        `;
+
+        grid.appendChild(card);
+    });
+
+    updateGlobalStats(state);
+}
+
+/* -----------------------------------------------
+   ESTATÍSTICAS GLOBAIS
+   ----------------------------------------------- */
+function updateGlobalStats(state) {
+    let totalTasks = 0;
+    let doneTasks = 0;
+    let donePhases = 0;
+
+    PHASES.forEach(phase => {
+        const total = phase.tasks.length;
+        const done = phase.tasks.reduce((acc, _, i) => acc + (state[taskKey(phase.id, i)] ? 1 : 0), 0);
+        totalTasks += total;
+        doneTasks += done;
+        if (done === total && total > 0) donePhases++;
+    });
+
+    const pct = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+    const circumference = 119.38;
+    const offset = circumference - (pct / 100) * circumference;
+
+    // Stats
+    document.getElementById('statTotal').textContent = totalTasks;
+    document.getElementById('statDone').textContent = doneTasks;
+    document.getElementById('statPending').textContent = totalTasks - doneTasks;
+    document.getElementById('statPhases').textContent = `${donePhases}/7`;
+
+    // Progresso header
+    document.getElementById('progressValue').textContent = `${pct}%`;
+    document.getElementById('progressRing').style.strokeDashoffset = offset;
+
+    // Barra global
+    document.getElementById('globalBarFill').style.width = `${pct}%`;
+}
+
+/* -----------------------------------------------
+   AÇÃO: marcar/desmarcar tarefa
+   ----------------------------------------------- */
+function toggleTask(phaseId, taskIdx) {
+    const state = loadState();
+    const key = taskKey(phaseId, taskIdx);
+    state[key] = !state[key];
+    saveState(state);
+    renderPhases();
+}
+
+/* -----------------------------------------------
+   AÇÃO: resetar tudo
+   ----------------------------------------------- */
+function resetAll() {
+    const confirm = window.confirm('Isso vai apagar todas as marcações. Tem certeza?');
+    if (!confirm) return;
+    localStorage.removeItem('imp_state');
+    renderPhases();
+}
+
+/* -----------------------------------------------
+   DATA NO CABEÇALHO
+   ----------------------------------------------- */
+function renderDate() {
+    const now = new Date();
+    const weekday = now.toLocaleDateString('pt-BR', { weekday: 'long' });
+    const date = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    document.getElementById('headerDate').innerHTML = `
+        <span>${date}</span>
+        <span class="header-date-day">${weekday}</span>
+    `;
+    document.getElementById('footerYear').textContent = now.getFullYear();
+}
+
+/* -----------------------------------------------
+   NOME DO CLIENTE (editável + persistido)
+   ----------------------------------------------- */
+function initClientName() {
+    const el = document.getElementById('clientName');
+    const saved = localStorage.getItem('imp_client');
+    if (saved) el.textContent = saved;
+
+    el.addEventListener('input', () => {
+        localStorage.setItem('imp_client', el.textContent.trim());
+    });
+
+    // Selecionar tudo ao focar
+    el.addEventListener('focus', () => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    });
+}
+
+/* -----------------------------------------------
+   OBSERVAÇÕES (textarea + persistida)
+   ----------------------------------------------- */
+function initNotes() {
+    const el = document.getElementById('notesArea');
+    el.value = localStorage.getItem('imp_notes') || '';
+    el.addEventListener('input', () => {
+        localStorage.setItem('imp_notes', el.value);
+    });
+}
+
+/* -----------------------------------------------
+   INICIALIZAÇÃO
+   ----------------------------------------------- */
+function init() {
+    renderDate();
+    initClientName();
+    initNotes();
+    renderPhases();
+}
+
+init();
+
+</script>
+</body>
+</html>

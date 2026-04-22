@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposta Técnica — Trescinco Volkswagen</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+:root {
+  --vw-navy:    #001E50;
+  --vw-sky:     #00B0F0;
+  --vw-sky-bg:  #E0F5FD;
+  --wa-green:   #25D366;
+  --ink:        #111827;
+  --ink-mid:    #374151;
+  --ink-light:  #6B7280;
+  --rule:       #CBD5E1;
+  --surface:    #F1F5F9;
+  --surface2:   #E2E8F0;
+  --white:      #FFFFFF;
+}
+
+html { font-size: 15px; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #CBD5E1 !important;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+.doc { max-width: 920px; margin: 48px auto; background: #FFFFFF !important; box-shadow: 0 8px 80px rgba(0,0,0,.18); }
+
+/* ═══════════════════════════════════════
+   COVER
+═══════════════════════════════════════ */
+.cover {
+  background: #001E50 !important;
+  min-height: 580px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cover-geo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cover-geo svg { width: 100%; height: 100%; }
+
+.cover-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 52px 68px 52px;
+  flex: 1;
+}
+
+.cover-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 72px;
+}
+
+.vw-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.vw-wordmark svg { width: 48px; height: 48px; }
+
+.vw-wordmark-text { line-height: 1; }
+.vw-wordmark-text .eyebrow { font-size: 9px; font-weight: 600; letter-spacing: 3.5px; text-transform: uppercase; color: rgba(255,255,255,.7); margin-bottom: 5px; }
+.vw-wordmark-text .brand   { font-size: 18px; font-weight: 800; color: white; letter-spacing: .3px; }
+
+.cover-chip {
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--vw-sky); border: 1px solid rgba(0,176,240,.4);
+  padding: 7px 16px; border-radius: 2px;
+}
+
+.cover-headline { margin-top: auto; }
+
+.cover-kicker {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--vw-sky); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.cover-kicker::before { content: ''; display: block; width: 28px; height: 2px; background: var(--vw-sky); }
+
+.cover-title {
+  font-size: 48px; font-weight: 900; color: white;
+  line-height: 1.05; letter-spacing: -1.5px; margin-bottom: 20px;
+}
+
+.cover-title em { color: #00B0F0; font-style: normal; }
+
+.cover-sub {
+  font-size: 14px; font-weight: 400; color: rgba(255,255,255,.88);
+  line-height: 1.7; max-width: 500px;
+}
+
+.cover-footer {
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,.08);
+  margin-top: 56px;
+  padding-top: 28px;
+  gap: 0;
+}
+
+.cover-meta {
+  flex: 1;
+  padding-right: 32px;
+  border-right: 1px solid rgba(255,255,255,.08);
+  margin-right: 32px;
+}
+.cover-meta:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+
+.cover-meta .lbl { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,.55); margin-bottom: 6px; }
+.cover-meta .val { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.9); }
+
+/* ═══════════════════════════════════════
+   ACCENT STRIPE
+═══════════════════════════════════════ */
+.stripe { height: 4px; background: linear-gradient(90deg, var(--vw-sky) 0%, var(--vw-navy) 60%); }
+
+/* ═══════════════════════════════════════
+   EXECUTIVE SUMMARY
+═══════════════════════════════════════ */
+.exec-wrap {
+  background: var(--surface);
+  border-bottom: 1px solid var(--rule);
+  padding: 52px 68px;
+  display: flex;
+  gap: 52px;
+  align-items: flex-start;
+}
+
+.exec-left { flex: 0 0 auto; }
+
+.exec-tag {
+  font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--vw-sky); margin-bottom: 16px;
+}
+
+.exec-title {
+  font-size: 26px; font-weight: 800; color: var(--vw-navy);
+  line-height: 1.15; letter-spacing: -.5px;
+  max-width: 200px;
+}
+
+.exec-divider { width: 1px; background: var(--rule); align-self: stretch; }
+
+.exec-right { flex: 1; }
+
+.exec-body {
+  font-size: 14px; font-weight: 400; color: var(--ink-mid);
+  line-height: 1.9;
+}
+
+.exec-body strong { color: var(--vw-navy); font-weight: 700; }
+
+.exec-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--rule);
+}
+
+.exec-stat {
+  flex: 1;
+  padding-right: 28px;
+  border-right: 1px solid var(--rule);
+  margin-right: 28px;
+}
+.exec-stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+
+.exec-stat .num { font-size: 28px; font-weight: 900; color: var(--vw-navy); letter-spacing: -1px; line-height: 1; margin-bottom: 6px; }
+.exec-stat .desc { font-size: 11px; color: var(--ink-light); line-height: 1.4; }
+
+/* ═══════════════════════════════════════
+   BODY
+═══════════════════════════════════════ */
+.body { padding: 72px 68px; }
+
+/* ═══════════════════════════════════════
+   SECTION
+═══════════════════════════════════════ */
+.section { margin-bottom: 72px; }
+
+.sec-head { margin-bottom: 36px; display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid var(--rule); }
+
+.sec-head-left {}
+
+.sec-num { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--vw-sky); margin-bottom: 8px; }
+.sec-title { font-size: 22px; font-weight: 800; color: var(--vw-navy); letter-spacing: -.4px; line-height: 1; }
+
+.sec-intro { font-size: 13.5px; color: var(--ink-light); line-height: 1.75; margin-bottom: 28px; }
+
+/* ═══════════════════════════════════════
+   DELIVERABLES
+═══════════════════════════════════════ */
+.del-list { display: flex; flex-direction: column; gap: 16px; }
+
+.del-row {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+  transition: background .15s;
+}
+
+.del-row:hover { background: #EDF0F5; }
+
+.del-index {
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: var(--vw-navy);
+  letter-spacing: 1px;
+  border-right: 1px solid var(--rule);
+}
+
+.del-body { padding: 16px 22px; }
+.del-name { font-size: 13px; font-weight: 700; color: var(--vw-navy); margin-bottom: 3px; }
+.del-desc { font-size: 12px; color: var(--ink-light); line-height: 1.5; }
+
+/* ═══════════════════════════════════════
+   SKILLS GRID
+═══════════════════════════════════════ */
+.skills-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--vw-sky); margin: 36px 0 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.skills-label::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.skill-card {
+  background: var(--surface);
+  border-radius: 3px;
+  padding: 20px 20px;
+  border-top: 2px solid var(--vw-navy);
+  position: relative;
+}
+
+.skill-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--vw-sky) 0%, var(--vw-navy) 100%);
+}
+
+.skill-icon {
+  width: 32px; height: 32px;
+  background: var(--vw-navy);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+
+.skill-icon svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.skill-name { font-size: 12px; font-weight: 700; color: var(--vw-navy); margin-bottom: 6px; line-height: 1.3; }
+.skill-desc { font-size: 11.5px; color: var(--ink-light); line-height: 1.55; }
+
+/* ═══════════════════════════════════════
+   FLOW — TIMELINE STYLE
+═══════════════════════════════════════ */
+.flow-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.flow-timeline::before {
+  content: '';
+  position: absolute;
+  left: 23px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--vw-sky) 0%, var(--vw-navy) 100%);
+}
+
+.flow-item {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 0 0 3px 0;
+  position: relative;
+}
+
+.flow-dot-wrap {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flow-dot-inner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flow-dot-inner svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.flow-dot-inner svg.filled { fill: white; stroke: none; }
+
+.flow-content {
+  background: var(--surface);
+  border-radius: 3px;
+  padding: 16px 22px;
+  flex: 1;
+  margin-bottom: 3px;
+  border-left: 3px solid transparent;
+}
+
+.flow-content.highlight { border-left-color: var(--vw-sky); }
+
+.flow-step-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-light); margin-bottom: 4px; }
+.flow-step-name  { font-size: 14px; font-weight: 700; color: var(--vw-navy); margin-bottom: 3px; }
+.flow-step-desc  { font-size: 12px; color: var(--ink-light); line-height: 1.5; }
+
+/* ═══════════════════════════════════════
+   INTEREST TABLE
+═══════════════════════════════════════ */
+.interest-table { width: 100%; border-collapse: collapse; border-spacing: 0; }
+
+.interest-table thead th {
+  background: var(--vw-navy);
+  color: rgba(255,255,255,.8);
+  font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 11px 20px; text-align: left;
+}
+.interest-table thead th:first-child { border-radius: 3px 0 0 3px; }
+.interest-table thead th:last-child  { border-radius: 0 3px 3px 0; }
+
+.interest-table tbody td {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 14px 20px;
+  font-size: 13px;
+  color: var(--ink-mid);
+  vertical-align: middle;
+}
+
+.interest-table tbody tr:last-child td { border-bottom: none; }
+.interest-table tbody tr:nth-child(even) td { background: var(--surface); }
+.interest-table tbody td:first-child { font-weight: 700; color: var(--vw-navy); white-space: nowrap; }
+
+.cat-pill {
+  display: inline-block;
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--vw-sky); background: var(--vw-sky-bg);
+  padding: 3px 10px; border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════
+   TEMPERATURE
+═══════════════════════════════════════ */
+.temp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.temp-card {
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.temp-card-head {
+  padding: 16px 18px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.temp-indicator {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+.temp-name { font-size: 13px; font-weight: 800; }
+
+.temp-card-body {
+  background: var(--surface);
+  padding: 14px 18px;
+  font-size: 12px; color: var(--ink-light); line-height: 1.55;
+}
+
+.temp-action {
+  font-size: 11px; font-weight: 600; margin-top: 10px;
+  padding-top: 10px; border-top: 1px solid var(--rule);
+}
+
+.t-frio    .temp-card-head { background: #EBF4FA; } .t-frio    .temp-name { color: #3A8CB4; } .t-frio    .temp-indicator { background: #3A8CB4; } .t-frio    .temp-action { color: #3A8CB4; }
+.t-morno   .temp-card-head { background: #FEF5E7; } .t-morno   .temp-name { color: #C07820; } .t-morno   .temp-indicator { background: #E8A020; } .t-morno   .temp-action { color: #C07820; }
+.t-quente  .temp-card-head { background: #FDECEA; } .t-quente  .temp-name { color: #C0282A; } .t-quente  .temp-indicator { background: #E03032; } .t-quente  .temp-action { color: #C0282A; }
+.t-vendido .temp-card-head { background: #E8F5EE; } .t-vendido .temp-name { color: #1A7A40; } .t-vendido .temp-indicator { background: #22A050; } .t-vendido .temp-action { color: #1A7A40; }
+
+/* ═══════════════════════════════════════
+   SHEETS TABLE
+═══════════════════════════════════════ */
+.data-table { width: 100%; border-collapse: collapse; border-spacing: 0; }
+
+.data-table thead th {
+  background: var(--vw-navy);
+  color: rgba(255,255,255,.85);
+  font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 11px 20px; text-align: left;
+}
+.data-table thead th:first-child { border-radius: 3px 0 0 3px; }
+.data-table thead th:last-child  { border-radius: 0 3px 3px 0; }
+
+.data-table tbody td {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 13px 20px;
+  font-size: 12.5px;
+  color: var(--ink-mid);
+  vertical-align: middle;
+}
+
+.data-table tbody tr:nth-child(even) td { background: var(--surface); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+
+.data-table tbody td:first-child {
+  font-family: 'Courier New', monospace;
+  font-size: 11px; font-weight: 700;
+  color: var(--vw-navy); letter-spacing: .5px; white-space: nowrap;
+}
+
+.auto-tag {
+  display: inline-block;
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: #1A7A40; background: rgba(34,160,80,.1);
+  padding: 2px 8px; border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════
+   DISTRIBUTION
+═══════════════════════════════════════ */
+.dist-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+.store-panel {
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+  border-top: 3px solid var(--vw-navy);
+}
+
+.store-panel.secondary { border-top-color: var(--vw-sky); }
+
+.store-panel-head {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.store-panel-name { font-size: 12px; font-weight: 800; color: var(--vw-navy); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+.store-panel-sub  { font-size: 11px; color: var(--ink-light); }
+
+.store-panel-body { padding: 18px 22px; }
+
+.sellers { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.seller {
+  font-size: 11px; font-weight: 600; color: var(--vw-navy);
+  background: white;
+  border: 1px solid var(--rule);
+  padding: 4px 11px; border-radius: 2px;
+}
+
+.rr-panel {
+  background: #001E50 !important;
+  border-radius: 3px;
+  padding: 24px 28px;
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+}
+
+.rr-section { flex: 1; }
+
+.rr-lbl { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,.65); margin-bottom: 14px; }
+
+.rr-seq { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.rr-pill {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.25);
+  color: rgba(255,255,255,.85);
+  padding: 5px 14px; border-radius: 2px;
+}
+
+.rr-pill.on { background: var(--vw-sky); border-color: var(--vw-sky); color: white; }
+.rr-chevron { color: rgba(255,255,255,.55); font-size: 14px; }
+.rr-dots    { color: rgba(255,255,255,.55); letter-spacing: 2px; }
+
+.rr-note { font-size: 12px; color: rgba(255,255,255,.5); line-height: 1.65; }
+.rr-note strong { color: rgba(255,255,255,.8); }
+
+/* ═══════════════════════════════════════
+   NOTIFICATION
+═══════════════════════════════════════ */
+.notif-layout { display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: start; }
+
+.notif-points { list-style: none; display: flex; flex-direction: column; gap: 0; }
+
+.notif-point {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.notif-point:last-child { border-bottom: none; }
+
+.notif-point-dot {
+  width: 6px; height: 6px; background: var(--vw-sky); border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+}
+
+.notif-point-text { font-size: 13px; color: var(--ink-mid); line-height: 1.5; }
+
+.wa-mock { width: 260px; flex-shrink: 0; }
+
+.wa-mock-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ink-light); margin-bottom: 10px; text-align: center;
+}
+
+.wa-screen {
+  background: #ECE5DD;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.12);
+}
+
+.wa-topbar {
+  background: #075E54;
+  border-radius: 8px 8px 0 0;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -16px -16px 12px;
+}
+
+.wa-avatar {
+  width: 28px; height: 28px;
+  background: var(--wa-green);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.wa-avatar svg { width: 16px; height: 16px; fill: white; }
+
+.wa-contact-name { font-size: 12px; font-weight: 700; color: white; }
+.wa-contact-sub  { font-size: 10px; color: rgba(255,255,255,.6); }
+
+.wa-bubble {
+  background: white;
+  border-radius: 0 10px 10px 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
+  font-size: 12px;
+  line-height: 1.85;
+}
+
+.wa-bubble-title {
+  font-weight: 700; color: #128C7E; font-size: 12px;
+  margin-bottom: 8px; padding-bottom: 8px;
+  border-bottom: 1px solid #E8E8E8;
+  display: block;
+}
+
+.wa-row { display: block; color: #333; }
+.wa-row b { color: #128C7E; }
+.wa-time  { display: block; text-align: right; font-size: 10px; color: #999; margin-top: 6px; }
+
+/* ═══════════════════════════════════════
+   PRICING
+═══════════════════════════════════════ */
+.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+.price-card {
+  background: var(--surface);
+  border-radius: 3px;
+  padding: 24px 26px;
+  border-top: 3px solid;
+}
+
+.price-card.marketing { border-top-color: var(--vw-navy); }
+.price-card.utility   { border-top-color: var(--vw-sky); }
+
+.price-type  { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--ink-light); margin-bottom: 12px; }
+.price-value { font-size: 36px; font-weight: 900; color: var(--vw-navy); letter-spacing: -2px; line-height: 1; }
+.price-unit  { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
+.price-desc  { font-size: 12px; color: var(--ink-light); margin-top: 12px; line-height: 1.55; padding-top: 12px; border-top: 1px solid var(--rule); }
+
+.benefits-panel {
+  background: #001E50 !important;
+  border-radius: 3px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+}
+
+.benefits-title { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--vw-sky); margin-bottom: 20px; }
+
+.benefits-list { display: flex; flex-direction: column; gap: 14px; }
+
+.benefit-item { display: flex; gap: 14px; align-items: flex-start; }
+.benefit-dot  { width: 6px; height: 6px; background: var(--vw-sky); border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.benefit-text { font-size: 13px; color: rgba(255,255,255,.65); line-height: 1.6; }
+.benefit-text strong { color: white; font-weight: 600; }
+
+.sim-table-wrap {
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sim-table-head {
+  background: var(--surface);
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ink-light);
+}
+
+.sim-table { width: 100%; border-collapse: collapse; }
+.sim-table th { background: var(--surface2); color: var(--vw-navy); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 20px; text-align: left; border-bottom: 2px solid var(--rule); }
+.sim-table td { padding: 12px 20px; font-size: 12.5px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+.sim-table tr:last-child td { border-bottom: none; }
+.sim-table tr:nth-child(even) td { background: var(--surface); }
+.sim-table td:first-child { font-weight: 600; color: var(--ink-mid); }
+.sim-table td:not(:first-child) { font-weight: 700; color: var(--vw-navy); text-align: right; }
+
+/* ═══════════════════════════════════════
+   TOOLS TABLE
+═══════════════════════════════════════ */
+.tools-grid { display: flex; flex-direction: column; gap: 16px; }
+
+.tool-row {
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+  align-items: center;
+}
+
+.tool-name-cell {
+  background: var(--surface2);
+  border-right: 1px solid var(--rule);
+  padding: 16px 20px;
+  font-size: 12px; font-weight: 700; color: var(--vw-navy);
+  align-self: stretch;
+  display: flex; align-items: center;
+}
+
+.tool-desc-cell { padding: 16px 20px; font-size: 12.5px; color: var(--ink-mid); }
+.tool-cost-cell { padding: 16px 20px; white-space: nowrap; }
+
+.cost-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  padding: 4px 12px; border-radius: 2px;
+}
+
+.cost-badge.variable { color: var(--vw-navy); background: var(--vw-sky-bg); }
+.cost-badge.fixed    { color: #C07820; background: rgba(232,160,32,.1); }
+.cost-badge.free     { color: #1A7A40; background: rgba(34,160,80,.1); }
+
+/* ═══════════════════════════════════════
+   NEEDS
+═══════════════════════════════════════ */
+.needs-list { display: flex; flex-direction: column; gap: 16px; }
+
+.need-row {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+  align-items: stretch;
+}
+
+.need-check-cell {
+  background: var(--surface2);
+  border-right: 1px solid var(--rule);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.need-checkbox {
+  width: 16px; height: 16px;
+  border: 2px solid var(--rule);
+  border-radius: 3px;
+  background: white;
+}
+
+.need-text-cell { padding: 15px 22px; font-size: 13px; color: var(--ink-mid); line-height: 1.5; }
+.need-text-cell strong { color: var(--vw-navy); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+.footer {
+  background: var(--vw-navy);
+  padding: 32px 68px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 3px solid var(--vw-sky);
+}
+
+.footer-brand  { font-size: 13px; font-weight: 800; color: white; margin-bottom: 3px; }
+.footer-sub    { font-size: 11px; color: rgba(255,255,255,.35); }
+.footer-right  { font-size: 11px; color: rgba(255,255,255,.3); text-align: right; line-height: 1.7; }
+
+@media print {
+  body { background: white; }
+  .doc { box-shadow: none; margin: 0; max-width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="cover-geo">
+    <svg viewBox="0 0 920 580" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="760" cy="-60" r="480" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <circle cx="760" cy="-60" r="320" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <circle cx="760" cy="-60" r="220" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+      <circle cx="760" cy="-60" r="120" stroke="rgba(0,176,240,0.35)" stroke-width="1.5"/>
+      <line x1="0" y1="580" x2="920" y2="0" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+      <line x1="460" y1="0" x2="460" y2="580" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      <rect x="600" y="200" width="400" height="400" rx="2" stroke="rgba(0,176,240,0.18)" stroke-width="1" fill="none"/>
+      <rect x="640" y="240" width="320" height="320" rx="2" stroke="rgba(0,176,240,0.10)" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+
+  <div class="cover-inner">
+    <div class="cover-topbar">
+      <div class="vw-wordmark">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+          <circle cx="50" cy="50" r="36" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <text x="50" y="63" text-anchor="middle" font-family="Inter, Arial Black, sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="-1">VW</text>
+        </svg>
+        <div class="vw-wordmark-text">
+          <div class="eyebrow">Trescinco</div>
+          <div class="brand">Volkswagen</div>
+        </div>
+      </div>
+      <div class="cover-chip">Proposta Técnica</div>
+    </div>
+
+    <div class="cover-headline">
+      <div class="cover-kicker">Automação Comercial</div>
+      <div class="cover-title">Atendimento<br>Inteligente via<br><em>WhatsApp</em></div>
+      <div class="cover-sub">Sistema automatizado de captação, qualificação e distribuição de leads com inteligência artificial — integrado à API oficial do Meta.</div>
+    </div>
+
+    <div class="cover-footer">
+      <div class="cover-meta">
+        <div class="lbl">Cliente</div>
+        <div class="val">Trescinco Volkswagen</div>
+      </div>
+      <div class="cover-meta">
+        <div class="lbl">Data</div>
+        <div class="val">Abril de 2026</div>
+      </div>
+      <div class="cover-meta">
+        <div class="lbl">Versão</div>
+        <div class="val">1.0 — Confidencial</div>
+      </div>
+      <div class="cover-meta">
+        <div class="lbl">Modalidade</div>
+        <div class="val">WhatsApp Business API</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stripe"></div>
+
+<!-- ══ EXECUTIVE SUMMARY ══ -->
+<div class="exec-wrap">
+  <div class="exec-left">
+    <div class="exec-tag">Visão Geral</div>
+    <div class="exec-title">Resumo<br>Executivo</div>
+  </div>
+  <div class="exec-divider"></div>
+  <div class="exec-right">
+    <div class="exec-body">
+      A Trescinco Volkswagen receberá um sistema de <strong>atendimento automatizado 24 horas</strong> via WhatsApp, integrado à API oficial do Meta — eliminando qualquer risco de bloqueio de número. A inteligência artificial conduz a conversa, <strong>identifica o interesse e a temperatura do lead</strong>, registra todos os dados na planilha existente e <strong>notifica o vendedor responsável</strong> automaticamente, seguindo o rodízio configurado entre as duas unidades.
+    </div>
+    <div class="exec-stats">
+      <div class="exec-stat">
+        <div class="num">24h</div>
+        <div class="desc">Atendimento contínuo sem interrupções</div>
+      </div>
+      <div class="exec-stat">
+        <div class="num">2</div>
+        <div class="desc">Lojas com rodízio automático de leads</div>
+      </div>
+      <div class="exec-stat">
+        <div class="num">23</div>
+        <div class="desc">Vendedores integrados ao sistema</div>
+      </div>
+      <div class="exec-stat">
+        <div class="num">0</div>
+        <div class="desc">Risco de bloqueio — API oficial Meta</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BODY ══ -->
+<div class="body">
+
+  <!-- 01 ENTREGAS -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">01</div>
+        <div class="sec-title">O que será entregue</div>
+      </div>
+    </div>
+
+    <div class="del-list">
+      <div class="del-row">
+        <div class="del-index">01</div>
+        <div class="del-body">
+          <div class="del-name">Atendimento automatizado 24h</div>
+          <div class="del-desc">A IA responde clientes a qualquer hora via WhatsApp Business API oficial do Meta, sem risco de bloqueio de número.</div>
+        </div>
+      </div>
+      <div class="del-row">
+        <div class="del-index">02</div>
+        <div class="del-body">
+          <div class="del-name">Classificação de interesse</div>
+          <div class="del-desc">Identifica automaticamente a categoria: Novos, Usados, PCD, Assinatura, Consórcio ou Serviços e Peças.</div>
+        </div>
+      </div>
+      <div class="del-row">
+        <div class="del-index">03</div>
+        <div class="del-body">
+          <div class="del-name">Temperatura do lead</div>
+          <div class="del-desc">Classifica o nível de intenção de compra em Frio, Morno, Quente ou Vendido com base no comportamento da conversa.</div>
+        </div>
+      </div>
+      <div class="del-row">
+        <div class="del-index">04</div>
+        <div class="del-body">
+          <div class="del-name">Banco de dados Supabase</div>
+          <div class="del-desc">Todos os dados de leads, conversas, vendedores e estoque armazenados em banco de dados em tempo real — sem planilhas.</div>
+        </div>
+      </div>
+      <div class="del-row">
+        <div class="del-index">05</div>
+        <div class="del-body">
+          <div class="del-name">Distribuição entre lojas e vendedores</div>
+          <div class="del-desc">Define a loja responsável e aloca o próximo vendedor via rodízio sequencial automático sem risco de duplicação.</div>
+        </div>
+      </div>
+      <div class="del-row">
+        <div class="del-index">06</div>
+        <div class="del-body">
+          <div class="del-name">Notificação ao vendedor</div>
+          <div class="del-desc">Após registrar o lead, envia automaticamente um resumo completo no WhatsApp do vendedor alocado.</div>
+        </div>
+      </div>
+      <div class="del-row">
+        <div class="del-index">07</div>
+        <div class="del-body">
+          <div class="del-name">Dashboard online em tempo real</div>
+          <div class="del-desc">Painel de gestão com funil de vendas, leads ao vivo, ranking de vendedores, taxa de conversão e gestão da equipe.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HABILIDADES INICIAIS -->
+    <div class="skills-label">Habilidades Iniciais da IA</div>
+
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="skill-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        </div>
+        <div class="skill-name">Estoque de veículos novos</div>
+        <div class="skill-desc">Acessa a base de veículos disponíveis e responde com disponibilidade e modelos em tempo real.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div class="skill-name">Interpretação de imagens e documentos</div>
+        <div class="skill-desc">Lê fotos de CNH, notas fiscais e arquivos enviados pelo cliente diretamente no WhatsApp.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+        </div>
+        <div class="skill-name">Interpretação de áudio</div>
+        <div class="skill-desc">Transcreve e interpreta mensagens de voz automaticamente, respondendo ao conteúdo do áudio.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="skill-name">Histórico do cliente</div>
+        <div class="skill-desc">Identifica clientes recorrentes e personaliza o atendimento com base no histórico de interações.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="skill-name">Conhecimento institucional</div>
+        <div class="skill-desc">Endereços, telefones, horários e informações das duas unidades da Trescinco.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="skill-name">Linha VW + Estoque Seminovos</div>
+        <div class="skill-desc">Conhecimento completo sobre toda a linha Volkswagen e estoque de seminovos atualizado em tempo real.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 FLUXO -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">02</div>
+        <div class="sec-title">Fluxo de operação</div>
+      </div>
+    </div>
+    <p class="sec-intro">Cada mensagem percorre o seguinte caminho de forma automática e instantânea:</p>
+
+    <div class="flow-timeline">
+
+      <div class="flow-item">
+        <div class="flow-dot-wrap">
+          <div class="flow-dot-inner" style="background:var(--vw-navy)">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step-label">Etapa 01</div>
+          <div class="flow-step-name">Cliente</div>
+          <div class="flow-step-desc">Envia uma mensagem para o número da Trescinco no WhatsApp.</div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-dot-wrap">
+          <div class="flow-dot-inner" style="background:#25D366">
+            <svg viewBox="0 0 24 24" fill="white" stroke="none">
+              <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.979-1.404A9.953 9.953 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-3.5 7c-.2 0-.513.075-.783.375C7.447 9.675 6.75 10.35 6.75 11.725c0 1.375 1.025 2.7 1.163 2.888.137.187 1.987 3.187 4.9 4.337.687.275 1.212.438 1.625.563.688.2 1.313.175 1.8.1.55-.087 1.688-.688 1.925-1.35.238-.663.238-1.238.163-1.35-.075-.113-.275-.188-.575-.338-.3-.15-1.688-.838-1.95-.938-.263-.1-.45-.15-.638.15-.188.3-.725.938-.888 1.125-.163.188-.325.213-.625.063-.3-.15-1.263-.463-2.4-1.475-.888-.788-1.488-1.763-1.663-2.063-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.638-1.538-.875-2.1-.225-.55-.463-.463-.638-.463z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step-label">Etapa 02</div>
+          <div class="flow-step-name">WhatsApp — API Oficial Meta</div>
+          <div class="flow-step-desc">A mensagem é recebida pelo canal oficial, garantindo segurança e conformidade com as políticas do Meta.</div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-dot-wrap">
+          <div class="flow-dot-inner" style="background:var(--vw-navy)">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+        </div>
+        <div class="flow-content highlight">
+          <div class="flow-step-label">Etapa 03</div>
+          <div class="flow-step-name">IA — Identifica contexto</div>
+          <div class="flow-step-desc">A inteligência artificial lê a mensagem, identifica o contexto, a intenção do cliente e o tipo de interesse.</div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-dot-wrap">
+          <div class="flow-dot-inner" style="background:var(--vw-navy)">
+            <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+        </div>
+        <div class="flow-content highlight">
+          <div class="flow-step-label">Etapa 04</div>
+          <div class="flow-step-name">Banco de Dados — Busca informações</div>
+          <div class="flow-step-desc">Consulta o estoque, histórico do cliente e base de conhecimento para formular uma resposta precisa e personalizada.</div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-dot-wrap">
+          <div class="flow-dot-inner" style="background:#25D366">
+            <svg viewBox="0 0 24 24" fill="white" stroke="none">
+              <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.979-1.404A9.953 9.953 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-3.5 7c-.2 0-.513.075-.783.375C7.447 9.675 6.75 10.35 6.75 11.725c0 1.375 1.025 2.7 1.163 2.888.137.187 1.987 3.187 4.9 4.337.687.275 1.212.438 1.625.563.688.2 1.313.175 1.8.1.55-.087 1.688-.688 1.925-1.35.238-.663.238-1.238.163-1.35-.075-.113-.275-.188-.575-.338-.3-.15-1.688-.838-1.95-.938-.263-.1-.45-.15-.638.15-.188.3-.725.938-.888 1.125-.163.188-.325.213-.625.063-.3-.15-1.263-.463-2.4-1.475-.888-.788-1.488-1.763-1.663-2.063-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.638-1.538-.875-2.1-.225-.55-.463-.463-.638-.463z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step-label">Etapa 05</div>
+          <div class="flow-step-name">WhatsApp — API Oficial Meta</div>
+          <div class="flow-step-desc">A resposta gerada pela IA é enviada ao cliente pelo canal oficial do WhatsApp.</div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-dot-wrap">
+          <div class="flow-dot-inner" style="background:#0F9D58">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step-label">Etapa 06</div>
+          <div class="flow-step-name">Supabase — Registra o lead</div>
+          <div class="flow-step-desc">Todos os dados são gravados no banco de dados em tempo real, alimentando o dashboard e o histórico do cliente.</div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-dot-wrap">
+          <div class="flow-dot-inner" style="background:var(--vw-navy)">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14h-.08z"/></svg>
+          </div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step-label">Etapa 07</div>
+          <div class="flow-step-name">Vendedor — Notificação WhatsApp</div>
+          <div class="flow-step-desc">O vendedor alocado pelo rodízio recebe automaticamente o resumo do lead no seu WhatsApp pessoal.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 03 INTERESSE -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">03</div>
+        <div class="sec-title">Classificação de Interesse</div>
+      </div>
+    </div>
+    <p class="sec-intro">A IA identifica e categoriza o segmento de interesse automaticamente com base na conversa com o cliente.</p>
+
+    <table class="interest-table">
+      <thead>
+        <tr><th>Categoria</th><th>Perfil do cliente</th><th>Tag</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Veículos Novos</td><td>Cliente buscando adquirir um veículo novo da linha Volkswagen.</td><td><span class="cat-pill">Novos</span></td></tr>
+        <tr><td>Veículos Usados</td><td>Cliente buscando seminovos ou usados disponíveis no estoque.</td><td><span class="cat-pill">Usados</span></td></tr>
+        <tr><td>PCD e Corporativas</td><td>Pessoas com deficiência ou empresas com benefícios fiscais específicos.</td><td><span class="cat-pill">PCD / Corp.</span></td></tr>
+        <tr><td>Carro por Assinatura</td><td>Cliente interessado no modelo de uso mensal sem compra.</td><td><span class="cat-pill">Assinatura</span></td></tr>
+        <tr><td>Consórcio</td><td>Cliente buscando aquisição por consórcio com parcelas sem juros.</td><td><span class="cat-pill">Consórcio</span></td></tr>
+        <tr><td>Serviços e Peças</td><td>Agendamento de revisão, manutenção, garantia ou compra de peças.</td><td><span class="cat-pill">Pós-venda</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 04 TEMPERATURA -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">04</div>
+        <div class="sec-title">Temperatura do Lead</div>
+      </div>
+    </div>
+    <p class="sec-intro">A IA classifica o nível de intenção de compra com base nos sinais identificados ao longo da conversa.</p>
+
+    <div class="temp-grid">
+      <div class="temp-card t-frio">
+        <div class="temp-card-head">
+          <div class="temp-indicator"></div>
+          <div class="temp-name">Frio</div>
+        </div>
+        <div class="temp-card-body">
+          Primeiro contato. Cliente ainda explorando, sem perguntas específicas.
+          <div class="temp-action">Monitorar e nutrir.</div>
+        </div>
+      </div>
+      <div class="temp-card t-morno">
+        <div class="temp-card-head">
+          <div class="temp-indicator"></div>
+          <div class="temp-name">Morno</div>
+        </div>
+        <div class="temp-card-body">
+          Pergunta sobre valores, financiamento ou consórcio.
+          <div class="temp-action">Apresentar simulações.</div>
+        </div>
+      </div>
+      <div class="temp-card t-quente">
+        <div class="temp-card-head">
+          <div class="temp-indicator"></div>
+          <div class="temp-name">Quente</div>
+        </div>
+        <div class="temp-card-body">
+          Quer visitar o showroom ou agendar test drive.
+          <div class="temp-action">Prioridade máxima.</div>
+        </div>
+      </div>
+      <div class="temp-card t-vendido">
+        <div class="temp-card-head">
+          <div class="temp-indicator"></div>
+          <div class="temp-name">Vendido</div>
+        </div>
+        <div class="temp-card-body">
+          Faturamento confirmado. Venda concluída.
+          <div class="temp-action">Iniciar pós-venda.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 SUPABASE -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">05</div>
+        <div class="sec-title">Banco de Dados — Supabase</div>
+      </div>
+    </div>
+    <p class="sec-intro">Todos os dados são gravados automaticamente no Supabase a cada interação. A IA preenche todos os campos sem intervenção manual, e o dashboard consome esses dados em tempo real.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Campo</th><th>Origem</th><th>Como é preenchido</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>DATA LEAD</td><td><span class="auto-tag">Automático</span></td><td>Data e hora exata do primeiro contato recebido</td></tr>
+        <tr><td>ATENDENTE</td><td><span class="auto-tag">Automático</span></td><td>Preenchido como "IA Trescinco" para rastreabilidade</td></tr>
+        <tr><td>CLIENTE</td><td><span class="auto-tag">Automático</span></td><td>Nome coletado durante a conversa</td></tr>
+        <tr><td>TELEFONE</td><td><span class="auto-tag">Automático</span></td><td>Número do WhatsApp do cliente</td></tr>
+        <tr><td>CONTATO</td><td><span class="auto-tag">Automático</span></td><td>Origem: WhatsApp / Instagram / Facebook / Usado Fácil</td></tr>
+        <tr><td>MODALIDADE</td><td><span class="auto-tag">Automático</span></td><td>Detectado na conversa: À vista / Financiamento / Consórcio</td></tr>
+        <tr><td>CADASTRO</td><td><span class="auto-tag">Automático</span></td><td>Sim ou Não — dados completos coletados</td></tr>
+        <tr><td>MODELO VEÍCULO</td><td><span class="auto-tag">Automático</span></td><td>Modelo de interesse identificado na conversa</td></tr>
+        <tr><td>STATUS</td><td><span class="auto-tag">Automático</span></td><td>Frio / Morno / Quente / Vendido — atualizado a cada interação</td></tr>
+        <tr><td>MOTIVO</td><td><span class="auto-tag">Automático</span></td><td>Resumo do interesse e intenção do cliente</td></tr>
+        <tr><td>VENDEDOR</td><td><span class="auto-tag">Automático</span></td><td>Nome do vendedor alocado pelo rodízio</td></tr>
+        <tr><td>DATA ULT CONTATO</td><td><span class="auto-tag">Automático</span></td><td>Atualizado a cada nova mensagem</td></tr>
+        <tr><td>OBS</td><td><span class="auto-tag">Automático</span></td><td>Resumo da conversa gerado pela IA ao final do atendimento</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 06 DISTRIBUIÇÃO -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">06</div>
+        <div class="sec-title">Distribuição entre Lojas e Vendedores</div>
+      </div>
+    </div>
+    <p class="sec-intro">Leads distribuídos automaticamente em rodízio sequencial entre as duas unidades, independente do tipo de interesse.</p>
+
+    <div class="dist-layout">
+      <div class="store-panel">
+        <div class="store-panel-head">
+          <div class="store-panel-name">Loja 1 — Trescinco Cuiabá</div>
+          <div class="store-panel-sub">8 números distintos · Rodízio entre vendedores</div>
+        </div>
+        <div class="store-panel-body">
+          <div class="sellers">
+            <span class="seller">Thiago</span><span class="seller">Oscar</span><span class="seller">Luciana</span>
+            <span class="seller">Wanderson</span><span class="seller">Filipe</span><span class="seller">Jordilton</span>
+            <span class="seller">Neilton</span><span class="seller">Jairo</span><span class="seller">Danielle</span>
+            <span class="seller">Marcelo</span><span class="seller">Tulio</span><span class="seller">Raimundo</span>
+            <span class="seller">Juliano</span><span class="seller">Luan</span><span class="seller">William</span>
+            <span class="seller">Claudio</span><span class="seller">Carlos B</span><span class="seller">Mario</span>
+            <span class="seller">Leandro</span><span class="seller">Edezio</span><span class="seller">Erick</span>
+            <span class="seller">Hugo</span>
+          </div>
+        </div>
+      </div>
+      <div class="store-panel secondary">
+        <div class="store-panel-head">
+          <div class="store-panel-name">Loja 2</div>
+          <div class="store-panel-sub">1 número compartilhado · Canal único</div>
+        </div>
+        <div class="store-panel-body">
+          <div class="sellers">
+            <span class="seller">Carlos Costa</span>
+          </div>
+          <p style="font-size:12px;color:var(--ink-light);margin-top:14px;line-height:1.6;">Notificação enviada ao número único da loja. Gestão interna de responsabilidade da equipe local.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rr-panel">
+      <div class="rr-section">
+        <div class="rr-lbl">Rodízio de lojas</div>
+        <div class="rr-seq">
+          <div class="rr-pill on">Loja 1</div>
+          <div class="rr-chevron">›</div>
+          <div class="rr-pill">Loja 2</div>
+          <div class="rr-chevron">›</div>
+          <div class="rr-pill on">Loja 1</div>
+          <div class="rr-chevron">›</div>
+          <div class="rr-pill">Loja 2</div>
+          <div class="rr-chevron">›</div>
+          <div class="rr-dots">···</div>
+        </div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,.08);"></div>
+      <div class="rr-section">
+        <div class="rr-lbl">Controle de estado</div>
+        <div class="rr-note">Aba <strong>CONTROLE</strong> na planilha registra a posição atual. O sistema lê, aloca e avança automaticamente a cada novo lead.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 NOTIFICAÇÃO -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">07</div>
+        <div class="sec-title">Notificação ao Vendedor</div>
+      </div>
+    </div>
+
+    <div class="notif-layout">
+      <div class="notif-context">
+        <p class="sec-intro" style="margin-bottom:0">Após registrar o lead, o sistema envia automaticamente uma mensagem no WhatsApp do vendedor alocado contendo:</p>
+        <ul class="notif-points">
+          <li class="notif-point"><div class="notif-point-dot"></div><div class="notif-point-text">Nome e telefone do cliente</div></li>
+          <li class="notif-point"><div class="notif-point-dot"></div><div class="notif-point-text">Origem do contato</div></li>
+          <li class="notif-point"><div class="notif-point-dot"></div><div class="notif-point-text">Interesse identificado e modalidade</div></li>
+          <li class="notif-point"><div class="notif-point-dot"></div><div class="notif-point-text">Modelo de veículo de interesse</div></li>
+          <li class="notif-point"><div class="notif-point-dot"></div><div class="notif-point-text">Temperatura do lead</div></li>
+          <li class="notif-point"><div class="notif-point-dot"></div><div class="notif-point-text">Resumo gerado pela IA da conversa</div></li>
+        </ul>
+      </div>
+
+      <div class="wa-mock">
+        <div class="wa-mock-label">Modelo de mensagem</div>
+        <div class="wa-screen">
+          <div class="wa-topbar">
+            <div class="wa-avatar">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.979-1.404A9.953 9.953 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-3.5 7c-.2 0-.513.075-.783.375-.27.3-.967.975-.967 2.35s1.025 2.7 1.163 2.888c.137.187 1.987 3.187 4.9 4.337.687.275 1.212.438 1.625.563.688.2 1.313.175 1.8.1.55-.087 1.688-.688 1.925-1.35.238-.663.238-1.238.163-1.35-.075-.113-.275-.188-.575-.338-.3-.15-1.688-.838-1.95-.938-.263-.1-.45-.15-.638.15-.188.3-.725.938-.888 1.125-.163.188-.325.213-.625.063-.3-.15-1.263-.463-2.4-1.475-.888-.788-1.488-1.763-1.663-2.063-.175-.3-.019-.462.131-.612.135-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.638-1.538-.875-2.1-.225-.55-.463-.463-.638-.463z"/></svg>
+            </div>
+            <div>
+              <div class="wa-contact-name">Trescinco VW</div>
+              <div class="wa-contact-sub">Sistema Automático</div>
+            </div>
+          </div>
+          <div class="wa-bubble">
+            <span class="wa-bubble-title">Novo Lead — Trescinco VW</span>
+            <span class="wa-row"><b>Nome:</b> João Silva</span>
+            <span class="wa-row"><b>Fone:</b> (65) 99999-9999</span>
+            <span class="wa-row"><b>Origem:</b> WhatsApp</span>
+            <span class="wa-row"><b>Interesse:</b> Veículos Novos</span>
+            <span class="wa-row"><b>Modalidade:</b> Financiamento</span>
+            <span class="wa-row"><b>Modelo:</b> Polo Track</span>
+            <span class="wa-row"><b>Status:</b> 🔥 Quente</span>
+            <span class="wa-row"><b>Resumo:</b> Quer visitar o showroom.</span>
+            <span class="wa-time">09:42 ✓✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 FERRAMENTAS -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">08</div>
+        <div class="sec-title">Ferramentas e infraestrutura</div>
+      </div>
+    </div>
+
+    <div class="tools-grid" style="margin-bottom:32px;">
+      <div class="tool-row">
+        <div class="tool-name-cell">WhatsApp Business API</div>
+        <div class="tool-desc-cell">Canal oficial de mensagens — sem risco de bloqueio de número</div>
+        <div class="tool-cost-cell"><span class="cost-badge variable">Variável por mensagem</span></div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-name-cell">n8n</div>
+        <div class="tool-desc-cell">Orquestração de todos os fluxos e integrações</div>
+        <div class="tool-cost-cell"><span class="cost-badge fixed">Variável</span></div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-name-cell">Claude AI (Anthropic)</div>
+        <div class="tool-desc-cell">Motor de inteligência artificial para leitura e resposta de conversas</div>
+        <div class="tool-cost-cell"><span class="cost-badge fixed">~R$ 150–280/mês</span></div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-name-cell">Supabase</div>
+        <div class="tool-desc-cell">Banco de dados em tempo real — armazena leads, conversas, vendedores e estoque</div>
+        <div class="tool-cost-cell"><span class="cost-badge free">Gratuito / Variável</span></div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-name-cell">Dashboard Web</div>
+        <div class="tool-desc-cell">Painel online com funil, leads ao vivo, ranking e gestão de vendedores</div>
+        <div class="tool-cost-cell"><span class="cost-badge variable">Incluso no projeto</span></div>
+      </div>
+    </div>
+
+    <!-- PRICING -->
+    <div class="pricing-grid">
+      <div class="price-card marketing">
+        <div class="price-type">Marketing</div>
+        <div class="price-value">R$ 0,31</div>
+        <div class="price-unit">por mensagem enviada</div>
+        <div class="price-desc">Promoções, lançamentos e campanhas ativas iniciadas pela empresa.</div>
+      </div>
+      <div class="price-card utility">
+        <div class="price-type">Utility</div>
+        <div class="price-value">R$ 0,03</div>
+        <div class="price-unit">por mensagem enviada</div>
+        <div class="price-desc">Notificações ao vendedor, confirmações e mensagens de atendimento.</div>
+      </div>
+    </div>
+
+    <div class="benefits-panel">
+      <div class="benefits-title">Benefícios incluídos pela Meta</div>
+      <div class="benefits-list">
+        <div class="benefit-item">
+          <div class="benefit-dot"></div>
+          <div class="benefit-text"><strong>1.000 conversas de serviço gratuitas por mês</strong> — atendimentos iniciados pelo cliente não geram custo dentro da franquia mensal.</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-dot"></div>
+          <div class="benefit-text"><strong>Janela gratuita de 72 horas</strong> para leads que entram via anúncio de clique para WhatsApp — sem custo adicional de conversa nesse período.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-table-wrap">
+      <div class="sim-table-head">Simulação prática de custo</div>
+      <table class="sim-table">
+        <thead>
+          <tr><th>Volume</th><th>Marketing (R$ 0,31)</th><th>Utility (R$ 0,03)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>100 mensagens</td><td>R$ 31,12</td><td>R$ 3,39</td></tr>
+          <tr><td>1.000 mensagens</td><td>R$ 311,16</td><td>R$ 33,86</td></tr>
+          <tr><td>10.000 mensagens</td><td>R$ 3.111,63</td><td>R$ 338,60</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 09 DASHBOARD -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">09</div>
+        <div class="sec-title">Dashboard Online</div>
+      </div>
+    </div>
+    <p class="sec-intro">Painel de gestão acessível pelo navegador, alimentado em tempo real pelo Supabase. Organizado em 5 páginas independentes.</p>
+
+    <div class="del-list">
+
+      <div class="del-row">
+        <div class="del-index" style="background:#E8F0FE;color:#1a56db;font-size:18px;">◎</div>
+        <div class="del-body">
+          <div class="del-name">Visão Geral — KPIs em tempo real</div>
+          <div class="del-desc">Total de leads (dia / semana / mês), taxa de conversão geral, distribuição por temperatura, origem dos leads (WhatsApp / Instagram / Facebook / Usado Fácil) e modalidade mais frequente.</div>
+        </div>
+      </div>
+
+      <div class="del-row">
+        <div class="del-index" style="background:#E8F0FE;color:#1a56db;font-size:18px;">◎</div>
+        <div class="del-body">
+          <div class="del-name">Leads ao Vivo</div>
+          <div class="del-desc">Tabela atualizada em tempo real com Cliente, Telefone, Origem, Interesse, Modalidade, Modelo, Status, Vendedor, Data de entrada e Última interação. Filtros por loja, status e período.</div>
+        </div>
+      </div>
+
+      <div class="del-row">
+        <div class="del-index" style="background:#E8F0FE;color:#1a56db;font-size:18px;">◎</div>
+        <div class="del-body">
+          <div class="del-name">Funil de Vendas</div>
+          <div class="del-desc">Representação visual em formato de funil com as 4 etapas: Frio → Morno → Quente → Vendido. Exibe volume de leads e percentual de conversão entre cada etapa.</div>
+        </div>
+      </div>
+
+      <div class="del-row">
+        <div class="del-index" style="background:#E8F0FE;color:#1a56db;font-size:18px;">◎</div>
+        <div class="del-body">
+          <div class="del-name">Ranking de Vendedores</div>
+          <div class="del-desc">Classificação por período (dia / semana / mês) com leads recebidos, leads convertidos e taxa de conversão individual. Separado por Loja 1 e Loja 2.</div>
+        </div>
+      </div>
+
+      <div class="del-row">
+        <div class="del-index" style="background:#E8F0FE;color:#1a56db;font-size:18px;">◎</div>
+        <div class="del-body">
+          <div class="del-name">Gestão de Vendedores</div>
+          <div class="del-desc">Página administrativa para cadastrar, editar, ativar e desativar vendedores. Exibe posição atual no rodízio, loja associada e número de WhatsApp. Alterações refletem imediatamente no sistema.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 10 NECESSIDADES -->
+  <div class="section" style="margin-bottom:0">
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-num">10</div>
+        <div class="sec-title">O que precisamos da Trescinco</div>
+      </div>
+    </div>
+    <p class="sec-intro">Para iniciar a implementação, os itens abaixo são necessários:</p>
+
+    <div class="needs-list">
+      <div class="need-row">
+        <div class="need-check-cell"><div class="need-checkbox"></div></div>
+        <div class="need-text-cell">Acesso ao <strong>Meta Business Manager</strong> para configuração do webhook do WhatsApp Business API</div>
+      </div>
+      <div class="need-row">
+        <div class="need-check-cell"><div class="need-checkbox"></div></div>
+        <div class="need-text-cell">Criação e acesso ao projeto <strong>Supabase</strong> — banco de dados que substituirá o Google Sheets</div>
+      </div>
+      <div class="need-row">
+        <div class="need-check-cell"><div class="need-checkbox"></div></div>
+        <div class="need-text-cell"><strong>Base de estoque de veículos</strong> disponíveis — pode ser uma aba na própria planilha, atualizada pela equipe</div>
+      </div>
+      <div class="need-row">
+        <div class="need-check-cell"><div class="need-checkbox"></div></div>
+        <div class="need-text-cell"><strong>Números de WhatsApp</strong> de todos os vendedores da Loja 1 para cadastro no sistema de rodízio</div>
+      </div>
+      <div class="need-row">
+        <div class="need-check-cell"><div class="need-checkbox"></div></div>
+        <div class="need-text-cell">Definição do <strong>tom de voz da IA</strong> — formal, descontraído ou intermediário</div>
+      </div>
+      <div class="need-row">
+        <div class="need-check-cell"><div class="need-checkbox"></div></div>
+        <div class="need-text-cell">Confirmação de <strong>quais vendedores pertencem a cada loja</strong> para correta configuração do rodízio</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div>
+    <div class="footer-brand">Trescinco Volkswagen</div>
+    <div class="footer-sub">Automação de Atendimento via WhatsApp · Proposta Técnica v1.0</div>
+  </div>
+  <div class="footer-right">Abril de 2026 · Confidencial<br>Documento preparado para apresentação interna</div>
+</div>
+
+</div>
+</body>
+</html>
