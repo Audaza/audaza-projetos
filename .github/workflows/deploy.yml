@@ -1,0 +1,33 @@
+name: Deploy FTP para Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Sync /projetos → Hostinger
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftp
+          port: 21
+          local-dir: ./
+          server-dir: /domains/audaza.com/public_html/projetos/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/.vercel/**
+            **/.DS_Store
+            **/README.md
+            **/vercel.json
