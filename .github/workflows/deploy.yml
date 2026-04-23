@@ -22,7 +22,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./
-          server-dir: /domains/audaza.com/public_html/projetos/
+          server-dir: /domains/audaza.com/public_html/apps/
           exclude: |
             **/.git*
             **/.git*/**
