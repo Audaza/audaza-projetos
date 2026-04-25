@@ -1,3 +1,6 @@
 .vercel
 .DS_Store
 node_modules/
+
+# audaza-links — credenciais (NUNCA versionar)
+links/redirector/config.php

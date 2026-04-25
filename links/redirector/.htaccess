@@ -1,0 +1,26 @@
+# audaza-links — redirector universal
+# Vale para link.audaza.com, go.audaza.com e bio.audaza.com.
+#
+# - Se a URL bater com arquivo OU pasta existente → serve normal.
+#   (importante em bio.audaza.com pra não atrapalhar biolinks já publicados)
+# - Caso contrário → manda pra index.php que consulta o Supabase.
+
+RewriteEngine On
+RewriteBase /
+
+# preserva files/folders existentes (biolinks)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# bloqueia leitura direta do config
+<Files "config.php">
+  Require all denied
+</Files>
+
+# headers de segurança básica
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

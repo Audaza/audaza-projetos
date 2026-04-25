@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Audaza Links · Encurtador & Tracking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #08090b;
+    --bg-elevated: #0f1114;
+    --bg-card: #12151a;
+    --bg-card-hover: #161a20;
+    --border: #1f242c;
+    --border-hover: #2a3140;
+    --text: #e6e8eb;
+    --text-muted: #8b94a3;
+    --text-dim: #5c6473;
+    --accent: #f59e0b;
+    --accent-hover: #fbbf24;
+    --accent-dim: rgba(245, 158, 11, 0.12);
+    --success: #10b981;
+    --danger: #ef4444;
+    --info: #6366f1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(245,158,11,.08), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 110%, rgba(99,102,241,.06), transparent 60%),
+      var(--bg);
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  input, select, textarea {
+    font-family: inherit;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    width: 100%;
+    transition: border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ─── Layout ─── */
+  .container { max-width: 1280px; margin: 0 auto; padding: 32px; }
+  header.app {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 32px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-logo { width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), #ea580c);
+    display: grid; place-items: center; color: #000; font-weight: 800; }
+  .brand-name { font-weight: 700; font-size: 16px; }
+  .brand-name span { color: var(--text-muted); font-weight: 400; }
+
+  .user-chip { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-muted); }
+  .user-chip button { color: var(--text-muted); }
+  .user-chip button:hover { color: var(--text); }
+
+  /* ─── Buttons ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: 10px; font-weight: 500; font-size: 14px;
+    transition: all .15s; border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-ghost { color: var(--text-muted); border-color: var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--border-hover); background: var(--bg-card); }
+  .btn-danger { color: var(--danger); border-color: var(--border); }
+  .btn-danger:hover { background: rgba(239,68,68,.08); border-color: var(--danger); }
+  .btn-sm { padding: 6px 10px; font-size: 12px; }
+  .btn-icon { padding: 8px; }
+
+  /* ─── Cards ─── */
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .card-hover:hover { background: var(--bg-card-hover); border-color: var(--border-hover); }
+
+  /* ─── Stats ─── */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .stat-card .stat-value { font-family: 'Instrument Serif', serif; font-size: 36px; line-height: 1; }
+  .stat-card .stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+
+  /* ─── Toolbar ─── */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+  .toolbar h2 { font-family: 'Instrument Serif', serif; font-size: 28px; font-weight: 400; }
+  .toolbar .search { display: flex; align-items: center; gap: 8px; flex: 1; max-width: 320px; }
+
+  /* ─── Links list ─── */
+  .links-grid { display: grid; gap: 12px; }
+  .link-row {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: center;
+    padding: 16px 20px; cursor: pointer;
+  }
+  .link-row .link-meta { min-width: 0; }
+  .link-row .link-title { font-weight: 500; font-size: 15px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .link-row .link-url { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); display: flex; align-items: center; gap: 6px; }
+  .link-row .link-dest { font-size: 12px; color: var(--text-dim); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .link-row .link-clicks { font-family: 'Instrument Serif', serif; font-size: 24px; text-align: right; }
+  .link-row .link-actions { display: flex; gap: 6px; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; background: var(--accent-dim); color: var(--accent); margin-left: 8px; }
+  .pill.muted { background: var(--bg-elevated); color: var(--text-dim); }
+  .pill.danger { background: rgba(239,68,68,.12); color: var(--danger); }
+
+  /* ─── Empty state ─── */
+  .empty { text-align: center; padding: 80px 24px; color: var(--text-muted); }
+  .empty h3 { font-family: 'Instrument Serif', serif; font-size: 32px; font-weight: 400; color: var(--text); margin-bottom: 8px; }
+
+  /* ─── Modal ─── */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center; z-index: 100; padding: 24px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px;
+    width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto;
+  }
+  .modal.wide { max-width: 1080px; }
+  .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .modal-header h3 { font-family: 'Instrument Serif', serif; font-size: 24px; font-weight: 400; }
+  .modal-body { padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+  /* ─── Form ─── */
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-help { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+  .url-preview {
+    padding: 12px 14px; background: var(--bg-elevated); border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent);
+    word-break: break-all;
+  }
+
+  /* ─── Login ─── */
+  .login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+  .login-card { width: 100%; max-width: 400px; padding: 40px; }
+  .login-card h1 { font-family: 'Instrument Serif', serif; font-size: 36px; font-weight: 400; margin-bottom: 8px; }
+  .login-card p { color: var(--text-muted); margin-bottom: 32px; font-size: 14px; }
+
+  /* ─── Detail view (analytics) ─── */
+  .detail-grid { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+  @media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } }
+  .qr-box { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 24px; background: var(--bg-elevated); border-radius: 14px; }
+  .qr-box canvas, .qr-box img { background: #fff; padding: 12px; border-radius: 8px; }
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--bg-elevated); border-radius: 12px; padding: 16px; }
+  .chart-card h4 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
+  .chart-card .full-w { grid-column: 1 / -1; }
+  .chart-wrap { position: relative; height: 200px; }
+  .chart-wrap.tall { height: 240px; }
+  .breakdown-list { display: flex; flex-direction: column; gap: 8px; }
+  .breakdown-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .breakdown-item:last-child { border: 0; }
+  .breakdown-item .label { color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .breakdown-item .count { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+  /* ─── Toast ─── */
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; font-size: 14px; opacity: 0; transform: translateY(10px); transition: all .2s; z-index: 200; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { border-color: var(--success); }
+  .toast.error { border-color: var(--danger); }
+
+  /* ─── Loading ─── */
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── Utility ─── */
+  .hidden { display: none !important; }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .between { justify-content: space-between; }
+  .grow { flex: 1; }
+</style>
+</head>
+<body>
+
+<!-- ════════════ LOGIN VIEW ════════════ -->
+<div id="loginView" class="login-wrap hidden">
+  <div class="card login-card">
+    <div class="brand" style="margin-bottom:24px">
+      <div class="brand-logo">A</div>
+      <div class="brand-name">Audaza <span>Links</span></div>
+    </div>
+    <h1>Entrar</h1>
+    <p>Acesso restrito ao painel da Audaza.</p>
+    <form id="loginForm">
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="loginEmail" required autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="loginPassword" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center">
+        <span id="loginBtnLabel">Entrar</span>
+      </button>
+      <div id="loginError" style="margin-top:12px; color:var(--danger); font-size:13px; text-align:center;"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ════════════ APP VIEW ════════════ -->
+<div id="appView" class="container hidden">
+
+  <header class="app">
+    <div class="brand">
+      <div class="brand-logo">A</div>
+      <div class="brand-name">Audaza <span>Links</span></div>
+    </div>
+    <div class="user-chip">
+      <span id="userEmail" class="mono"></span>
+      <button class="btn-sm" id="logoutBtn">Sair</button>
+    </div>
+  </header>
+
+  <!-- stats -->
+  <div class="stats-row">
+    <div class="card stat-card">
+      <div class="stat-label">Total de links</div>
+      <div class="stat-value mono" id="statTotalLinks">0</div>
+      <div class="stat-sub">criados</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-label">Cliques (30d)</div>
+      <div class="stat-value mono" id="statTotalClicks">0</div>
+      <div class="stat-sub">últimos 30 dias</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-label">Cliques (24h)</div>
+      <div class="stat-value mono" id="statClicks24h">0</div>
+      <div class="stat-sub">últimas 24 horas</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-label">Top link</div>
+      <div class="stat-value mono" style="font-size:18px" id="statTopLink">—</div>
+      <div class="stat-sub" id="statTopLinkClicks">—</div>
+    </div>
+  </div>
+
+  <!-- toolbar -->
+  <div class="toolbar">
+    <h2>Seus links</h2>
+    <div class="row">
+      <input type="search" placeholder="Buscar..." id="searchInput" style="width:240px" />
+      <button class="btn btn-primary" onclick="openCreateModal()">
+        <span>＋ Novo link</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- list -->
+  <div id="linksList" class="links-grid"></div>
+
+  <div id="emptyState" class="empty hidden">
+    <h3>Nenhum link ainda</h3>
+    <p>Crie o primeiro link encurtado e veja os cliques chegarem em tempo real.</p>
+    <button class="btn btn-primary" style="margin-top:24px" onclick="openCreateModal()">＋ Criar primeiro link</button>
+  </div>
+</div>
+
+<!-- ════════════ CREATE / EDIT MODAL ════════════ -->
+<div class="modal-backdrop" id="formModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="formModalTitle">Novo link</h3>
+      <button class="btn btn-icon btn-ghost" onclick="closeFormModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="linkForm">
+        <input type="hidden" id="formLinkId" />
+
+        <div class="form-group">
+          <label>URL de destino *</label>
+          <input type="url" id="formDestination" placeholder="https://audaza.com/landing/..." required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Domínio</label>
+            <select id="formHost">
+              <option value="link.audaza.com">link.audaza.com</option>
+              <option value="go.audaza.com">go.audaza.com</option>
+              <option value="bio.audaza.com">bio.audaza.com</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Slug (deixe vazio para aleatório)</label>
+            <input type="text" id="formSlug" placeholder="ex: promo-natal" pattern="[a-zA-Z0-9_-]+" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Pré-visualização</label>
+          <div class="url-preview" id="urlPreview">link.audaza.com/&lt;slug&gt;</div>
+        </div>
+
+        <div class="form-group">
+          <label>Título interno (opcional)</label>
+          <input type="text" id="formTitle" placeholder="Ex: Campanha Black Friday — Cartão Tadeu" />
+          <div class="form-help">Só você vê. Ajuda a achar o link depois.</div>
+        </div>
+
+        <details style="margin-top:16px;">
+          <summary style="cursor:pointer; color:var(--text-muted); font-size:14px; padding:8px 0;">▸ UTMs (opcional)</summary>
+          <div style="padding-top:12px;">
+            <div class="form-row">
+              <div class="form-group">
+                <label>utm_source</label>
+                <input type="text" id="formUtmSource" placeholder="instagram, whatsapp..." />
+              </div>
+              <div class="form-group">
+                <label>utm_medium</label>
+                <input type="text" id="formUtmMedium" placeholder="social, email..." />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>utm_campaign</label>
+                <input type="text" id="formUtmCampaign" placeholder="black-friday-2026" />
+              </div>
+              <div class="form-group">
+                <label>utm_content</label>
+                <input type="text" id="formUtmContent" placeholder="botao-cta-1" />
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details style="margin-top:8px;">
+          <summary style="cursor:pointer; color:var(--text-muted); font-size:14px; padding:8px 0;">▸ Avançado (opcional)</summary>
+          <div style="padding-top:12px;">
+            <div class="form-group">
+              <label>Expira em</label>
+              <input type="datetime-local" id="formExpiresAt" />
+              <div class="form-help">Após a data, o link retorna 410 (link expirado).</div>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="formIsActive">
+                <option value="true">Ativo</option>
+                <option value="false">Pausado</option>
+              </select>
+            </div>
+          </div>
+        </details>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeFormModal()">Cancelar</button>
+      <button class="btn btn-primary" id="formSubmitBtn" onclick="submitLinkForm()">Criar link</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ DETAIL MODAL ════════════ -->
+<div class="modal-backdrop" id="detailModal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <h3 id="detailTitle">Detalhes do link</h3>
+      <div class="row">
+        <button class="btn btn-ghost btn-sm" onclick="editFromDetail()">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteFromDetail()">Excluir</button>
+        <button class="btn btn-icon btn-ghost" onclick="closeDetailModal()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <!-- left: QR + info -->
+        <div>
+          <div class="qr-box">
+            <div id="qrCode"></div>
+            <button class="btn btn-ghost btn-sm" onclick="downloadQR()">Baixar QR</button>
+          </div>
+          <div style="margin-top:16px;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">URL curta</div>
+            <div class="url-preview row" style="justify-content:space-between;">
+              <span id="detailShortUrl"></span>
+              <button class="btn btn-ghost btn-sm" onclick="copyShortUrl()">Copiar</button>
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">Destino</div>
+            <div style="font-size:13px; color:var(--text-muted); word-break:break-all;" id="detailDestination"></div>
+          </div>
+          <div style="margin-top:16px;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">Status</div>
+            <div id="detailStatus"></div>
+          </div>
+        </div>
+
+        <!-- right: charts -->
+        <div>
+          <div class="stats-row" style="margin-bottom:16px;">
+            <div class="chart-card stat-card">
+              <div class="stat-label">Total</div>
+              <div class="stat-value mono" id="detailTotalClicks">0</div>
+            </div>
+            <div class="chart-card stat-card">
+              <div class="stat-label">24h</div>
+              <div class="stat-value mono" id="detailClicks24h">0</div>
+            </div>
+            <div class="chart-card stat-card">
+              <div class="stat-label">Pico (hora)</div>
+              <div class="stat-value mono" id="detailPeakHour">—</div>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-card full-w">
+              <h4>Cliques por dia (últimos 30 dias)</h4>
+              <div class="chart-wrap"><canvas id="chartDaily"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <h4>Dispositivo</h4>
+              <div class="chart-wrap"><canvas id="chartDevice"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <h4>Hora do dia</h4>
+              <div class="chart-wrap"><canvas id="chartHour"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <h4>Top países</h4>
+              <div class="breakdown-list" id="breakdownCountry"></div>
+            </div>
+            <div class="chart-card">
+              <h4>Top navegadores</h4>
+              <div class="breakdown-list" id="breakdownBrowser"></div>
+            </div>
+            <div class="chart-card full-w">
+              <h4>Top referrers</h4>
+              <div class="breakdown-list" id="breakdownReferer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- toast -->
+<div id="toast" class="toast"></div>
+
+<!-- libs -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+<script>
+/* ───────────────────────────────────────────────────────────
+   CONFIG — Supabase Task Manager (compartilhado)
+   ─────────────────────────────────────────────────────────── */
+const SUPABASE_URL = 'https://seykakvwlcjewjflkkdt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_Im6il7Dgwh0X37rhI6iv-g_ENceHMN5';
+
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ─── State ─── */
+let currentUser = null;
+let allLinks = [];
+let currentLinkId = null;
+const charts = {};
+
+/* ───────────────────────────────────────────────────────────
+   AUTH
+   ─────────────────────────────────────────────────────────── */
+async function checkSession() {
+  const { data: { session } } = await supa.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    showApp();
+  } else {
+    showLogin();
+  }
+}
+
+function showLogin() {
+  document.getElementById('loginView').classList.remove('hidden');
+  document.getElementById('appView').classList.add('hidden');
+}
+
+function showApp() {
+  document.getElementById('loginView').classList.add('hidden');
+  document.getElementById('appView').classList.remove('hidden');
+  document.getElementById('userEmail').textContent = currentUser.email;
+  loadLinks();
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtnLabel');
+  const errEl = document.getElementById('loginError');
+  btn.textContent = 'Entrando...';
+  errEl.textContent = '';
+  const { data, error } = await supa.auth.signInWithPassword({ email, password });
+  btn.textContent = 'Entrar';
+  if (error) {
+    errEl.textContent = error.message === 'Invalid login credentials'
+      ? 'E-mail ou senha incorretos.'
+      : error.message;
+    return;
+  }
+  currentUser = data.user;
+  showApp();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await supa.auth.signOut();
+  currentUser = null;
+  showLogin();
+});
+
+/* ───────────────────────────────────────────────────────────
+   LOAD LINKS + STATS
+   ─────────────────────────────────────────────────────────── */
+async function loadLinks() {
+  const { data: links, error } = await supa
+    .from('audazalinks_links')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) { toast('Erro ao carregar links: ' + error.message, 'error'); return; }
+  allLinks = links || [];
+
+  await loadStats();
+  renderLinks();
+}
+
+async function loadStats() {
+  // total cliques 30d
+  const since30 = new Date(Date.now() - 30 * 86400e3).toISOString();
+  const since24 = new Date(Date.now() - 86400e3).toISOString();
+
+  const [{ count: c30 }, { count: c24 }] = await Promise.all([
+    supa.from('audazalinks_clicks').select('id', { count: 'exact', head: true }).gte('clicked_at', since30),
+    supa.from('audazalinks_clicks').select('id', { count: 'exact', head: true }).gte('clicked_at', since24),
+  ]);
+
+  document.getElementById('statTotalLinks').textContent = allLinks.length;
+  document.getElementById('statTotalClicks').textContent = c30 || 0;
+  document.getElementById('statClicks24h').textContent = c24 || 0;
+
+  const top = [...allLinks].sort((a,b) => (b.click_count||0) - (a.click_count||0))[0];
+  if (top) {
+    document.getElementById('statTopLink').textContent = `${top.host}/${top.slug}`;
+    document.getElementById('statTopLinkClicks').textContent = `${top.click_count || 0} cliques`;
+  }
+}
+
+function renderLinks() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  const filtered = allLinks.filter(l =>
+    !q || (l.title||'').toLowerCase().includes(q)
+       || l.slug.toLowerCase().includes(q)
+       || (l.destination||'').toLowerCase().includes(q)
+  );
+
+  const list = document.getElementById('linksList');
+  const empty = document.getElementById('emptyState');
+
+  if (allLinks.length === 0) {
+    list.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+
+  list.innerHTML = filtered.map(l => `
+    <div class="card card-hover link-row" onclick="openDetail(${l.id})">
+      <div class="link-meta">
+        <div class="link-title">
+          ${escapeHtml(l.title || '(sem título)')}
+          ${!l.is_active ? '<span class="pill danger">pausado</span>' : ''}
+          ${isExpired(l) ? '<span class="pill danger">expirado</span>' : ''}
+        </div>
+        <div class="link-url mono">
+          ${l.host}/${l.slug}
+          <button class="btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();copyText('https://${l.host}/${l.slug}')" title="Copiar">⧉</button>
+        </div>
+        <div class="link-dest">→ ${escapeHtml(l.destination)}</div>
+      </div>
+      <div class="link-clicks">${l.click_count || 0}</div>
+      <div class="link-actions">
+        <button class="btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();openDetail(${l.id})" title="Ver">→</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('searchInput').addEventListener('input', renderLinks);
+
+/* ───────────────────────────────────────────────────────────
+   CREATE / EDIT LINK
+   ─────────────────────────────────────────────────────────── */
+function openCreateModal() {
+  document.getElementById('formModalTitle').textContent = 'Novo link';
+  document.getElementById('formSubmitBtn').textContent = 'Criar link';
+  document.getElementById('linkForm').reset();
+  document.getElementById('formLinkId').value = '';
+  updatePreview();
+  document.getElementById('formModal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const l = allLinks.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('formModalTitle').textContent = 'Editar link';
+  document.getElementById('formSubmitBtn').textContent = 'Salvar alterações';
+  document.getElementById('formLinkId').value = l.id;
+  document.getElementById('formDestination').value = l.destination || '';
+  document.getElementById('formHost').value = l.host;
+  document.getElementById('formSlug').value = l.slug;
+  document.getElementById('formTitle').value = l.title || '';
+  document.getElementById('formUtmSource').value = l.utm_source || '';
+  document.getElementById('formUtmMedium').value = l.utm_medium || '';
+  document.getElementById('formUtmCampaign').value = l.utm_campaign || '';
+  document.getElementById('formUtmContent').value = l.utm_content || '';
+  document.getElementById('formExpiresAt').value = l.expires_at ? l.expires_at.slice(0,16) : '';
+  document.getElementById('formIsActive').value = String(l.is_active);
+  updatePreview();
+  document.getElementById('formModal').classList.add('open');
+}
+
+function closeFormModal() {
+  document.getElementById('formModal').classList.remove('open');
+}
+
+function updatePreview() {
+  const host = document.getElementById('formHost').value;
+  const slug = document.getElementById('formSlug').value || '<slug>';
+  document.getElementById('urlPreview').textContent = `${host}/${slug}`;
+}
+document.getElementById('formHost').addEventListener('change', updatePreview);
+document.getElementById('formSlug').addEventListener('input', updatePreview);
+
+async function submitLinkForm() {
+  const id = document.getElementById('formLinkId').value;
+  const destination = document.getElementById('formDestination').value.trim();
+  const host = document.getElementById('formHost').value;
+  let slug = document.getElementById('formSlug').value.trim();
+  const title = document.getElementById('formTitle').value.trim();
+
+  if (!destination) { toast('Destino é obrigatório', 'error'); return; }
+
+  // Slug random se vazio
+  if (!slug) slug = randomSlug();
+  // Validar formato
+  if (!/^[a-zA-Z0-9_-]+$/.test(slug)) { toast('Slug só pode ter letras, números, _ e -', 'error'); return; }
+
+  const payload = {
+    destination,
+    host,
+    slug,
+    title: title || null,
+    utm_source: document.getElementById('formUtmSource').value.trim() || null,
+    utm_medium: document.getElementById('formUtmMedium').value.trim() || null,
+    utm_campaign: document.getElementById('formUtmCampaign').value.trim() || null,
+    utm_content: document.getElementById('formUtmContent').value.trim() || null,
+    expires_at: document.getElementById('formExpiresAt').value || null,
+    is_active: document.getElementById('formIsActive').value === 'true',
+  };
+  if (!id) payload.created_by = currentUser.id;
+
+  const btn = document.getElementById('formSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+
+  let result;
+  if (id) {
+    result = await supa.from('audazalinks_links').update(payload).eq('id', id).select().single();
+  } else {
+    result = await supa.from('audazalinks_links').insert(payload).select().single();
+  }
+
+  btn.disabled = false; btn.textContent = id ? 'Salvar alterações' : 'Criar link';
+
+  if (result.error) {
+    if (result.error.code === '23505') {
+      toast(`Já existe um link com slug "${slug}" em ${host}`, 'error');
+    } else {
+      toast('Erro: ' + result.error.message, 'error');
+    }
+    return;
+  }
+
+  toast(id ? 'Link atualizado' : 'Link criado!', 'success');
+  closeFormModal();
+  await loadLinks();
+}
+
+async function deleteLink(id) {
+  if (!confirm('Excluir este link? Os cliques associados também serão apagados.')) return;
+  const { error } = await supa.from('audazalinks_links').delete().eq('id', id);
+  if (error) { toast(error.message, 'error'); return; }
+  toast('Link excluído', 'success');
+  closeDetailModal();
+  await loadLinks();
+}
+
+/* ───────────────────────────────────────────────────────────
+   DETAIL VIEW (analytics)
+   ─────────────────────────────────────────────────────────── */
+async function openDetail(id) {
+  currentLinkId = id;
+  const link = allLinks.find(l => l.id === id);
+  if (!link) return;
+
+  const shortUrl = `https://${link.host}/${link.slug}`;
+  document.getElementById('detailTitle').textContent = link.title || `${link.host}/${link.slug}`;
+  document.getElementById('detailShortUrl').textContent = shortUrl;
+  document.getElementById('detailDestination').textContent = link.destination;
+  document.getElementById('detailStatus').innerHTML =
+    `${link.is_active ? '<span class="pill">ativo</span>' : '<span class="pill danger">pausado</span>'}` +
+    `${isExpired(link) ? ' <span class="pill danger">expirado</span>' : ''}`;
+  document.getElementById('detailTotalClicks').textContent = link.click_count || 0;
+
+  // QR
+  const qrEl = document.getElementById('qrCode');
+  qrEl.innerHTML = '';
+  const canvas = document.createElement('canvas');
+  qrEl.appendChild(canvas);
+  await QRCode.toCanvas(canvas, shortUrl, { width: 200, margin: 1, color: { dark: '#000', light: '#fff' } });
+
+  document.getElementById('detailModal').classList.add('open');
+
+  // Load click data
+  const { data: clicks } = await supa
+    .from('audazalinks_clicks')
+    .select('*')
+    .eq('link_id', id)
+    .order('clicked_at', { ascending: false })
+    .limit(10000);
+
+  renderAnalytics(clicks || []);
+}
+
+function closeDetailModal() {
+  document.getElementById('detailModal').classList.remove('open');
+  Object.values(charts).forEach(c => c?.destroy());
+  Object.keys(charts).forEach(k => delete charts[k]);
+  currentLinkId = null;
+}
+
+function editFromDetail() { closeDetailModal(); openEditModal(currentLinkId); }
+function deleteFromDetail() { deleteLink(currentLinkId); }
+
+async function copyShortUrl() {
+  const text = document.getElementById('detailShortUrl').textContent;
+  await copyText(text);
+}
+function downloadQR() {
+  const canvas = document.querySelector('#qrCode canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = `audaza-links-qr-${currentLinkId}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function renderAnalytics(clicks) {
+  // 24h count
+  const since24 = Date.now() - 86400e3;
+  const c24 = clicks.filter(c => new Date(c.clicked_at).getTime() >= since24).length;
+  document.getElementById('detailClicks24h').textContent = c24;
+
+  // peak hour
+  const byHour = new Array(24).fill(0);
+  clicks.forEach(c => {
+    const h = new Date(c.clicked_at).getHours();
+    byHour[h]++;
+  });
+  const peakHour = byHour.indexOf(Math.max(...byHour));
+  document.getElementById('detailPeakHour').textContent = clicks.length ? `${String(peakHour).padStart(2,'0')}h` : '—';
+
+  // daily (30 days)
+  const byDay = {};
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400e3);
+    byDay[d.toISOString().slice(0,10)] = 0;
+  }
+  clicks.forEach(c => {
+    const day = new Date(c.clicked_at).toISOString().slice(0,10);
+    if (day in byDay) byDay[day]++;
+  });
+
+  drawLineChart('chartDaily', Object.keys(byDay).map(d => d.slice(5)), Object.values(byDay));
+  drawDoughnut('chartDevice', countBy(clicks, 'device_type'));
+  drawBarChart('chartHour', byHour.map((_,i) => `${i}h`), byHour);
+
+  renderBreakdown('breakdownCountry', countBy(clicks, 'country'), 'Sem dados de país (enriquecimento pendente)');
+  renderBreakdown('breakdownBrowser', countBy(clicks, 'browser'), 'Sem dados (enriquecimento pendente)');
+  renderBreakdown('breakdownReferer', countBy(clicks, 'referer_host'), 'Tráfego direto (sem referrer)');
+}
+
+function countBy(arr, key) {
+  const m = {};
+  arr.forEach(item => {
+    const v = item[key] || '(desconhecido)';
+    m[v] = (m[v] || 0) + 1;
+  });
+  return m;
+}
+
+function renderBreakdown(elId, map, emptyMsg) {
+  const el = document.getElementById(elId);
+  const items = Object.entries(map).sort((a,b) => b[1] - a[1]).slice(0, 8);
+  if (items.length === 0) {
+    el.innerHTML = `<div style="color:var(--text-dim); font-size:13px;">${emptyMsg}</div>`;
+    return;
+  }
+  const total = items.reduce((s, [_,c]) => s + c, 0);
+  el.innerHTML = items.map(([k, v]) => `
+    <div class="breakdown-item">
+      <div class="label">${escapeHtml(k)}</div>
+      <div class="count">${v} <span style="color:var(--text-dim)">(${Math.round(v/total*100)}%)</span></div>
+    </div>
+  `).join('');
+}
+
+const CHART_COLORS = ['#f59e0b', '#6366f1', '#10b981', '#ef4444', '#06b6d4', '#ec4899', '#84cc16'];
+const CHART_DEFAULTS = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { labels: { color: '#8b94a3', font: { family: 'Inter', size: 11 } } } },
+  scales: {
+    x: { ticks: { color: '#5c6473', font: { size: 10 } }, grid: { color: '#1f242c' } },
+    y: { ticks: { color: '#5c6473', font: { size: 10 } }, grid: { color: '#1f242c' }, beginAtZero: true },
+  },
+};
+
+function drawLineChart(id, labels, data) {
+  const ctx = document.getElementById(id);
+  charts[id] = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [{
+      data, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.1)',
+      tension: .3, fill: true, pointRadius: 0, borderWidth: 2,
+    }] },
+    options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } },
+  });
+}
+
+function drawBarChart(id, labels, data) {
+  const ctx = document.getElementById(id);
+  charts[id] = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: '#6366f1' }] },
+    options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } },
+  });
+}
+
+function drawDoughnut(id, map) {
+  const ctx = document.getElementById(id);
+  const labels = Object.keys(map);
+  const data = Object.values(map);
+  charts[id] = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: CHART_COLORS, borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { color: '#8b94a3', font: { size: 11 }, boxWidth: 10 } } },
+    },
+  });
+}
+
+/* ───────────────────────────────────────────────────────────
+   HELPERS
+   ─────────────────────────────────────────────────────────── */
+function randomSlug(len = 6) {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let s = '';
+  for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
+
+function isExpired(l) {
+  return l.expires_at && new Date(l.expires_at) < new Date();
+}
+
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast('Copiado!', 'success');
+  } catch (e) {
+    toast('Erro ao copiar', 'error');
+  }
+}
+
+let toastTimer;
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ─── Boot ─── */
+checkSession();
+</script>
+</body>
+</html>

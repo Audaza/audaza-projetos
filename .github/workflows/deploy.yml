@@ -31,3 +31,5 @@ jobs:
             **/.DS_Store
             **/README.md
             **/vercel.json
+            **/*.sql
+            links/redirector/**

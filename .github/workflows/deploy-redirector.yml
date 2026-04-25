@@ -1,0 +1,76 @@
+name: Deploy redirector audaza-links
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'links/redirector/**'
+      - '.github/workflows/deploy-redirector.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy-link:
+    name: Sync → link.audaza.com
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftp
+          port: 21
+          local-dir: ./links/redirector/
+          server-dir: /domains/link.audaza.com/public_html/
+          state-name: .ftp-deploy-state-link.json
+          exclude: |
+            **/config.php
+            **/config.example.php
+            **/README.md
+            **/.DS_Store
+
+  deploy-go:
+    name: Sync → go.audaza.com
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftp
+          port: 21
+          local-dir: ./links/redirector/
+          server-dir: /domains/go.audaza.com/public_html/
+          state-name: .ftp-deploy-state-go.json
+          exclude: |
+            **/config.php
+            **/config.example.php
+            **/README.md
+            **/.DS_Store
+
+  # bio.audaza.com já tem biolinks publicados.
+  # Deploy aqui só sobe index.php + .htaccess (sem mexer nas pastas de slugs existentes).
+  deploy-bio:
+    name: Sync → bio.audaza.com
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftp
+          port: 21
+          local-dir: ./links/redirector/
+          server-dir: /domains/bio.audaza.com/public_html/
+          state-name: .ftp-deploy-state-bio.json
+          dangerous-clean-slate: false
+          exclude: |
+            **/config.php
+            **/config.example.php
+            **/README.md
+            **/.DS_Store
