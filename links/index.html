@@ -623,7 +623,7 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
 <!-- libs -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<!-- qr-code-styling carregado on-demand via dynamic import dentro de openDetail() -->
 
 <script>
 /* ─── CONFIG ─── */
@@ -635,6 +635,14 @@ let currentUser = null;
 let allLinks = [];
 let currentLinkId = null;
 const charts = {};
+let currentQR = null;
+let qrModulePromise = null;
+function loadQRStyling() {
+  if (!qrModulePromise) {
+    qrModulePromise = import('https://esm.sh/qr-code-styling@1.6.0-rc.1').then(m => m.default || m);
+  }
+  return qrModulePromise;
+}
 
 /* ─── THEME ─── */
 const savedTheme = localStorage.getItem('audazalinks-theme');
@@ -1015,19 +1023,37 @@ async function openDetail(id) {
   // ABRE O MODAL PRIMEIRO — depois faz QR + analytics (assim erros não bloqueiam)
   document.getElementById('detailModal').classList.add('open');
 
-  // QR Code (qrcodejs gera <img> ou <canvas> dentro do container)
+  // QR Code via qr-code-styling — alta resolução (1024×1024 interno), escala perfeita
   const qrEl = document.getElementById('qrCode');
   qrEl.innerHTML = '';
   try {
-    if (typeof QRCode === 'undefined') throw new Error('QRCode lib não carregou');
-    new QRCode(qrEl, {
-      text: shortUrl,
-      width: 200,
-      height: 200,
-      colorDark: '#000000',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.H,
+    const QRCodeStyling = await loadQRStyling();
+    currentQR = new QRCodeStyling({
+      type: 'canvas',
+      width: 1024,
+      height: 1024,
+      data: shortUrl,
+      margin: 24,
+      qrOptions: {
+        errorCorrectionLevel: 'H',
+      },
+      dotsOptions: {
+        color: '#0a0a0a',
+        type: 'rounded',
+      },
+      backgroundOptions: {
+        color: '#ffffff',
+      },
+      cornersSquareOptions: {
+        color: '#5b9eff',
+        type: 'extra-rounded',
+      },
+      cornersDotOptions: {
+        color: '#3a72d8',
+        type: 'dot',
+      },
     });
+    currentQR.append(qrEl);
   } catch (e) {
     console.error('QR error:', e);
     qrEl.innerHTML = `<div style="width:200px;height:200px;display:grid;place-items:center;background:var(--alt);border-radius:8px;color:var(--danger);font-size:12px;text-align:center;padding:12px;">Erro ao gerar QR<br/><small style="opacity:.6">${escapeHtml(e.message)}</small></div>`;
@@ -1066,22 +1092,12 @@ function deleteFromDetail() { deleteLink(currentLinkId); }
 
 async function copyShortUrl() { await copyText(document.getElementById('detailShortUrl').textContent); }
 function downloadQR() {
-  // qrcodejs gera <canvas> ou <img>, dependendo do browser
-  const canvas = document.querySelector('#qrCode canvas');
-  const img = document.querySelector('#qrCode img');
-  let dataUrl;
-  if (canvas) {
-    dataUrl = canvas.toDataURL('image/png');
-  } else if (img) {
-    dataUrl = img.src;
-  } else {
-    toast('QR não disponível', 'error');
-    return;
-  }
-  const a = document.createElement('a');
-  a.download = `audaza-links-qr-${currentLinkId}.png`;
-  a.href = dataUrl;
-  a.click();
+  if (!currentQR) { toast('QR não disponível', 'error'); return; }
+  // qr-code-styling tem download nativo em alta resolução
+  currentQR.download({
+    name: `audaza-links-qr-${currentLinkId}`,
+    extension: 'png',
+  });
 }
 
 function renderAnalytics(clicks) {
