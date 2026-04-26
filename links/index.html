@@ -298,11 +298,27 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
 /* ─── EXPORT MENU ─── */
 .export-menu{position:absolute;top:calc(100% + 6px);right:0;min-width:280px;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--r-md);box-shadow:var(--sh-lg);padding:6px;z-index:10;display:none;flex-direction:column;gap:2px;animation:slideUp .18s cubic-bezier(.22,1,.36,1) both}
 .export-menu.open{display:flex}
+.export-menu .export-menu-h{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);padding:8px 12px 4px}
 .export-menu button{display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:center;padding:10px 12px;border-radius:var(--r-sm);text-align:left;color:var(--ink-soft);transition:.12s;width:100%}
 .export-menu button:hover{background:var(--hover);color:var(--ink)}
 .export-menu button svg{width:16px;height:16px;color:var(--brand)}
 .export-menu button strong{display:block;font-size:13px;font-weight:500;color:var(--ink)}
 .export-menu button small{display:block;font-size:11.5px;color:var(--ink-faint);margin-top:1px;line-height:1.3}
+
+/* ─── QR STYLES MENU (variações de QR) ─── */
+.qr-styles-menu{min-width:340px;left:0;right:auto}
+.qr-styles-menu button{grid-template-columns:36px 1fr}
+.qr-styles-menu button.featured{background:linear-gradient(135deg,rgba(91,158,255,.06),rgba(58,114,216,.04))}
+.qr-styles-menu button.featured strong{color:var(--brand)}
+.qr-swatch{width:36px;height:36px;border-radius:var(--r-sm);position:relative;overflow:hidden;border:1px solid var(--rule);background-position:center;background-size:cover}
+.qr-swatch::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cg fill='currentColor' opacity='.85'%3E%3Crect x='1' y='1' width='3' height='3' rx='.5'/%3E%3Crect x='8' y='1' width='3' height='3' rx='.5'/%3E%3Crect x='1' y='8' width='3' height='3' rx='.5'/%3E%3Crect x='5' y='5' width='1.4' height='1.4' rx='.4'/%3E%3Crect x='7' y='5' width='1.4' height='1.4' rx='.4'/%3E%3Crect x='5' y='7' width='1.4' height='1.4' rx='.4'/%3E%3C/g%3E%3C/svg%3E") center/100% no-repeat;opacity:.95}
+.qr-swatch-basic{background:#fff;color:#000}
+.qr-swatch-mono{background:#fafafa;color:#0a0a0a}
+.qr-swatch-mono::after{filter:blur(.2px)}
+.qr-swatch-audaza{background:linear-gradient(135deg,#0a0c12,#1a1f2e);color:#5b9eff}
+.qr-swatch-brand{background:#fff;color:#5b9eff}
+.qr-swatch-editorial{background:#fafafa;color:#0a0a0a}
+.qr-swatch-cyber{background:#06070b;color:#33ccdd}
 
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:24px;right:24px;padding:11px 18px;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--r);font-size:13px;opacity:0;transform:translateY(10px);transition:all .2s;z-index:200;box-shadow:var(--sh)}
@@ -592,7 +608,40 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
           </div>
           <div class="qr-box">
             <div id="qrCode"></div>
-            <button class="btn btn-s btn-sm" onclick="downloadQR()">Baixar QR</button>
+            <div style="position:relative;display:inline-block">
+              <button class="btn btn-s btn-sm" onclick="toggleQRStylesMenu(event)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Baixar QR
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px;opacity:.6"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div id="qrStylesMenu" class="export-menu qr-styles-menu">
+                <div class="export-menu-h">Estilos de QR Code</div>
+                <button onclick="downloadQRStyle('basic')" data-style="basic">
+                  <span class="qr-swatch qr-swatch-basic"></span>
+                  <div><strong>Básico</strong><small>Preto e branco quadrado · máxima compatibilidade</small></div>
+                </button>
+                <button onclick="downloadQRStyle('mono')" data-style="mono">
+                  <span class="qr-swatch qr-swatch-mono"></span>
+                  <div><strong>Mono Soft</strong><small>Preto arredondado em fundo claro</small></div>
+                </button>
+                <button onclick="downloadQRStyle('audaza')" data-style="audaza" class="featured">
+                  <span class="qr-swatch qr-swatch-audaza"></span>
+                  <div><strong>Padrão Audaza ⭐</strong><small>Dark + gradiente azul + logo (estilo da plataforma)</small></div>
+                </button>
+                <button onclick="downloadQRStyle('brand')" data-style="brand">
+                  <span class="qr-swatch qr-swatch-brand"></span>
+                  <div><strong>Brand Blue</strong><small>Azul Audaza puro com logo no centro</small></div>
+                </button>
+                <button onclick="downloadQRStyle('editorial')" data-style="editorial">
+                  <span class="qr-swatch qr-swatch-editorial"></span>
+                  <div><strong>Editorial</strong><small>Minimalista classy, sem logo</small></div>
+                </button>
+                <button onclick="downloadQRStyle('cyber')" data-style="cyber">
+                  <span class="qr-swatch qr-swatch-cyber"></span>
+                  <div><strong>Cyber</strong><small>Cyan/teal neon em fundo dark</small></div>
+                </button>
+              </div>
+            </div>
           </div>
           <div class="detail-globe-wrap" id="detailGlobeWrap">
             <h4>Origem geográfica</h4>
@@ -1245,12 +1294,138 @@ function exportSummaryPNG() {
 
 async function copyShortUrl() { await copyText(document.getElementById('detailShortUrl').textContent); }
 function downloadQR() {
-  if (!currentQR) { toast('QR não disponível', 'error'); return; }
-  // qr-code-styling tem download nativo em alta resolução
-  currentQR.download({
-    name: `audaza-links-qr-${currentLinkId}`,
-    extension: 'png',
-  });
+  // chamada legada do menu Exportar — usa estilo padrão Audaza
+  downloadQRStyle('audaza');
+}
+
+const AUDAZA_LOGO_DATA_URL = (() => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5b9eff"/><stop offset="100%" stop-color="#3a72d8"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(%23g)"/><g stroke="white" stroke-width="8" stroke-linecap="round" fill="none"><path d="M40 60c-7 7-7 18 0 25s18 7 25 0l8-8"/><path d="M60 40c7-7 7-18 0-25s-18-7-25 0l-8 8"/></g></svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg).replace(/'/g, '%27');
+})();
+
+const QR_STYLES = {
+  basic: {
+    name: 'Básico',
+    config: (data) => ({
+      type: 'canvas', width: 1024, height: 1024, data, margin: 32,
+      qrOptions: { errorCorrectionLevel: 'M' },
+      dotsOptions: { type: 'square', color: '#000000' },
+      backgroundOptions: { color: '#ffffff' },
+      cornersSquareOptions: { type: 'square', color: '#000000' },
+      cornersDotOptions: { type: 'square', color: '#000000' },
+    }),
+  },
+  mono: {
+    name: 'Mono Soft',
+    config: (data) => ({
+      type: 'canvas', width: 1024, height: 1024, data, margin: 32,
+      qrOptions: { errorCorrectionLevel: 'M' },
+      dotsOptions: { type: 'rounded', color: '#0a0a0a' },
+      backgroundOptions: { color: '#fafafa' },
+      cornersSquareOptions: { type: 'extra-rounded', color: '#0a0a0a' },
+      cornersDotOptions: { type: 'dot', color: '#0a0a0a' },
+    }),
+  },
+  audaza: {
+    name: 'Padrão Audaza',
+    config: (data) => ({
+      type: 'canvas', width: 1024, height: 1024, data, margin: 32,
+      qrOptions: { errorCorrectionLevel: 'H' },
+      image: AUDAZA_LOGO_DATA_URL,
+      imageOptions: { crossOrigin: 'anonymous', margin: 6, imageSize: 0.22, hideBackgroundDots: true },
+      dotsOptions: {
+        type: 'rounded',
+        gradient: { type: 'linear', rotation: Math.PI / 4, colorStops: [
+          { offset: 0, color: '#7ec8ff' }, { offset: 1, color: '#3a72d8' },
+        ]},
+      },
+      backgroundOptions: { color: '#0a0c12' },
+      cornersSquareOptions: {
+        type: 'extra-rounded',
+        gradient: { type: 'linear', rotation: Math.PI / 4, colorStops: [
+          { offset: 0, color: '#5b9eff' }, { offset: 1, color: '#3a72d8' },
+        ]},
+      },
+      cornersDotOptions: { type: 'dot', color: '#7ec8ff' },
+    }),
+  },
+  brand: {
+    name: 'Brand Blue',
+    config: (data) => ({
+      type: 'canvas', width: 1024, height: 1024, data, margin: 32,
+      qrOptions: { errorCorrectionLevel: 'H' },
+      image: AUDAZA_LOGO_DATA_URL,
+      imageOptions: { crossOrigin: 'anonymous', margin: 6, imageSize: 0.22, hideBackgroundDots: true },
+      dotsOptions: { type: 'rounded', color: '#5b9eff' },
+      backgroundOptions: { color: '#ffffff' },
+      cornersSquareOptions: { type: 'extra-rounded', color: '#3a72d8' },
+      cornersDotOptions: { type: 'dot', color: '#5b9eff' },
+    }),
+  },
+  editorial: {
+    name: 'Editorial',
+    config: (data) => ({
+      type: 'canvas', width: 1024, height: 1024, data, margin: 40,
+      qrOptions: { errorCorrectionLevel: 'M' },
+      dotsOptions: { type: 'classy-rounded', color: '#0a0a0a' },
+      backgroundOptions: { color: '#fafafa' },
+      cornersSquareOptions: { type: 'extra-rounded', color: '#0a0a0a' },
+      cornersDotOptions: { type: 'dot', color: '#0a0a0a' },
+    }),
+  },
+  cyber: {
+    name: 'Cyber',
+    config: (data) => ({
+      type: 'canvas', width: 1024, height: 1024, data, margin: 32,
+      qrOptions: { errorCorrectionLevel: 'H' },
+      dotsOptions: {
+        type: 'classy',
+        gradient: { type: 'linear', rotation: 0, colorStops: [
+          { offset: 0, color: '#5be3c2' }, { offset: 1, color: '#33ccdd' },
+        ]},
+      },
+      backgroundOptions: { color: '#06070b' },
+      cornersSquareOptions: { type: 'extra-rounded', color: '#33ccdd' },
+      cornersDotOptions: { type: 'dot', color: '#5be3c2' },
+    }),
+  },
+};
+
+function toggleQRStylesMenu(e) {
+  e?.stopPropagation();
+  const m = document.getElementById('qrStylesMenu');
+  // fecha o outro menu, se houver
+  document.getElementById('exportMenu')?.classList.remove('open');
+  m.classList.toggle('open');
+}
+document.addEventListener('click', (e) => {
+  const m = document.getElementById('qrStylesMenu');
+  if (!m || !m.classList.contains('open')) return;
+  if (m.contains(e.target) || e.target.closest('[onclick*="toggleQRStylesMenu"]')) return;
+  m.classList.remove('open');
+});
+
+async function downloadQRStyle(styleKey) {
+  document.getElementById('qrStylesMenu')?.classList.remove('open');
+  const link = allLinks.find(l => l.id === currentLinkId);
+  if (!link) { toast('Link não encontrado', 'error'); return; }
+  const style = QR_STYLES[styleKey];
+  if (!style) return;
+
+  try {
+    const QRCodeStyling = await loadQRStyling();
+    const shortUrl = `https://${link.host}/${link.slug}`;
+    const tempQR = new QRCodeStyling(style.config(shortUrl));
+    const slug = link.slug.replace(/[^a-zA-Z0-9_-]/g, '_');
+    tempQR.download({
+      name: `audaza-links_${slug}_${styleKey}`,
+      extension: 'png',
+    });
+    toast(`QR "${style.name}" gerando…`, 'success');
+  } catch (e) {
+    console.error(e);
+    toast('Erro ao gerar QR: ' + e.message, 'error');
+  }
 }
 
 function renderAnalytics(clicks) {
