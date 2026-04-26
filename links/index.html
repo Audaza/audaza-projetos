@@ -350,8 +350,7 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
   <main class="workspace">
     <div class="page-head">
       <div class="eyebrow">Encurtador</div>
-      <h1 class="page-title">Crie links curtos com <em>tracking</em> completo.</h1>
-      <p class="page-desc">Encurte URLs em <span class="mono">link.audaza.com</span>, <span class="mono">go.audaza.com</span> ou <span class="mono">bio.audaza.com</span> e veja cliques, países, devices e referrers em tempo real.</p>
+      <h1 class="page-title">Links com <em>tracking</em> completo.</h1>
     </div>
 
     <!-- stats -->
@@ -793,11 +792,19 @@ async function submitLinkForm() {
   const title = document.getElementById('formTitle').value.trim();
 
   if (!destination) { toast('Destino é obrigatório', 'error'); return; }
+  // Normaliza: adiciona https:// se faltar esquema
+  let normalizedDest = destination;
+  if (!/^https?:\/\//i.test(normalizedDest)) {
+    normalizedDest = 'https://' + normalizedDest.replace(/^\/+/, '');
+  }
+  // Valida URL
+  try { new URL(normalizedDest); } catch { toast('URL de destino inválida', 'error'); return; }
+
   if (!slug) slug = randomSlug();
   if (!/^[a-zA-Z0-9_-]+$/.test(slug)) { toast('Slug só pode ter letras, números, _ e -', 'error'); return; }
 
   const payload = {
-    destination, host, slug,
+    destination: normalizedDest, host, slug,
     title: title || null,
     utm_source: document.getElementById('formUtmSource').value.trim() || null,
     utm_medium: document.getElementById('formUtmMedium').value.trim() || null,

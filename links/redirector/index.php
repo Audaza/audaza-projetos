@@ -108,6 +108,11 @@ if (!empty($utms)) {
 }
 
 // ─── 6. REDIRECT IMEDIATO ───────────────────────────────────────
+// Garante esquema absoluto (browser trata URL sem http(s):// como path relativo)
+if (!preg_match('#^https?://#i', $destination)) {
+    $destination = 'https://' . ltrim($destination, '/');
+}
+
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Location: ' . $destination, true, 302);
 
