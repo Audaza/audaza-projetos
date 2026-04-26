@@ -533,21 +533,7 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
       <div class="detail-grid">
         <!-- left -->
         <div>
-          <div class="qr-box">
-            <div id="qrCode"></div>
-            <button class="btn btn-s btn-sm" onclick="downloadQR()">Baixar QR</button>
-          </div>
-          <div class="detail-globe-wrap" id="detailGlobeWrap">
-            <h4>Origem geográfica</h4>
-            <div class="detail-globe-canvas-wrap">
-              <canvas id="detailGlobeCanvas"></canvas>
-            </div>
-            <div class="detail-globe-stat" id="detailGlobeStat">
-              <span class="dot"></span>
-              <span id="detailGlobeStatText">0 cidades</span>
-            </div>
-          </div>
-          <div class="detail-info">
+          <div class="detail-info" style="margin-top:0;margin-bottom:14px">
             <div>
               <div class="di-l">URL curta</div>
               <div class="short-url-w">
@@ -564,6 +550,20 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
             <div>
               <div class="di-l">Status</div>
               <div id="detailStatus"></div>
+            </div>
+          </div>
+          <div class="qr-box">
+            <div id="qrCode"></div>
+            <button class="btn btn-s btn-sm" onclick="downloadQR()">Baixar QR</button>
+          </div>
+          <div class="detail-globe-wrap" id="detailGlobeWrap">
+            <h4>Origem geográfica</h4>
+            <div class="detail-globe-canvas-wrap">
+              <canvas id="detailGlobeCanvas"></canvas>
+            </div>
+            <div class="detail-globe-stat" id="detailGlobeStat">
+              <span class="dot"></span>
+              <span id="detailGlobeStatText">0 cidades</span>
             </div>
           </div>
         </div>
