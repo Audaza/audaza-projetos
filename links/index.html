@@ -2,365 +2,487 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="robots" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+<meta name="theme-color" content="#06070b" />
+<meta name="robots" content="noindex,nofollow" />
 <title>Audaza Links · Encurtador & Tracking</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%235b9eff'/%3E%3Cstop offset='100%25' stop-color='%233a72d8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Cg stroke='white' stroke-width='8' stroke-linecap='round' fill='none'%3E%3Cpath d='M40 60c-7 7-7 18 0 25s18 7 25 0l8-8'/%3E%3Cpath d='M60 40c7-7 7-18 0-25s-18-7-25 0l-8 8'/%3E%3C/g%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-  :root {
-    --bg: #08090b;
-    --bg-elevated: #0f1114;
-    --bg-card: #12151a;
-    --bg-card-hover: #161a20;
-    --border: #1f242c;
-    --border-hover: #2a3140;
-    --text: #e6e8eb;
-    --text-muted: #8b94a3;
-    --text-dim: #5c6473;
-    --accent: #f59e0b;
-    --accent-hover: #fbbf24;
-    --accent-dim: rgba(245, 158, 11, 0.12);
-    --success: #10b981;
-    --danger: #ef4444;
-    --info: #6366f1;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    line-height: 1.5;
-  }
-  body {
-    min-height: 100vh;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(245,158,11,.08), transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 110%, rgba(99,102,241,.06), transparent 60%),
-      var(--bg);
-  }
-  a { color: inherit; text-decoration: none; }
-  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
-  input, select, textarea {
-    font-family: inherit;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 14px;
-    width: 100%;
-    transition: border-color .15s;
-  }
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-  }
-  .mono { font-family: 'JetBrains Mono', monospace; }
+:root{
+  --bg:#06070b;--bg-2:#0a0c12;
+  --surface:rgba(255,255,255,0.035);--surface-2:rgba(255,255,255,0.06);
+  --alt:rgba(255,255,255,0.025);--hover:rgba(255,255,255,0.05);--canvas:rgba(255,255,255,0.025);
+  --border:rgba(245,245,247,.08);--border-2:rgba(245,245,247,.16);--rule:rgba(245,245,247,.08);
+  --text:#f5f5f7;--text-2:rgba(245,245,247,.78);--text-3:rgba(245,245,247,.55);--text-4:rgba(245,245,247,.32);
+  --ink:#f5f5f7;--ink-soft:rgba(245,245,247,.72);--ink-faint:rgba(245,245,247,.42);--ink-dim:rgba(245,245,247,.20);
+  --brand:#5b9eff;--brand-2:#3a72d8;--brand-l:rgba(91,158,255,.14);--cool:#7ec8ff;
+  --grad:linear-gradient(135deg,#5b9eff,#3a72d8);
+  --success:#5be38a;--danger:#ff7a7a;--warn:#f5c45b;
+  --r-xs:4px;--r-sm:7px;--r:9px;--r-md:11px;--r-lg:14px;--r-xl:20px;
+  --sh-sm:0 1px 2px rgba(0,0,0,.30);
+  --sh:0 8px 24px rgba(0,0,0,.32),0 2px 6px rgba(0,0,0,.20);
+  --sh-lg:0 24px 60px rgba(0,0,0,.45),0 8px 16px rgba(0,0,0,.25);
+  --sh-brand:0 10px 30px rgba(91,158,255,.32),0 4px 10px rgba(91,158,255,.18);
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Segoe UI',sans-serif;
+  --font-d:'Space Grotesk','Inter',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  min-height:100vh;
+  background-image:
+    radial-gradient(60% 50% at 80% 0%, rgba(91,158,255,.08), transparent 60%),
+    radial-gradient(50% 50% at 0% 100%, rgba(126,200,255,.05), transparent 60%);
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:transparent;color:inherit}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+::selection{background:var(--brand);color:#fff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(245,245,247,.10);border-radius:999px;border:2px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(245,245,247,.20);background-clip:content-box;border:2px solid transparent}
 
-  /* ─── Layout ─── */
-  .container { max-width: 1280px; margin: 0 auto; padding: 32px; }
-  header.app {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 32px;
-  }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand-logo { width: 32px; height: 32px; border-radius: 8px;
-    background: linear-gradient(135deg, var(--accent), #ea580c);
-    display: grid; place-items: center; color: #000; font-weight: 800; }
-  .brand-name { font-weight: 700; font-size: 16px; }
-  .brand-name span { color: var(--text-muted); font-weight: 400; }
+/* ─── LIGHT MODE ─── */
+body.light{
+  --bg:#fafafa;--bg-2:#ffffff;
+  --surface:#ffffff;--surface-2:#f5f5f5;
+  --alt:#f9f9f9;--hover:#f0f0f0;--canvas:#f5f5f5;
+  --border:rgba(0,0,0,.10);--border-2:rgba(0,0,0,.18);--rule:rgba(0,0,0,.08);
+  --text:#0a0a0a;--text-2:rgba(10,10,10,.78);--text-3:rgba(10,10,10,.55);--text-4:rgba(10,10,10,.32);
+  --ink:#0a0a0a;--ink-soft:rgba(10,10,10,.74);--ink-faint:rgba(10,10,10,.48);--ink-dim:rgba(10,10,10,.24);
+  --brand-l:rgba(91,158,255,.12);
+  --sh-sm:0 1px 2px rgba(0,0,0,.05);
+  --sh:0 4px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.04);
+  --sh-lg:0 16px 40px rgba(0,0,0,.10),0 4px 10px rgba(0,0,0,.05);
+  background-image:
+    radial-gradient(60% 50% at 80% 0%, rgba(91,158,255,.05), transparent 60%),
+    radial-gradient(50% 50% at 0% 100%, rgba(126,200,255,.03), transparent 60%);
+}
+body.light .topbar{background:rgba(255,255,255,0.86);border-bottom:1px solid rgba(0,0,0,.08)}
+body.light .modal-bg{background:rgba(0,0,0,.45)}
+body.light .pl-prev{background:rgba(0,0,0,.04)}
+.theme-icon-light{display:none}
+body.light .theme-icon-light{display:block}
+body.light .theme-icon-dark{display:none}
 
-  .user-chip { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-muted); }
-  .user-chip button { color: var(--text-muted); }
-  .user-chip button:hover { color: var(--text); }
+/* ─── TOPBAR ─── */
+.topbar{
+  display:flex;align-items:center;gap:14px;padding:12px clamp(16px,3vw,32px);
+  background:rgba(6,7,11,0.72);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid var(--rule);
+  height:58px;position:sticky;top:0;z-index:20;
+}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand-mk{
+  width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  display:grid;place-items:center;color:#fff;box-shadow:var(--sh-brand);
+}
+.brand-mk svg{width:14px;height:14px}
+.brand-nm{font-family:var(--font-d);font-weight:600;font-size:16px;letter-spacing:-0.02em;line-height:1;color:var(--ink);display:flex;align-items:baseline;gap:5px}
+.brand-nm span{color:var(--ink-faint);font-weight:400;font-size:15px}
+.div-v{width:1px;height:22px;background:var(--rule)}
+.tb-acts{display:flex;gap:6px;margin-left:auto;align-items:center}
+.user-tag{font-family:var(--mono);font-size:12px;color:var(--ink-faint);padding:0 10px}
 
-  /* ─── Buttons ─── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 16px; border-radius: 10px; font-weight: 500; font-size: 14px;
-    transition: all .15s; border: 1px solid transparent;
-  }
-  .btn-primary { background: var(--accent); color: #000; }
-  .btn-primary:hover { background: var(--accent-hover); }
-  .btn-ghost { color: var(--text-muted); border-color: var(--border); }
-  .btn-ghost:hover { color: var(--text); border-color: var(--border-hover); background: var(--bg-card); }
-  .btn-danger { color: var(--danger); border-color: var(--border); }
-  .btn-danger:hover { background: rgba(239,68,68,.08); border-color: var(--danger); }
-  .btn-sm { padding: 6px 10px; font-size: 12px; }
-  .btn-icon { padding: 8px; }
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:0 14px;height:36px;border-radius:var(--r);font-size:13px;font-weight:500;border:1px solid transparent;transition:.15s;white-space:nowrap}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+.btn-g{color:var(--ink-soft)}
+.btn-g:hover{background:var(--hover);color:var(--ink)}
+.btn-s{background:var(--surface);border-color:var(--rule);color:var(--ink)}
+.btn-s:hover{border-color:var(--ink-dim);background:var(--surface-2)}
+.btn-p{background:#fff;color:#0a0a0a}
+.btn-p:hover{background:#e5e5e7}
+body.light .btn-p{background:#0a0a0a;color:#fff}
+body.light .btn-p:hover{background:#27272a}
+.btn-br{background:var(--grad);color:#fff;box-shadow:var(--sh-brand)}
+.btn-br:hover{filter:brightness(1.08)}
+.btn-d{color:var(--danger);border-color:var(--rule);background:var(--surface)}
+.btn-d:hover{background:rgba(255,122,122,.08);border-color:var(--danger)}
+.btn-i{width:32px;height:32px;padding:0;border-radius:var(--r-sm);justify-content:center;color:var(--ink-faint)}
+.btn-i:hover{background:var(--hover);color:var(--ink)}
+.btn-i.danger:hover{background:rgba(255,122,122,.14);color:var(--danger)}
+.btn-sm{height:30px;padding:0 10px;font-size:12px;border-radius:var(--r-sm)}
 
-  /* ─── Cards ─── */
-  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
-  .card-hover:hover { background: var(--bg-card-hover); border-color: var(--border-hover); }
+/* ─── LAYOUT ─── */
+.workspace{max-width:1200px;margin:0 auto;padding:32px clamp(16px,3vw,32px) 80px}
 
-  /* ─── Stats ─── */
-  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-bottom: 24px; }
-  .stat-card .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
-  .stat-card .stat-value { font-family: 'Instrument Serif', serif; font-size: 36px; line-height: 1; }
-  .stat-card .stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+.page-head{margin-bottom:24px}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);margin-bottom:10px}
+.page-title{font-family:var(--font-d);font-size:clamp(28px,3.6vw,38px);font-weight:500;letter-spacing:-0.02em;line-height:1.06;color:var(--text)}
+.page-title em{font-style:normal;font-weight:500;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.page-desc{margin-top:10px;color:var(--text-2);font-size:13.5px;line-height:1.55;max-width:580px}
 
-  /* ─── Toolbar ─── */
-  .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
-  .toolbar h2 { font-family: 'Instrument Serif', serif; font-size: 28px; font-weight: 400; }
-  .toolbar .search { display: flex; align-items: center; gap: 8px; flex: 1; max-width: 320px; }
+/* ─── STATS ─── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.stat{
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
+  padding:18px 20px;position:relative;overflow:hidden;
+}
+.stat::before{content:'';position:absolute;inset:0;border-radius:var(--r-lg);background:radial-gradient(40% 60% at 100% 0%,rgba(91,158,255,.04),transparent 70%);pointer-events:none}
+.stat>*{position:relative;z-index:1}
+.stat-l{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px}
+.stat-v{font-family:var(--font-d);font-size:32px;font-weight:500;letter-spacing:-0.02em;line-height:1;color:var(--ink)}
+.stat-v.sm{font-size:16px;font-weight:500}
+.stat-s{font-size:11.5px;color:var(--ink-faint);margin-top:6px}
 
-  /* ─── Links list ─── */
-  .links-grid { display: grid; gap: 12px; }
-  .link-row {
-    display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: center;
-    padding: 16px 20px; cursor: pointer;
-  }
-  .link-row .link-meta { min-width: 0; }
-  .link-row .link-title { font-weight: 500; font-size: 15px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .link-row .link-url { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); display: flex; align-items: center; gap: 6px; }
-  .link-row .link-dest { font-size: 12px; color: var(--text-dim); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .link-row .link-clicks { font-family: 'Instrument Serif', serif; font-size: 24px; text-align: right; }
-  .link-row .link-actions { display: flex; gap: 6px; }
-  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; background: var(--accent-dim); color: var(--accent); margin-left: 8px; }
-  .pill.muted { background: var(--bg-elevated); color: var(--text-dim); }
-  .pill.danger { background: rgba(239,68,68,.12); color: var(--danger); }
+/* ─── TOOLBAR ─── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.toolbar h2{font-family:var(--font-d);font-size:22px;font-weight:500;letter-spacing:-0.018em}
+.toolbar-r{display:flex;gap:8px;align-items:center}
+.search-w{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);height:36px;padding:0 12px;width:240px;transition:.15s}
+.search-w:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(91,158,255,.18);background:var(--surface-2)}
+.search-w svg{width:14px;height:14px;color:var(--ink-faint)}
+.search-w input{flex:1;background:transparent;border:0;outline:0;font-size:13px;color:var(--ink)}
+.search-w input::placeholder{color:var(--ink-dim)}
 
-  /* ─── Empty state ─── */
-  .empty { text-align: center; padding: 80px 24px; color: var(--text-muted); }
-  .empty h3 { font-family: 'Instrument Serif', serif; font-size: 32px; font-weight: 400; color: var(--text); margin-bottom: 8px; }
+/* ─── LINKS LIST ─── */
+.links-grid{display:flex;flex-direction:column;gap:8px}
+.link-row{
+  display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;
+  padding:14px 18px;background:var(--surface);border:1px solid var(--rule);
+  border-radius:var(--r-lg);cursor:pointer;transition:.15s;
+}
+.link-row:hover{border-color:var(--ink-dim);background:var(--surface-2);transform:translateY(-1px)}
+.link-icon{
+  width:38px;height:38px;border-radius:var(--r);background:var(--brand-l);
+  border:1px solid rgba(91,158,255,.25);display:grid;place-items:center;color:var(--brand);flex-shrink:0;
+}
+.link-icon svg{width:16px;height:16px}
+.link-meta{min-width:0}
+.link-title{font-weight:500;font-size:14px;margin-bottom:3px;color:var(--ink);display:flex;align-items:center;gap:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.link-url{font-family:var(--mono);font-size:12px;color:var(--brand);display:flex;align-items:center;gap:6px}
+.link-url .lu-host{color:var(--ink-faint)}
+.link-dest{font-size:11.5px;color:var(--text-3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
+.link-clicks{text-align:right;padding:0 14px;border-left:1px solid var(--rule);min-width:72px}
+.link-clicks .num{font-family:var(--font-d);font-size:22px;font-weight:500;letter-spacing:-0.02em;color:var(--ink);line-height:1}
+.link-clicks .lbl{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-top:3px}
+.link-actions{display:flex;gap:2px}
 
-  /* ─── Modal ─── */
-  .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
-    display: none; align-items: center; justify-content: center; z-index: 100; padding: 24px;
-  }
-  .modal-backdrop.open { display: flex; }
-  .modal {
-    background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px;
-    width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto;
-  }
-  .modal.wide { max-width: 1080px; }
-  .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  .modal-header h3 { font-family: 'Instrument Serif', serif; font-size: 24px; font-weight: 400; }
-  .modal-body { padding: 24px; }
-  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+.pill{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.04em}
+.pill.active{background:rgba(91,227,138,.12);color:var(--success)}
+.pill.danger{background:rgba(255,122,122,.14);color:var(--danger)}
+.pill.muted{background:var(--surface);color:var(--ink-faint);border:1px solid var(--rule)}
 
-  /* ─── Form ─── */
-  .form-group { margin-bottom: 16px; }
-  .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .form-help { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
-  .url-preview {
-    padding: 12px 14px; background: var(--bg-elevated); border-radius: 10px;
-    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent);
-    word-break: break-all;
-  }
+/* ─── EMPTY STATE ─── */
+.empty{text-align:center;padding:80px 24px;color:var(--text-3)}
+.empty-mk{width:64px;height:64px;border-radius:18px;background:var(--brand-l);border:1px solid rgba(91,158,255,.2);color:var(--brand);display:grid;place-items:center;margin:0 auto 20px}
+.empty-mk svg{width:28px;height:28px}
+.empty h3{font-family:var(--font-d);font-size:24px;font-weight:500;letter-spacing:-0.018em;color:var(--ink);margin-bottom:8px}
+.empty p{max-width:360px;margin:0 auto 24px;font-size:13.5px;color:var(--text-2)}
 
-  /* ─── Login ─── */
-  .login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
-  .login-card { width: 100%; max-width: 400px; padding: 40px; }
-  .login-card h1 { font-family: 'Instrument Serif', serif; font-size: 36px; font-weight: 400; margin-bottom: 8px; }
-  .login-card p { color: var(--text-muted); margin-bottom: 32px; font-size: 14px; }
+/* ─── MODAL ─── */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);
+  display:none;align-items:center;justify-content:center;z-index:100;padding:24px;
+  animation:fade .2s ease both;
+}
+.modal-bg.open{display:flex}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--r-xl);
+  width:100%;max-width:680px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh-lg);
+  animation:slideUp .25s cubic-bezier(.22,1,.36,1) both;
+}
+.modal.wide{max-width:1080px}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.modal-h{padding:18px 24px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;background:var(--bg-2);z-index:5;border-radius:var(--r-xl) var(--r-xl) 0 0}
+.modal-h h3{font-family:var(--font-d);font-size:18px;font-weight:500;letter-spacing:-0.018em}
+.modal-h .h-acts{display:flex;gap:6px;align-items:center}
+.modal-b{padding:24px}
+.modal-f{padding:14px 24px;border-top:1px solid var(--rule);display:flex;justify-content:flex-end;gap:8px;background:var(--bg-2);border-radius:0 0 var(--r-xl) var(--r-xl)}
 
-  /* ─── Detail view (analytics) ─── */
-  .detail-grid { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
-  @media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } }
-  .qr-box { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 24px; background: var(--bg-elevated); border-radius: 14px; }
-  .qr-box canvas, .qr-box img { background: #fff; padding: 12px; border-radius: 8px; }
-  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 640px) { .charts-grid { grid-template-columns: 1fr; } }
-  .chart-card { background: var(--bg-elevated); border-radius: 12px; padding: 16px; }
-  .chart-card h4 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
-  .chart-card .full-w { grid-column: 1 / -1; }
-  .chart-wrap { position: relative; height: 200px; }
-  .chart-wrap.tall { height: 240px; }
-  .breakdown-list { display: flex; flex-direction: column; gap: 8px; }
-  .breakdown-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--border); }
-  .breakdown-item:last-child { border: 0; }
-  .breakdown-item .label { color: var(--text); display: flex; align-items: center; gap: 8px; }
-  .breakdown-item .count { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+/* ─── FORM ─── */
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.label{display:block;font-size:11.5px;font-weight:500;color:var(--ink-soft);margin-bottom:6px}
+.label small{font-weight:400;color:var(--ink-faint);margin-left:4px}
+.input,.textarea,.select{
+  width:100%;padding:9px 12px;height:36px;background:var(--alt);
+  border:1px solid var(--rule);border-radius:var(--r);font-size:13px;color:var(--ink);transition:.12s;
+  font-family:inherit;
+}
+.input::placeholder,.textarea::placeholder{color:var(--ink-dim)}
+.input:focus,.textarea:focus,.select:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px rgba(91,158,255,.18);background:var(--surface)}
+.textarea{height:auto;min-height:62px;resize:vertical;line-height:1.5;padding:10px 12px}
+.select{appearance:none;-webkit-appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a5a8ad' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.help{font-size:11.5px;color:var(--ink-faint);margin-top:6px;line-height:1.45}
+.preview-url{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:11px 14px;background:rgba(91,158,255,.06);border:1px solid rgba(91,158,255,.16);
+  border-radius:var(--r);font-family:var(--mono);font-size:12.5px;color:var(--brand);word-break:break-all;
+}
+details.adv{margin-top:12px;border:1px dashed var(--rule);border-radius:var(--r);overflow:hidden}
+details.adv summary{padding:10px 14px;cursor:pointer;font-size:12.5px;color:var(--ink-soft);font-weight:500;font-family:var(--font-d);list-style:none;display:flex;align-items:center;gap:6px}
+details.adv summary::before{content:'›';transition:.15s;font-size:14px;color:var(--ink-faint)}
+details.adv[open] summary::before{transform:rotate(90deg)}
+details.adv summary::-webkit-details-marker{display:none}
+details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);background:var(--alt)}
 
-  /* ─── Toast ─── */
-  .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; font-size: 14px; opacity: 0; transform: translateY(10px); transition: all .2s; z-index: 200; }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.success { border-color: var(--success); }
-  .toast.error { border-color: var(--danger); }
+/* ─── LOGIN ─── */
+.login{min-height:100vh;display:grid;place-items:center;padding:24px}
+.login-card{
+  width:100%;max-width:400px;padding:36px 32px;
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-xl);
+  box-shadow:var(--sh-lg);position:relative;overflow:hidden;
+}
+.login-card::before{content:'';position:absolute;inset:0;border-radius:var(--r-xl);background:radial-gradient(60% 60% at 100% 0%,rgba(91,158,255,.06),transparent 60%);pointer-events:none}
+.login-card>*{position:relative;z-index:1}
+.login-card .brand{margin-bottom:24px}
+.login-card h1{font-family:var(--font-d);font-size:32px;font-weight:500;letter-spacing:-0.02em;line-height:1.1;margin-bottom:8px}
+.login-card .lead{color:var(--text-2);margin-bottom:28px;font-size:13.5px}
+.login-err{margin-top:12px;color:var(--danger);font-size:12.5px;text-align:center;min-height:18px}
 
-  /* ─── Loading ─── */
-  .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ─── DETAIL ─── */
+.detail-grid{display:grid;grid-template-columns:300px 1fr;gap:24px}
+@media (max-width:820px){.detail-grid{grid-template-columns:1fr}}
+.qr-box{
+  display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px;
+  background:var(--alt);border:1px solid var(--rule);border-radius:var(--r-lg);
+}
+.qr-box canvas{background:#fff;padding:10px;border-radius:var(--r-sm);box-shadow:var(--sh-sm)}
+.detail-info{margin-top:12px;display:flex;flex-direction:column;gap:14px}
+.detail-info .di-l{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:5px}
+.short-url-w{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:9px 12px;background:rgba(91,158,255,.06);border:1px solid rgba(91,158,255,.16);
+  border-radius:var(--r);font-family:var(--mono);font-size:12px;color:var(--brand);word-break:break-all;
+}
+.short-url-w span{flex:1;min-width:0}
+.dest-w{font-size:12px;color:var(--text-2);font-family:var(--mono);word-break:break-all;line-height:1.5;padding:9px 12px;background:var(--alt);border:1px solid var(--rule);border-radius:var(--r)}
 
-  /* ─── Utility ─── */
-  .hidden { display: none !important; }
-  .row { display: flex; align-items: center; gap: 8px; }
-  .between { justify-content: space-between; }
-  .grow { flex: 1; }
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.charts-grid{grid-template-columns:1fr}}
+.chart-card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px}
+.chart-card.full{grid-column:1/-1}
+.chart-card h4{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:12px}
+.chart-wrap{position:relative;height:200px}
+.chart-wrap.short{height:160px}
+.bd-list{display:flex;flex-direction:column;gap:8px}
+.bd-item{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:7px 0;border-bottom:1px dashed var(--rule)}
+.bd-item:last-child{border-bottom:0}
+.bd-l{color:var(--ink);display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bd-c{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);flex-shrink:0}
+.bd-c .pct{color:var(--ink-dim);margin-left:4px}
+.bd-empty{color:var(--ink-dim);font-size:12.5px;font-style:italic}
+
+.detail-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.detail-stats .stat{padding:12px 14px}
+.detail-stats .stat-v{font-size:22px}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:24px;right:24px;padding:11px 18px;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--r);font-size:13px;opacity:0;transform:translateY(10px);transition:all .2s;z-index:200;box-shadow:var(--sh)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{border-color:rgba(91,227,138,.4);color:var(--success)}
+.toast.error{border-color:rgba(255,122,122,.4);color:var(--danger)}
+
+/* ─── UTILITIES ─── */
+.hidden{display:none!important}
+.row{display:flex;align-items:center;gap:8px}
+.between{justify-content:space-between}
+.grow{flex:1}
+.muted{color:var(--ink-faint)}
 </style>
 </head>
 <body>
 
-<!-- ════════════ LOGIN VIEW ════════════ -->
-<div id="loginView" class="login-wrap hidden">
-  <div class="card login-card">
-    <div class="brand" style="margin-bottom:24px">
-      <div class="brand-logo">A</div>
-      <div class="brand-name">Audaza <span>Links</span></div>
+<!-- ════════════ LOGIN ════════════ -->
+<div id="loginView" class="login hidden">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-mk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 15c-2 2-2 5 0 7s5 2 7 0l3-3"/><path d="M15 9c2-2 2-5 0-7s-5-2-7 0L5 5"/></svg>
+      </div>
+      <div class="brand-nm">Audaza <span>Links</span></div>
     </div>
-    <h1>Entrar</h1>
-    <p>Acesso restrito ao painel da Audaza.</p>
+    <h1>Bem-vindo</h1>
+    <p class="lead">Acesso restrito ao painel da Audaza.</p>
     <form id="loginForm">
-      <div class="form-group">
-        <label>E-mail</label>
-        <input type="email" id="loginEmail" required autocomplete="email" />
+      <div class="field">
+        <label class="label">E-mail</label>
+        <input type="email" class="input" id="loginEmail" required autocomplete="email" placeholder="voce@audaza.com" />
       </div>
-      <div class="form-group">
-        <label>Senha</label>
-        <input type="password" id="loginPassword" required autocomplete="current-password" />
+      <div class="field">
+        <label class="label">Senha</label>
+        <input type="password" class="input" id="loginPassword" required autocomplete="current-password" />
       </div>
-      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center">
+      <button type="submit" class="btn btn-br" style="width:100%;justify-content:center;height:40px;font-size:13.5px">
         <span id="loginBtnLabel">Entrar</span>
       </button>
-      <div id="loginError" style="margin-top:12px; color:var(--danger); font-size:13px; text-align:center;"></div>
+      <div class="login-err" id="loginError"></div>
     </form>
   </div>
 </div>
 
-<!-- ════════════ APP VIEW ════════════ -->
-<div id="appView" class="container hidden">
+<!-- ════════════ APP ════════════ -->
+<div id="appView" class="hidden">
 
-  <header class="app">
+  <header class="topbar">
     <div class="brand">
-      <div class="brand-logo">A</div>
-      <div class="brand-name">Audaza <span>Links</span></div>
+      <div class="brand-mk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 15c-2 2-2 5 0 7s5 2 7 0l3-3"/><path d="M15 9c2-2 2-5 0-7s-5-2-7 0L5 5"/></svg>
+      </div>
+      <div class="brand-nm">Audaza <span>Links</span></div>
     </div>
-    <div class="user-chip">
-      <span id="userEmail" class="mono"></span>
-      <button class="btn-sm" id="logoutBtn">Sair</button>
+    <div class="div-v"></div>
+    <div class="user-tag" id="userEmail"></div>
+    <div class="tb-acts">
+      <button class="btn btn-i" id="themeToggle" title="Trocar tema">
+        <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+      </button>
+      <button class="btn btn-s btn-sm" id="logoutBtn">Sair</button>
     </div>
   </header>
 
-  <!-- stats -->
-  <div class="stats-row">
-    <div class="card stat-card">
-      <div class="stat-label">Total de links</div>
-      <div class="stat-value mono" id="statTotalLinks">0</div>
-      <div class="stat-sub">criados</div>
+  <main class="workspace">
+    <div class="page-head">
+      <div class="eyebrow">Encurtador</div>
+      <h1 class="page-title">Crie links curtos com <em>tracking</em> completo.</h1>
+      <p class="page-desc">Encurte URLs em <span class="mono">link.audaza.com</span>, <span class="mono">go.audaza.com</span> ou <span class="mono">bio.audaza.com</span> e veja cliques, países, devices e referrers em tempo real.</p>
     </div>
-    <div class="card stat-card">
-      <div class="stat-label">Cliques (30d)</div>
-      <div class="stat-value mono" id="statTotalClicks">0</div>
-      <div class="stat-sub">últimos 30 dias</div>
-    </div>
-    <div class="card stat-card">
-      <div class="stat-label">Cliques (24h)</div>
-      <div class="stat-value mono" id="statClicks24h">0</div>
-      <div class="stat-sub">últimas 24 horas</div>
-    </div>
-    <div class="card stat-card">
-      <div class="stat-label">Top link</div>
-      <div class="stat-value mono" style="font-size:18px" id="statTopLink">—</div>
-      <div class="stat-sub" id="statTopLinkClicks">—</div>
-    </div>
-  </div>
 
-  <!-- toolbar -->
-  <div class="toolbar">
-    <h2>Seus links</h2>
-    <div class="row">
-      <input type="search" placeholder="Buscar..." id="searchInput" style="width:240px" />
-      <button class="btn btn-primary" onclick="openCreateModal()">
-        <span>＋ Novo link</span>
+    <!-- stats -->
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-l">Total de links</div>
+        <div class="stat-v" id="statTotalLinks">0</div>
+        <div class="stat-s">criados</div>
+      </div>
+      <div class="stat">
+        <div class="stat-l">Cliques 30 dias</div>
+        <div class="stat-v" id="statTotalClicks">0</div>
+        <div class="stat-s">últimos 30d</div>
+      </div>
+      <div class="stat">
+        <div class="stat-l">Cliques 24h</div>
+        <div class="stat-v" id="statClicks24h">0</div>
+        <div class="stat-s">últimas 24h</div>
+      </div>
+      <div class="stat">
+        <div class="stat-l">Top link</div>
+        <div class="stat-v sm" id="statTopLink">—</div>
+        <div class="stat-s" id="statTopLinkClicks">—</div>
+      </div>
+    </div>
+
+    <!-- toolbar -->
+    <div class="toolbar">
+      <h2>Seus links</h2>
+      <div class="toolbar-r">
+        <div class="search-w">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <input type="search" id="searchInput" placeholder="Buscar..." />
+        </div>
+        <button class="btn btn-br" onclick="openCreateModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Novo link
+        </button>
+      </div>
+    </div>
+
+    <!-- list -->
+    <div id="linksList" class="links-grid"></div>
+
+    <div id="emptyState" class="empty hidden">
+      <div class="empty-mk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 15c-2 2-2 5 0 7s5 2 7 0l3-3"/><path d="M15 9c2-2 2-5 0-7s-5-2-7 0L5 5"/></svg>
+      </div>
+      <h3>Nenhum link ainda</h3>
+      <p>Crie o primeiro link curto. Os cliques chegam em tempo real com país, device, browser e referrer.</p>
+      <button class="btn btn-br" onclick="openCreateModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Criar primeiro link
       </button>
     </div>
-  </div>
-
-  <!-- list -->
-  <div id="linksList" class="links-grid"></div>
-
-  <div id="emptyState" class="empty hidden">
-    <h3>Nenhum link ainda</h3>
-    <p>Crie o primeiro link encurtado e veja os cliques chegarem em tempo real.</p>
-    <button class="btn btn-primary" style="margin-top:24px" onclick="openCreateModal()">＋ Criar primeiro link</button>
-  </div>
+  </main>
 </div>
 
-<!-- ════════════ CREATE / EDIT MODAL ════════════ -->
-<div class="modal-backdrop" id="formModal">
+<!-- ════════════ FORM MODAL ════════════ -->
+<div class="modal-bg" id="formModal">
   <div class="modal">
-    <div class="modal-header">
+    <div class="modal-h">
       <h3 id="formModalTitle">Novo link</h3>
-      <button class="btn btn-icon btn-ghost" onclick="closeFormModal()">✕</button>
+      <div class="h-acts">
+        <button class="btn btn-i" onclick="closeFormModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
     </div>
-    <div class="modal-body">
+    <div class="modal-b">
       <form id="linkForm">
         <input type="hidden" id="formLinkId" />
 
-        <div class="form-group">
-          <label>URL de destino *</label>
-          <input type="url" id="formDestination" placeholder="https://audaza.com/landing/..." required />
+        <div class="field">
+          <label class="label">URL de destino *</label>
+          <input type="url" class="input" id="formDestination" placeholder="https://audaza.com/landing/..." required />
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label>Domínio</label>
-            <select id="formHost">
+        <div class="field-row">
+          <div class="field">
+            <label class="label">Domínio</label>
+            <select class="select" id="formHost">
               <option value="link.audaza.com">link.audaza.com</option>
               <option value="go.audaza.com">go.audaza.com</option>
               <option value="bio.audaza.com">bio.audaza.com</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Slug (deixe vazio para aleatório)</label>
-            <input type="text" id="formSlug" placeholder="ex: promo-natal" pattern="[a-zA-Z0-9_-]+" />
+          <div class="field">
+            <label class="label">Slug <small>vazio = aleatório</small></label>
+            <input type="text" class="input" id="formSlug" placeholder="ex: promo-natal" pattern="[a-zA-Z0-9_-]+" />
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Pré-visualização</label>
-          <div class="url-preview" id="urlPreview">link.audaza.com/&lt;slug&gt;</div>
+        <div class="field">
+          <label class="label">Pré-visualização</label>
+          <div class="preview-url">
+            <span id="urlPreview">link.audaza.com/&lt;slug&gt;</span>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>Título interno (opcional)</label>
-          <input type="text" id="formTitle" placeholder="Ex: Campanha Black Friday — Cartão Tadeu" />
-          <div class="form-help">Só você vê. Ajuda a achar o link depois.</div>
+        <div class="field">
+          <label class="label">Título interno <small>opcional</small></label>
+          <input type="text" class="input" id="formTitle" placeholder="Ex: Black Friday — Cartão Tadeu" />
+          <div class="help">Só você vê. Ajuda a achar o link depois.</div>
         </div>
 
-        <details style="margin-top:16px;">
-          <summary style="cursor:pointer; color:var(--text-muted); font-size:14px; padding:8px 0;">▸ UTMs (opcional)</summary>
-          <div style="padding-top:12px;">
-            <div class="form-row">
-              <div class="form-group">
-                <label>utm_source</label>
-                <input type="text" id="formUtmSource" placeholder="instagram, whatsapp..." />
-              </div>
-              <div class="form-group">
-                <label>utm_medium</label>
-                <input type="text" id="formUtmMedium" placeholder="social, email..." />
-              </div>
+        <details class="adv">
+          <summary>UTMs (Google Analytics / Meta Ads)</summary>
+          <div class="adv-body">
+            <div class="field-row">
+              <div class="field"><label class="label">utm_source</label><input type="text" class="input" id="formUtmSource" placeholder="instagram, whatsapp..." /></div>
+              <div class="field"><label class="label">utm_medium</label><input type="text" class="input" id="formUtmMedium" placeholder="social, email..." /></div>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>utm_campaign</label>
-                <input type="text" id="formUtmCampaign" placeholder="black-friday-2026" />
-              </div>
-              <div class="form-group">
-                <label>utm_content</label>
-                <input type="text" id="formUtmContent" placeholder="botao-cta-1" />
-              </div>
+            <div class="field-row">
+              <div class="field"><label class="label">utm_campaign</label><input type="text" class="input" id="formUtmCampaign" placeholder="black-friday-2026" /></div>
+              <div class="field"><label class="label">utm_content</label><input type="text" class="input" id="formUtmContent" placeholder="botao-cta-1" /></div>
             </div>
           </div>
         </details>
 
-        <details style="margin-top:8px;">
-          <summary style="cursor:pointer; color:var(--text-muted); font-size:14px; padding:8px 0;">▸ Avançado (opcional)</summary>
-          <div style="padding-top:12px;">
-            <div class="form-group">
-              <label>Expira em</label>
-              <input type="datetime-local" id="formExpiresAt" />
-              <div class="form-help">Após a data, o link retorna 410 (link expirado).</div>
+        <details class="adv">
+          <summary>Avançado</summary>
+          <div class="adv-body">
+            <div class="field">
+              <label class="label">Expira em</label>
+              <input type="datetime-local" class="input" id="formExpiresAt" />
+              <div class="help">Após a data, o link retorna 410 (link expirado).</div>
             </div>
-            <div class="form-group">
-              <label>Status</label>
-              <select id="formIsActive">
+            <div class="field">
+              <label class="label">Status</label>
+              <select class="select" id="formIsActive">
                 <option value="true">Ativo</option>
                 <option value="false">Pausado</option>
               </select>
@@ -369,90 +491,102 @@
         </details>
       </form>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeFormModal()">Cancelar</button>
-      <button class="btn btn-primary" id="formSubmitBtn" onclick="submitLinkForm()">Criar link</button>
+    <div class="modal-f">
+      <button class="btn btn-g" onclick="closeFormModal()">Cancelar</button>
+      <button class="btn btn-br" id="formSubmitBtn" onclick="submitLinkForm()">Criar link</button>
     </div>
   </div>
 </div>
 
 <!-- ════════════ DETAIL MODAL ════════════ -->
-<div class="modal-backdrop" id="detailModal">
+<div class="modal-bg" id="detailModal">
   <div class="modal wide">
-    <div class="modal-header">
+    <div class="modal-h">
       <h3 id="detailTitle">Detalhes do link</h3>
-      <div class="row">
-        <button class="btn btn-ghost btn-sm" onclick="editFromDetail()">Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteFromDetail()">Excluir</button>
-        <button class="btn btn-icon btn-ghost" onclick="closeDetailModal()">✕</button>
+      <div class="h-acts">
+        <button class="btn btn-s btn-sm" onclick="editFromDetail()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
+        </button>
+        <button class="btn btn-d btn-sm" onclick="deleteFromDetail()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+          Excluir
+        </button>
+        <button class="btn btn-i" onclick="closeDetailModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
     </div>
-    <div class="modal-body">
+    <div class="modal-b">
       <div class="detail-grid">
-        <!-- left: QR + info -->
+        <!-- left -->
         <div>
           <div class="qr-box">
             <div id="qrCode"></div>
-            <button class="btn btn-ghost btn-sm" onclick="downloadQR()">Baixar QR</button>
+            <button class="btn btn-s btn-sm" onclick="downloadQR()">Baixar QR</button>
           </div>
-          <div style="margin-top:16px;">
-            <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">URL curta</div>
-            <div class="url-preview row" style="justify-content:space-between;">
-              <span id="detailShortUrl"></span>
-              <button class="btn btn-ghost btn-sm" onclick="copyShortUrl()">Copiar</button>
+          <div class="detail-info">
+            <div>
+              <div class="di-l">URL curta</div>
+              <div class="short-url-w">
+                <span id="detailShortUrl"></span>
+                <button class="btn btn-i btn-sm" onclick="copyShortUrl()" title="Copiar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
             </div>
-          </div>
-          <div style="margin-top:16px;">
-            <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">Destino</div>
-            <div style="font-size:13px; color:var(--text-muted); word-break:break-all;" id="detailDestination"></div>
-          </div>
-          <div style="margin-top:16px;">
-            <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">Status</div>
-            <div id="detailStatus"></div>
+            <div>
+              <div class="di-l">Destino</div>
+              <div class="dest-w" id="detailDestination"></div>
+            </div>
+            <div>
+              <div class="di-l">Status</div>
+              <div id="detailStatus"></div>
+            </div>
           </div>
         </div>
 
-        <!-- right: charts -->
+        <!-- right -->
         <div>
-          <div class="stats-row" style="margin-bottom:16px;">
-            <div class="chart-card stat-card">
-              <div class="stat-label">Total</div>
-              <div class="stat-value mono" id="detailTotalClicks">0</div>
+          <div class="detail-stats">
+            <div class="stat">
+              <div class="stat-l">Total</div>
+              <div class="stat-v" id="detailTotalClicks">0</div>
             </div>
-            <div class="chart-card stat-card">
-              <div class="stat-label">24h</div>
-              <div class="stat-value mono" id="detailClicks24h">0</div>
+            <div class="stat">
+              <div class="stat-l">24h</div>
+              <div class="stat-v" id="detailClicks24h">0</div>
             </div>
-            <div class="chart-card stat-card">
-              <div class="stat-label">Pico (hora)</div>
-              <div class="stat-value mono" id="detailPeakHour">—</div>
+            <div class="stat">
+              <div class="stat-l">Pico</div>
+              <div class="stat-v" id="detailPeakHour">—</div>
             </div>
           </div>
 
           <div class="charts-grid">
-            <div class="chart-card full-w">
+            <div class="chart-card full">
               <h4>Cliques por dia (últimos 30 dias)</h4>
               <div class="chart-wrap"><canvas id="chartDaily"></canvas></div>
             </div>
             <div class="chart-card">
               <h4>Dispositivo</h4>
-              <div class="chart-wrap"><canvas id="chartDevice"></canvas></div>
+              <div class="chart-wrap short"><canvas id="chartDevice"></canvas></div>
             </div>
             <div class="chart-card">
               <h4>Hora do dia</h4>
-              <div class="chart-wrap"><canvas id="chartHour"></canvas></div>
+              <div class="chart-wrap short"><canvas id="chartHour"></canvas></div>
             </div>
             <div class="chart-card">
               <h4>Top países</h4>
-              <div class="breakdown-list" id="breakdownCountry"></div>
+              <div class="bd-list" id="breakdownCountry"></div>
             </div>
             <div class="chart-card">
               <h4>Top navegadores</h4>
-              <div class="breakdown-list" id="breakdownBrowser"></div>
+              <div class="bd-list" id="breakdownBrowser"></div>
             </div>
-            <div class="chart-card full-w">
+            <div class="chart-card full">
               <h4>Top referrers</h4>
-              <div class="breakdown-list" id="breakdownReferer"></div>
+              <div class="bd-list" id="breakdownReferer"></div>
             </div>
           </div>
         </div>
@@ -470,38 +604,36 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
 <script>
-/* ───────────────────────────────────────────────────────────
-   CONFIG — Supabase Task Manager (compartilhado)
-   ─────────────────────────────────────────────────────────── */
+/* ─── CONFIG ─── */
 const SUPABASE_URL = 'https://seykakvwlcjewjflkkdt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Im6il7Dgwh0X37rhI6iv-g_ENceHMN5';
-
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ─── State ─── */
 let currentUser = null;
 let allLinks = [];
 let currentLinkId = null;
 const charts = {};
 
-/* ───────────────────────────────────────────────────────────
-   AUTH
-   ─────────────────────────────────────────────────────────── */
+/* ─── THEME ─── */
+const savedTheme = localStorage.getItem('audazalinks-theme');
+if (savedTheme === 'light') document.body.classList.add('light');
+document.getElementById('themeToggle').addEventListener('click', () => {
+  document.body.classList.toggle('light');
+  localStorage.setItem('audazalinks-theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  // re-render charts on theme change to pick up new colors
+  if (currentLinkId) reloadDetailCharts();
+});
+
+/* ─── AUTH ─── */
 async function checkSession() {
   const { data: { session } } = await supa.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    showApp();
-  } else {
-    showLogin();
-  }
+  if (session) { currentUser = session.user; showApp(); }
+  else showLogin();
 }
-
 function showLogin() {
   document.getElementById('loginView').classList.remove('hidden');
   document.getElementById('appView').classList.add('hidden');
 }
-
 function showApp() {
   document.getElementById('loginView').classList.add('hidden');
   document.getElementById('appView').classList.remove('hidden');
@@ -535,32 +667,22 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   showLogin();
 });
 
-/* ───────────────────────────────────────────────────────────
-   LOAD LINKS + STATS
-   ─────────────────────────────────────────────────────────── */
+/* ─── LOAD ─── */
 async function loadLinks() {
-  const { data: links, error } = await supa
-    .from('audazalinks_links')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) { toast('Erro ao carregar links: ' + error.message, 'error'); return; }
+  const { data: links, error } = await supa.from('audazalinks_links').select('*').order('created_at', { ascending: false });
+  if (error) { toast('Erro ao carregar: ' + error.message, 'error'); return; }
   allLinks = links || [];
-
   await loadStats();
   renderLinks();
 }
 
 async function loadStats() {
-  // total cliques 30d
   const since30 = new Date(Date.now() - 30 * 86400e3).toISOString();
   const since24 = new Date(Date.now() - 86400e3).toISOString();
-
   const [{ count: c30 }, { count: c24 }] = await Promise.all([
     supa.from('audazalinks_clicks').select('id', { count: 'exact', head: true }).gte('clicked_at', since30),
     supa.from('audazalinks_clicks').select('id', { count: 'exact', head: true }).gte('clicked_at', since24),
   ]);
-
   document.getElementById('statTotalLinks').textContent = allLinks.length;
   document.getElementById('statTotalClicks').textContent = c30 || 0;
   document.getElementById('statClicks24h').textContent = c24 || 0;
@@ -569,15 +691,16 @@ async function loadStats() {
   if (top) {
     document.getElementById('statTopLink').textContent = `${top.host}/${top.slug}`;
     document.getElementById('statTopLinkClicks').textContent = `${top.click_count || 0} cliques`;
+  } else {
+    document.getElementById('statTopLink').textContent = '—';
+    document.getElementById('statTopLinkClicks').textContent = '—';
   }
 }
 
 function renderLinks() {
   const q = (document.getElementById('searchInput').value || '').toLowerCase();
   const filtered = allLinks.filter(l =>
-    !q || (l.title||'').toLowerCase().includes(q)
-       || l.slug.toLowerCase().includes(q)
-       || (l.destination||'').toLowerCase().includes(q)
+    !q || (l.title||'').toLowerCase().includes(q) || l.slug.toLowerCase().includes(q) || (l.destination||'').toLowerCase().includes(q)
   );
 
   const list = document.getElementById('linksList');
@@ -591,22 +714,32 @@ function renderLinks() {
   empty.classList.add('hidden');
 
   list.innerHTML = filtered.map(l => `
-    <div class="card card-hover link-row" onclick="openDetail(${l.id})">
+    <div class="link-row" onclick="openDetail(${l.id})">
+      <div class="link-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </div>
       <div class="link-meta">
         <div class="link-title">
           ${escapeHtml(l.title || '(sem título)')}
           ${!l.is_active ? '<span class="pill danger">pausado</span>' : ''}
           ${isExpired(l) ? '<span class="pill danger">expirado</span>' : ''}
         </div>
-        <div class="link-url mono">
-          ${l.host}/${l.slug}
-          <button class="btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();copyText('https://${l.host}/${l.slug}')" title="Copiar">⧉</button>
+        <div class="link-url">
+          <span class="lu-host">${l.host}/</span><strong>${l.slug}</strong>
+          <button class="btn btn-i btn-sm" onclick="event.stopPropagation();copyText('https://${l.host}/${l.slug}')" title="Copiar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
         </div>
         <div class="link-dest">→ ${escapeHtml(l.destination)}</div>
       </div>
-      <div class="link-clicks">${l.click_count || 0}</div>
+      <div class="link-clicks">
+        <div class="num">${l.click_count || 0}</div>
+        <div class="lbl">cliques</div>
+      </div>
       <div class="link-actions">
-        <button class="btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();openDetail(${l.id})" title="Ver">→</button>
+        <button class="btn btn-i" onclick="event.stopPropagation();openDetail(${l.id})" title="Ver detalhes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
       </div>
     </div>
   `).join('');
@@ -614,9 +747,7 @@ function renderLinks() {
 
 document.getElementById('searchInput').addEventListener('input', renderLinks);
 
-/* ───────────────────────────────────────────────────────────
-   CREATE / EDIT LINK
-   ─────────────────────────────────────────────────────────── */
+/* ─── CREATE / EDIT ─── */
 function openCreateModal() {
   document.getElementById('formModalTitle').textContent = 'Novo link';
   document.getElementById('formSubmitBtn').textContent = 'Criar link';
@@ -625,7 +756,6 @@ function openCreateModal() {
   updatePreview();
   document.getElementById('formModal').classList.add('open');
 }
-
 function openEditModal(id) {
   const l = allLinks.find(x => x.id === id);
   if (!l) return;
@@ -645,10 +775,7 @@ function openEditModal(id) {
   updatePreview();
   document.getElementById('formModal').classList.add('open');
 }
-
-function closeFormModal() {
-  document.getElementById('formModal').classList.remove('open');
-}
+function closeFormModal() { document.getElementById('formModal').classList.remove('open'); }
 
 function updatePreview() {
   const host = document.getElementById('formHost').value;
@@ -666,16 +793,11 @@ async function submitLinkForm() {
   const title = document.getElementById('formTitle').value.trim();
 
   if (!destination) { toast('Destino é obrigatório', 'error'); return; }
-
-  // Slug random se vazio
   if (!slug) slug = randomSlug();
-  // Validar formato
   if (!/^[a-zA-Z0-9_-]+$/.test(slug)) { toast('Slug só pode ter letras, números, _ e -', 'error'); return; }
 
   const payload = {
-    destination,
-    host,
-    slug,
+    destination, host, slug,
     title: title || null,
     utm_source: document.getElementById('formUtmSource').value.trim() || null,
     utm_medium: document.getElementById('formUtmMedium').value.trim() || null,
@@ -690,23 +812,16 @@ async function submitLinkForm() {
   btn.disabled = true; btn.textContent = 'Salvando...';
 
   let result;
-  if (id) {
-    result = await supa.from('audazalinks_links').update(payload).eq('id', id).select().single();
-  } else {
-    result = await supa.from('audazalinks_links').insert(payload).select().single();
-  }
+  if (id) result = await supa.from('audazalinks_links').update(payload).eq('id', id).select().single();
+  else result = await supa.from('audazalinks_links').insert(payload).select().single();
 
   btn.disabled = false; btn.textContent = id ? 'Salvar alterações' : 'Criar link';
 
   if (result.error) {
-    if (result.error.code === '23505') {
-      toast(`Já existe um link com slug "${slug}" em ${host}`, 'error');
-    } else {
-      toast('Erro: ' + result.error.message, 'error');
-    }
+    if (result.error.code === '23505') toast(`Slug "${slug}" já existe em ${host}`, 'error');
+    else toast('Erro: ' + result.error.message, 'error');
     return;
   }
-
   toast(id ? 'Link atualizado' : 'Link criado!', 'success');
   closeFormModal();
   await loadLinks();
@@ -721,9 +836,7 @@ async function deleteLink(id) {
   await loadLinks();
 }
 
-/* ───────────────────────────────────────────────────────────
-   DETAIL VIEW (analytics)
-   ─────────────────────────────────────────────────────────── */
+/* ─── DETAIL ─── */
 async function openDetail(id) {
   currentLinkId = id;
   const link = allLinks.find(l => l.id === id);
@@ -734,11 +847,10 @@ async function openDetail(id) {
   document.getElementById('detailShortUrl').textContent = shortUrl;
   document.getElementById('detailDestination').textContent = link.destination;
   document.getElementById('detailStatus').innerHTML =
-    `${link.is_active ? '<span class="pill">ativo</span>' : '<span class="pill danger">pausado</span>'}` +
+    `${link.is_active ? '<span class="pill active">ativo</span>' : '<span class="pill danger">pausado</span>'}` +
     `${isExpired(link) ? ' <span class="pill danger">expirado</span>' : ''}`;
   document.getElementById('detailTotalClicks').textContent = link.click_count || 0;
 
-  // QR
   const qrEl = document.getElementById('qrCode');
   qrEl.innerHTML = '';
   const canvas = document.createElement('canvas');
@@ -747,14 +859,15 @@ async function openDetail(id) {
 
   document.getElementById('detailModal').classList.add('open');
 
-  // Load click data
-  const { data: clicks } = await supa
-    .from('audazalinks_clicks')
-    .select('*')
-    .eq('link_id', id)
-    .order('clicked_at', { ascending: false })
-    .limit(10000);
+  const { data: clicks } = await supa.from('audazalinks_clicks').select('*').eq('link_id', id).order('clicked_at', { ascending: false }).limit(10000);
+  renderAnalytics(clicks || []);
+}
 
+async function reloadDetailCharts() {
+  if (!currentLinkId) return;
+  const { data: clicks } = await supa.from('audazalinks_clicks').select('*').eq('link_id', currentLinkId).order('clicked_at', { ascending: false }).limit(10000);
+  Object.values(charts).forEach(c => c?.destroy());
+  Object.keys(charts).forEach(k => delete charts[k]);
   renderAnalytics(clicks || []);
 }
 
@@ -768,35 +881,26 @@ function closeDetailModal() {
 function editFromDetail() { closeDetailModal(); openEditModal(currentLinkId); }
 function deleteFromDetail() { deleteLink(currentLinkId); }
 
-async function copyShortUrl() {
-  const text = document.getElementById('detailShortUrl').textContent;
-  await copyText(text);
-}
+async function copyShortUrl() { await copyText(document.getElementById('detailShortUrl').textContent); }
 function downloadQR() {
   const canvas = document.querySelector('#qrCode canvas');
   if (!canvas) return;
-  const link = document.createElement('a');
-  link.download = `audaza-links-qr-${currentLinkId}.png`;
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+  const a = document.createElement('a');
+  a.download = `audaza-links-qr-${currentLinkId}.png`;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
 }
 
 function renderAnalytics(clicks) {
-  // 24h count
   const since24 = Date.now() - 86400e3;
   const c24 = clicks.filter(c => new Date(c.clicked_at).getTime() >= since24).length;
   document.getElementById('detailClicks24h').textContent = c24;
 
-  // peak hour
   const byHour = new Array(24).fill(0);
-  clicks.forEach(c => {
-    const h = new Date(c.clicked_at).getHours();
-    byHour[h]++;
-  });
+  clicks.forEach(c => byHour[new Date(c.clicked_at).getHours()]++);
   const peakHour = byHour.indexOf(Math.max(...byHour));
   document.getElementById('detailPeakHour').textContent = clicks.length ? `${String(peakHour).padStart(2,'0')}h` : '—';
 
-  // daily (30 days)
   const byDay = {};
   for (let i = 29; i >= 0; i--) {
     const d = new Date(Date.now() - i * 86400e3);
@@ -811,68 +915,62 @@ function renderAnalytics(clicks) {
   drawDoughnut('chartDevice', countBy(clicks, 'device_type'));
   drawBarChart('chartHour', byHour.map((_,i) => `${i}h`), byHour);
 
-  renderBreakdown('breakdownCountry', countBy(clicks, 'country'), 'Sem dados de país (enriquecimento pendente)');
-  renderBreakdown('breakdownBrowser', countBy(clicks, 'browser'), 'Sem dados (enriquecimento pendente)');
-  renderBreakdown('breakdownReferer', countBy(clicks, 'referer_host'), 'Tráfego direto (sem referrer)');
+  renderBreakdown('breakdownCountry', countBy(clicks, 'country'), 'Sem dados de país (enriquecimento pendente).');
+  renderBreakdown('breakdownBrowser', countBy(clicks, 'browser'), 'Sem dados (enriquecimento pendente).');
+  renderBreakdown('breakdownReferer', countBy(clicks, 'referer_host'), 'Tráfego direto (sem referrer).');
 }
 
 function countBy(arr, key) {
   const m = {};
-  arr.forEach(item => {
-    const v = item[key] || '(desconhecido)';
-    m[v] = (m[v] || 0) + 1;
-  });
+  arr.forEach(item => { const v = item[key] || '(desconhecido)'; m[v] = (m[v] || 0) + 1; });
   return m;
 }
-
 function renderBreakdown(elId, map, emptyMsg) {
   const el = document.getElementById(elId);
   const items = Object.entries(map).sort((a,b) => b[1] - a[1]).slice(0, 8);
-  if (items.length === 0) {
-    el.innerHTML = `<div style="color:var(--text-dim); font-size:13px;">${emptyMsg}</div>`;
-    return;
-  }
-  const total = items.reduce((s, [_,c]) => s + c, 0);
+  if (items.length === 0) { el.innerHTML = `<div class="bd-empty">${emptyMsg}</div>`; return; }
+  const total = items.reduce((s,[_,c]) => s + c, 0);
   el.innerHTML = items.map(([k, v]) => `
-    <div class="breakdown-item">
-      <div class="label">${escapeHtml(k)}</div>
-      <div class="count">${v} <span style="color:var(--text-dim)">(${Math.round(v/total*100)}%)</span></div>
+    <div class="bd-item">
+      <div class="bd-l">${escapeHtml(k)}</div>
+      <div class="bd-c">${v}<span class="pct">(${Math.round(v/total*100)}%)</span></div>
     </div>
   `).join('');
 }
 
-const CHART_COLORS = ['#f59e0b', '#6366f1', '#10b981', '#ef4444', '#06b6d4', '#ec4899', '#84cc16'];
-const CHART_DEFAULTS = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: { legend: { labels: { color: '#8b94a3', font: { family: 'Inter', size: 11 } } } },
-  scales: {
-    x: { ticks: { color: '#5c6473', font: { size: 10 } }, grid: { color: '#1f242c' } },
-    y: { ticks: { color: '#5c6473', font: { size: 10 } }, grid: { color: '#1f242c' }, beginAtZero: true },
-  },
-};
+const CHART_COLORS = ['#5b9eff','#7ec8ff','#5be38a','#f5c45b','#ff7a7a','#b78fff','#5be3c2'];
+function chartTextColor() { return document.body.classList.contains('light') ? 'rgba(10,10,10,.55)' : 'rgba(245,245,247,.55)'; }
+function chartGridColor() { return document.body.classList.contains('light') ? 'rgba(0,0,0,.06)' : 'rgba(245,245,247,.06)'; }
+function chartDefaults() {
+  return {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: chartTextColor(), font: { family: 'Inter', size: 11 } } } },
+    scales: {
+      x: { ticks: { color: chartTextColor(), font: { size: 10 } }, grid: { color: chartGridColor() } },
+      y: { ticks: { color: chartTextColor(), font: { size: 10 } }, grid: { color: chartGridColor() }, beginAtZero: true },
+    },
+  };
+}
 
 function drawLineChart(id, labels, data) {
   const ctx = document.getElementById(id);
   charts[id] = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets: [{
-      data, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.1)',
-      tension: .3, fill: true, pointRadius: 0, borderWidth: 2,
+      data, borderColor: '#5b9eff', backgroundColor: 'rgba(91,158,255,.12)',
+      tension: .35, fill: true, pointRadius: 0, borderWidth: 2,
     }] },
-    options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } },
+    options: { ...chartDefaults(), plugins: { legend: { display: false } } },
   });
 }
-
 function drawBarChart(id, labels, data) {
   const ctx = document.getElementById(id);
   charts[id] = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: '#6366f1' }] },
-    options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } },
+    data: { labels, datasets: [{ data, backgroundColor: '#7ec8ff', borderRadius: 4 }] },
+    options: { ...chartDefaults(), plugins: { legend: { display: false } } },
   });
 }
-
 function drawDoughnut(id, map) {
   const ctx = document.getElementById(id);
   const labels = Object.keys(map);
@@ -880,39 +978,26 @@ function drawDoughnut(id, map) {
   charts[id] = new Chart(ctx, {
     type: 'doughnut',
     data: { labels, datasets: [{ data, backgroundColor: CHART_COLORS, borderWidth: 0 }] },
-    options: { responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'right', labels: { color: '#8b94a3', font: { size: 11 }, boxWidth: 10 } } },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: { legend: { position: 'right', labels: { color: chartTextColor(), font: { size: 11 }, boxWidth: 10 } } },
     },
   });
 }
 
-/* ───────────────────────────────────────────────────────────
-   HELPERS
-   ─────────────────────────────────────────────────────────── */
+/* ─── HELPERS ─── */
 function randomSlug(len = 6) {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let s = '';
   for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
   return s;
 }
-
-function isExpired(l) {
-  return l.expires_at && new Date(l.expires_at) < new Date();
-}
-
-function escapeHtml(str) {
-  return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
-}
-
+function isExpired(l) { return l.expires_at && new Date(l.expires_at) < new Date(); }
+function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 async function copyText(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    toast('Copiado!', 'success');
-  } catch (e) {
-    toast('Erro ao copiar', 'error');
-  }
+  try { await navigator.clipboard.writeText(text); toast('Copiado!', 'success'); }
+  catch (e) { toast('Erro ao copiar', 'error'); }
 }
-
 let toastTimer;
 function toast(msg, type = '') {
   const el = document.getElementById('toast');
@@ -922,7 +1007,7 @@ function toast(msg, type = '') {
   toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-/* ─── Boot ─── */
+/* ─── BOOT ─── */
 checkSession();
 </script>
 </body>
