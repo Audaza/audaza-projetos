@@ -847,7 +847,7 @@ async function deleteLink(id) {
 async function openDetail(id) {
   currentLinkId = id;
   const link = allLinks.find(l => l.id === id);
-  if (!link) return;
+  if (!link) { toast('Link não encontrado', 'error'); return; }
 
   const shortUrl = `https://${link.host}/${link.slug}`;
   document.getElementById('detailTitle').textContent = link.title || `${link.host}/${link.slug}`;
@@ -858,16 +858,32 @@ async function openDetail(id) {
     `${isExpired(link) ? ' <span class="pill danger">expirado</span>' : ''}`;
   document.getElementById('detailTotalClicks').textContent = link.click_count || 0;
 
-  const qrEl = document.getElementById('qrCode');
-  qrEl.innerHTML = '';
-  const canvas = document.createElement('canvas');
-  qrEl.appendChild(canvas);
-  await QRCode.toCanvas(canvas, shortUrl, { width: 200, margin: 1, color: { dark: '#000', light: '#fff' } });
-
+  // ABRE O MODAL PRIMEIRO — depois faz QR + analytics (assim erros não bloqueiam)
   document.getElementById('detailModal').classList.add('open');
 
-  const { data: clicks } = await supa.from('audazalinks_clicks').select('*').eq('link_id', id).order('clicked_at', { ascending: false }).limit(10000);
-  renderAnalytics(clicks || []);
+  // QR Code (em try/catch porque a lib pode falhar e não pode bloquear o modal)
+  const qrEl = document.getElementById('qrCode');
+  qrEl.innerHTML = '';
+  try {
+    const canvas = document.createElement('canvas');
+    qrEl.appendChild(canvas);
+    if (typeof QRCode !== 'undefined' && QRCode.toCanvas) {
+      await QRCode.toCanvas(canvas, shortUrl, { width: 200, margin: 1, color: { dark: '#000', light: '#fff' } });
+    } else {
+      qrEl.innerHTML = `<div style="width:200px;height:200px;display:grid;place-items:center;background:var(--alt);border-radius:8px;color:var(--text-3);font-size:12px;">QR indisponível</div>`;
+    }
+  } catch (e) {
+    console.error('QR error:', e);
+    qrEl.innerHTML = `<div style="width:200px;height:200px;display:grid;place-items:center;background:var(--alt);border-radius:8px;color:var(--danger);font-size:12px;">Erro ao gerar QR</div>`;
+  }
+
+  // Analytics
+  try {
+    const { data: clicks } = await supa.from('audazalinks_clicks').select('*').eq('link_id', id).order('clicked_at', { ascending: false }).limit(10000);
+    renderAnalytics(clicks || []);
+  } catch (e) {
+    console.error('Analytics error:', e);
+  }
 }
 
 async function reloadDetailCharts() {
