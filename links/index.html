@@ -691,8 +691,16 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
               <div class="bd-list" id="breakdownCountry"></div>
             </div>
             <div class="chart-card">
+              <h4>Top cidades</h4>
+              <div class="bd-list" id="breakdownCity"></div>
+            </div>
+            <div class="chart-card">
               <h4>Top navegadores</h4>
               <div class="bd-list" id="breakdownBrowser"></div>
+            </div>
+            <div class="chart-card">
+              <h4>Top sistemas operacionais</h4>
+              <div class="bd-list" id="breakdownOS"></div>
             </div>
             <div class="chart-card full">
               <h4>Top referrers</h4>
@@ -1414,8 +1422,10 @@ function renderAnalytics(clicks) {
   drawDoughnut('chartDevice', countBy(clicks, 'device_type'));
   drawBarChart('chartHour', byHour.map((_,i) => `${i}h`), byHour);
 
-  renderBreakdown('breakdownCountry', countBy(clicks, 'country'), 'Sem dados de país.');
+  renderBreakdown('breakdownCountry', countByWithFlag(clicks), 'Sem dados de país.');
+  renderBreakdown('breakdownCity', countByCity(clicks), 'Sem cidades identificadas.');
   renderBreakdown('breakdownBrowser', countBy(clicks, 'browser'), 'Sem dados.');
+  renderBreakdown('breakdownOS', countBy(clicks, 'os'), 'Sem dados.');
   renderBreakdown('breakdownReferer', countByReferer(clicks), 'Sem cliques ainda.');
 }
 
@@ -1429,6 +1439,32 @@ function countByReferer(arr) {
   arr.forEach(item => {
     const v = item.referer_host || 'Direto / digitado';
     m[v] = (m[v] || 0) + 1;
+  });
+  return m;
+}
+function countByCity(arr) {
+  const m = {};
+  arr.forEach(item => {
+    if (!item.city) return;
+    const region = item.region ? `, ${item.region}` : '';
+    const country = item.country_code ? ` · ${item.country_code}` : '';
+    const v = `${item.city}${region}${country}`;
+    m[v] = (m[v] || 0) + 1;
+  });
+  return m;
+}
+function countryFlag(code) {
+  if (!code || code.length !== 2) return '';
+  const A = 0x1F1E6, a = 'A'.charCodeAt(0);
+  return String.fromCodePoint(...code.toUpperCase().split('').map(c => A + (c.charCodeAt(0) - a)));
+}
+function countByWithFlag(arr) {
+  const m = {};
+  arr.forEach(item => {
+    if (!item.country) return;
+    const flag = countryFlag(item.country_code);
+    const k = flag ? `${flag} ${item.country}` : item.country;
+    m[k] = (m[k] || 0) + 1;
   });
   return m;
 }
