@@ -118,7 +118,17 @@ body.light .btn-p:hover{background:#27272a}
 /* ─── LAYOUT ─── */
 .workspace{max-width:1200px;margin:0 auto;padding:32px clamp(16px,3vw,32px) 80px}
 
-.page-head{margin-bottom:24px}
+/* HERO COM GLOBO */
+.hero{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:center;margin-bottom:32px;min-height:320px}
+@media (max-width:880px){.hero{grid-template-columns:1fr;text-align:center}}
+.hero-text{min-width:0}
+.hero-globe{position:relative;width:360px;height:360px;justify-self:end}
+@media (max-width:880px){.hero-globe{width:280px;height:280px;justify-self:center}}
+#globeCanvas{width:100%;height:100%;cursor:grab;opacity:0;transition:opacity 1.2s ease;contain:layout paint size;touch-action:none}
+.globe-stat{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface-2);border:1px solid var(--rule);border-radius:999px;font-size:11.5px;color:var(--ink-soft);white-space:nowrap;backdrop-filter:blur(8px)}
+.globe-stat .dot{width:6px;height:6px;border-radius:50%;background:var(--brand);box-shadow:0 0 8px var(--brand);animation:pulse-dot 2s ease-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+
 .eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);margin-bottom:10px}
 .page-title{font-family:var(--font-d);font-size:clamp(28px,3.6vw,38px);font-weight:500;letter-spacing:-0.02em;line-height:1.06;color:var(--text)}
 .page-title em{font-style:normal;font-weight:500;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -348,9 +358,18 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
   </header>
 
   <main class="workspace">
-    <div class="page-head">
-      <div class="eyebrow">Encurtador</div>
-      <h1 class="page-title">Links com <em>tracking</em> completo.</h1>
+    <div class="hero">
+      <div class="hero-text">
+        <div class="eyebrow">Encurtador</div>
+        <h1 class="page-title">Links com <em>tracking</em> completo.</h1>
+      </div>
+      <div class="hero-globe">
+        <canvas id="globeCanvas"></canvas>
+        <div class="globe-stat" id="globeStat" style="display:none">
+          <span class="dot"></span>
+          <span id="globeStatText">0 cidades</span>
+        </div>
+      </div>
     </div>
 
     <!-- stats -->
@@ -619,8 +638,9 @@ if (savedTheme === 'light') document.body.classList.add('light');
 document.getElementById('themeToggle').addEventListener('click', () => {
   document.body.classList.toggle('light');
   localStorage.setItem('audazalinks-theme', document.body.classList.contains('light') ? 'light' : 'dark');
-  // re-render charts on theme change to pick up new colors
   if (currentLinkId) reloadDetailCharts();
+  // Reinicializa globo com cores do tema novo
+  if (globeInstance) initGlobe();
 });
 
 /* ─── AUTH ─── */
@@ -638,6 +658,8 @@ function showApp() {
   document.getElementById('appView').classList.remove('hidden');
   document.getElementById('userEmail').textContent = currentUser.email;
   loadLinks();
+  // Inicializa globo após DOM pintar
+  requestAnimationFrame(() => requestAnimationFrame(initGlobe));
 }
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -674,6 +696,129 @@ async function loadLinks() {
   await loadStats();
   renderLinks();
 }
+
+/* ─── GLOBE (cobe via ESM dynamic import) ─── */
+let globeState = { phi: 0, theta: 0.2, dragX: 0, dragY: 0, dragging: false, startPhi: 0, startTheta: 0 };
+let globeInstance = null;
+
+async function initGlobe() {
+  const canvas = document.getElementById('globeCanvas');
+  if (!canvas) return;
+
+  // Locations únicas com cliques
+  const { data: clicks } = await supa
+    .from('audazalinks_clicks')
+    .select('latitude, longitude, city, country')
+    .not('latitude', 'is', null);
+
+  const cityMap = new Map();
+  (clicks || []).forEach(c => {
+    const k = `${c.latitude}|${c.longitude}`;
+    if (!cityMap.has(k)) cityMap.set(k, { lat: +c.latitude, lng: +c.longitude, city: c.city, country: c.country, count: 0 });
+    cityMap.get(k).count++;
+  });
+  const realCities = Array.from(cityMap.values());
+
+  // Markers (real + alguns globais decorativos)
+  const markers = realCities.map(c => ({
+    location: [c.lat, c.lng],
+    size: Math.min(0.12, 0.04 + (c.count * 0.005)),
+  }));
+  if (markers.length === 0) {
+    markers.push(
+      { location: [-15.59, -56.10], size: 0.06 },  // Cuiabá
+      { location: [-23.55, -46.63], size: 0.05 },  // SP
+      { location: [-22.91, -43.17], size: 0.05 },  // RJ
+      { location: [40.71, -74.01], size: 0.04 },   // NY
+      { location: [51.51, -0.13],   size: 0.04 },  // London
+    );
+  }
+
+  // Atualiza chip "X cidades · Y cliques"
+  const stat = document.getElementById('globeStat');
+  const statText = document.getElementById('globeStatText');
+  if (realCities.length > 0) {
+    const totalClicks = realCities.reduce((s, c) => s + c.count, 0);
+    statText.textContent = `${realCities.length} ${realCities.length === 1 ? 'cidade' : 'cidades'} · ${totalClicks} ${totalClicks === 1 ? 'clique' : 'cliques'}`;
+    stat.style.display = '';
+  } else {
+    stat.style.display = 'none';
+  }
+
+  // Limpa instância anterior se houver
+  if (globeInstance) { globeInstance.destroy(); globeInstance = null; }
+
+  let createGlobe;
+  try {
+    const mod = await import('https://esm.sh/cobe@0.6.3');
+    createGlobe = mod.default || mod;
+  } catch (e) {
+    console.error('cobe load failed:', e);
+    canvas.style.display = 'none';
+    return;
+  }
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const size = canvas.offsetWidth;
+  if (size === 0) {
+    setTimeout(() => initGlobe(), 200);
+    return;
+  }
+
+  const isLight = document.body.classList.contains('light');
+  globeInstance = createGlobe(canvas, {
+    devicePixelRatio: dpr,
+    width: size * dpr,
+    height: size * dpr,
+    phi: 0, theta: 0.2,
+    dark: isLight ? 0 : 1,
+    diffuse: 1.4,
+    mapSamples: 16000,
+    mapBrightness: isLight ? 1.6 : 6,
+    baseColor: isLight ? [0.85, 0.88, 0.95] : [0.32, 0.42, 0.6],
+    markerColor: [0.49, 0.89, 0.96],
+    glowColor: isLight ? [0.85, 0.88, 0.95] : [0.36, 0.62, 1],
+    markers,
+    onRender: (state) => {
+      if (!globeState.dragging) globeState.phi += 0.0035;
+      state.phi = globeState.phi + globeState.dragX;
+      state.theta = globeState.theta + globeState.dragY;
+    },
+  });
+
+  setTimeout(() => { canvas.style.opacity = '1'; }, 100);
+}
+
+// Drag para girar
+(function setupGlobeDrag() {
+  const canvas = document.getElementById('globeCanvas');
+  if (!canvas) return;
+  let startX = 0, startY = 0;
+  canvas.addEventListener('pointerdown', (e) => {
+    globeState.dragging = true;
+    globeState.startPhi = globeState.phi + globeState.dragX;
+    globeState.startTheta = globeState.theta + globeState.dragY;
+    startX = e.clientX; startY = e.clientY;
+    canvas.style.cursor = 'grabbing';
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!globeState.dragging) return;
+    globeState.dragX = (e.clientX - startX) / 200;
+    globeState.dragY = Math.max(-0.5, Math.min(0.5, (e.clientY - startY) / 400));
+  });
+  const stop = (e) => {
+    if (!globeState.dragging) return;
+    globeState.dragging = false;
+    globeState.phi = globeState.startPhi + globeState.dragX;
+    globeState.theta = globeState.startTheta + globeState.dragY;
+    globeState.dragX = 0; globeState.dragY = 0;
+    canvas.style.cursor = 'grab';
+    if (e.pointerId !== undefined) canvas.releasePointerCapture(e.pointerId);
+  };
+  canvas.addEventListener('pointerup', stop);
+  canvas.addEventListener('pointercancel', stop);
+})();
 
 async function loadStats() {
   const since30 = new Date(Date.now() - 30 * 86400e3).toISOString();

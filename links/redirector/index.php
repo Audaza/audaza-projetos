@@ -218,6 +218,8 @@ function log_click(int $link_id, string $host_used): void
         'country_code' => $geo['country_code'] ?? null,
         'region'       => $geo['region']       ?? null,
         'city'         => $geo['city']         ?? null,
+        'latitude'     => $geo['latitude']     ?? null,
+        'longitude'    => $geo['longitude']    ?? null,
         'user_agent'   => mb_substr($ua, 0, 500),
         'device_type'  => $device,
         'browser'      => $browser,
@@ -251,7 +253,7 @@ function geo_lookup(?string $ip): ?array
         return null;
     }
     // ip-api.com — HTTP, free 45 req/min, sem token
-    $url = 'http://ip-api.com/json/' . urlencode($ip) . '?fields=status,country,countryCode,regionName,city';
+    $url = 'http://ip-api.com/json/' . urlencode($ip) . '?fields=status,country,countryCode,regionName,city,lat,lon';
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
@@ -269,6 +271,8 @@ function geo_lookup(?string $ip): ?array
         'country_code' => $d['countryCode'] ?? null,
         'region'       => $d['regionName']  ?? null,
         'city'         => $d['city']        ?? null,
+        'latitude'     => $d['lat']         ?? null,
+        'longitude'    => $d['lon']         ?? null,
     ];
 }
 
