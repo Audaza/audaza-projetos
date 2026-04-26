@@ -635,7 +635,7 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
                 </button>
                 <button onclick="downloadQRStyle('audaza')" data-style="audaza" class="featured">
                   <span class="qr-swatch qr-swatch-audaza"></span>
-                  <div><strong>Padrão Audaza ⭐</strong><small>Dark + gradiente azul + logo (estilo da plataforma)</small></div>
+                  <div><strong>Soft Blue ⭐</strong><small>Dark + gradiente azul + logo (estilo da plataforma)</small></div>
                 </button>
                 <button onclick="downloadQRStyle('brand')" data-style="brand">
                   <span class="qr-swatch qr-swatch-brand"></span>
@@ -768,7 +768,8 @@ async function generateQRPreviews(linkId) {
 
   await Promise.all(styleKeys.map(async (key) => {
     try {
-      const cfg = { ...QR_STYLES[key].config(shortUrl), width: 200, height: 200 };
+      // Preview 200×200 com margem proporcionalmente maior (~22%) pra ficar visível em 52px
+      const cfg = { ...QR_STYLES[key].config(shortUrl), width: 200, height: 200, margin: 44 };
       const qr = new QRCodeStyling(cfg);
       const holder = document.createElement('div');
       holder.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:200px;height:200px;';
@@ -1429,7 +1430,7 @@ const QR_STYLES = {
     }),
   },
   audaza: {
-    name: 'Padrão Audaza',
+    name: 'Soft Blue',
     config: (data) => ({
       type: 'canvas', width: 1024, height: 1024, data, margin: 32,
       qrOptions: { errorCorrectionLevel: 'H' },
