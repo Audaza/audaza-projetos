@@ -8,76 +8,13 @@ on:
       - '.github/workflows/deploy-redirector.yml'
   workflow_dispatch:
 
+# Os subdomínios link./go./bio.audaza.com têm vhost no Hostinger apontando para:
+#   /domains/audaza.com/public_html/{link,go,bio}/
+# Por isso o deploy é nessas subpastas (NÃO em /domains/{sub}.audaza.com/).
+
 jobs:
-  # ════════ PATH-BASED (audaza.com/{l,g,b}/...) — funciona já ════════
-  deploy-path-l:
-    name: Sync → audaza.com/l/
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          protocol: ftp
-          port: 21
-          local-dir: ./links/redirector/
-          server-dir: /domains/audaza.com/public_html/l/
-          state-name: .ftp-deploy-state-path-l.json
-          exclude: |
-            **/config.php
-            **/config.example.php
-            **/README.md
-            **/.DS_Store
-
-  deploy-path-g:
-    name: Sync → audaza.com/g/
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          protocol: ftp
-          port: 21
-          local-dir: ./links/redirector/
-          server-dir: /domains/audaza.com/public_html/g/
-          state-name: .ftp-deploy-state-path-g.json
-          exclude: |
-            **/config.php
-            **/config.example.php
-            **/README.md
-            **/.DS_Store
-
-  deploy-path-b:
-    name: Sync → audaza.com/b/
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          protocol: ftp
-          port: 21
-          local-dir: ./links/redirector/
-          server-dir: /domains/audaza.com/public_html/b/
-          state-name: .ftp-deploy-state-path-b.json
-          exclude: |
-            **/config.php
-            **/config.example.php
-            **/README.md
-            **/.DS_Store
-
-  # ════════ SUBDOMÍNIOS — só funcionam se você criar no hPanel ════════
-  # As pastas FTP foram criadas pelo deploy anterior. Deixar os jobs aqui
-  # mantém os arquivos sincronizados pra quando os subdomínios virem online.
   deploy-link:
-    name: Sync → link.audaza.com (aguarda subdomínio)
+    name: Sync → link.audaza.com  (/audaza.com/public_html/link/)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,7 +26,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./links/redirector/
-          server-dir: /domains/link.audaza.com/public_html/
+          server-dir: /domains/audaza.com/public_html/link/
           state-name: .ftp-deploy-state-link.json
           exclude: |
             **/config.php
@@ -98,7 +35,7 @@ jobs:
             **/.DS_Store
 
   deploy-go:
-    name: Sync → go.audaza.com (aguarda subdomínio)
+    name: Sync → go.audaza.com  (/audaza.com/public_html/go/)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -110,7 +47,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./links/redirector/
-          server-dir: /domains/go.audaza.com/public_html/
+          server-dir: /domains/audaza.com/public_html/go/
           state-name: .ftp-deploy-state-go.json
           exclude: |
             **/config.php
@@ -119,7 +56,7 @@ jobs:
             **/.DS_Store
 
   deploy-bio:
-    name: Sync → bio.audaza.com (aguarda subdomínio)
+    name: Sync → bio.audaza.com  (/audaza.com/public_html/bio/)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -131,7 +68,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./links/redirector/
-          server-dir: /domains/bio.audaza.com/public_html/
+          server-dir: /domains/audaza.com/public_html/bio/
           state-name: .ftp-deploy-state-bio.json
           dangerous-clean-slate: false
           exclude: |
