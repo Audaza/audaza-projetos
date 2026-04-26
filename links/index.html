@@ -578,7 +578,14 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><circle cx="8" cy="9" r="1.3"/><path d="M14 8l3 3"/><path d="M14 12l3-3"/></svg>
               <div>
                 <strong>Modal (PNG)</strong>
-                <small>Captura do relatório completo — QR, globo, gráficos e métricas</small>
+                <small>Imagem do relatório — QR, globo, gráficos e métricas</small>
+              </div>
+            </button>
+            <button onclick="exportModalPDF()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h2a2 2 0 0 1 0 4H9z"/><path d="M14 13v4h2"/></svg>
+              <div>
+                <strong>Modal (PDF)</strong>
+                <small>PDF idêntico à página de resultados, página única em alta resolução</small>
               </div>
             </button>
           </div>
@@ -1334,31 +1341,26 @@ function exportSummaryPNG() {
   downloadQR();  // já existe — baixa o QR em 1024×1024
 }
 
-async function exportModalPNG() {
-  document.getElementById('exportMenu').classList.remove('open');
-  const link = allLinks.find(l => l.id === currentLinkId);
-  if (!link) return;
-  toast('Gerando captura do relatório…', '');
+// Captura o modal expandido em canvas (helper compartilhado entre PNG e PDF)
+async function captureModalCanvas() {
+  const modalEl = document.querySelector('#detailModal .modal');
+  if (!modalEl) throw new Error('Modal não encontrado');
 
-  let modalEl, originalMaxH, originalOverflow;
+  const mod = await import('https://esm.sh/html2canvas@1.4.1');
+  const html2canvas = mod.default || mod;
+
+  const originalMaxH = modalEl.style.maxHeight;
+  const originalOverflow = modalEl.style.overflow;
+  modalEl.style.maxHeight = 'none';
+  modalEl.style.overflow = 'visible';
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  const isLight = document.body.classList.contains('light');
+  const bg = isLight ? '#ffffff' : '#0a0c12';
+
+  let canvas;
   try {
-    const mod = await import('https://esm.sh/html2canvas@1.4.1');
-    const html2canvas = mod.default || mod;
-
-    modalEl = document.querySelector('#detailModal .modal');
-    if (!modalEl) throw new Error('Modal não encontrado');
-
-    // Expande temporariamente pra capturar todo o conteúdo (sem scroll)
-    originalMaxH = modalEl.style.maxHeight;
-    originalOverflow = modalEl.style.overflow;
-    modalEl.style.maxHeight = 'none';
-    modalEl.style.overflow = 'visible';
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-    const isLight = document.body.classList.contains('light');
-    const bg = isLight ? '#ffffff' : '#0a0c12';
-
-    const canvas = await html2canvas(modalEl, {
+    canvas = await html2canvas(modalEl, {
       backgroundColor: bg,
       scale: 2,
       useCORS: true,
@@ -1367,11 +1369,20 @@ async function exportModalPNG() {
       windowWidth: modalEl.scrollWidth,
       windowHeight: modalEl.scrollHeight,
     });
-
-    // Restaura
+  } finally {
     modalEl.style.maxHeight = originalMaxH;
     modalEl.style.overflow = originalOverflow;
+  }
+  return canvas;
+}
 
+async function exportModalPNG() {
+  document.getElementById('exportMenu').classList.remove('open');
+  const link = allLinks.find(l => l.id === currentLinkId);
+  if (!link) return;
+  toast('Gerando captura do relatório…', '');
+  try {
+    const canvas = await captureModalCanvas();
     canvas.toBlob((blob) => {
       if (!blob) { toast('Erro ao gerar PNG', 'error'); return; }
       const slug = link.slug.replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -1385,13 +1396,44 @@ async function exportModalPNG() {
       toast('Relatório salvo!', 'success');
     }, 'image/png');
   } catch (e) {
-    // Restaura em caso de erro
-    if (modalEl) {
-      modalEl.style.maxHeight = originalMaxH || '';
-      modalEl.style.overflow = originalOverflow || '';
-    }
     console.error('Modal capture error:', e);
     toast('Erro: ' + e.message, 'error');
+  }
+}
+
+async function exportModalPDF() {
+  document.getElementById('exportMenu').classList.remove('open');
+  const link = allLinks.find(l => l.id === currentLinkId);
+  if (!link) return;
+  toast('Gerando PDF do relatório…', '');
+  try {
+    const [{ default: jsPDF }, canvas] = await Promise.all([
+      import('https://esm.sh/jspdf@2.5.1').then(m => ({ default: m.default?.jsPDF || m.jsPDF || m.default })),
+      captureModalCanvas(),
+    ]);
+
+    // Página com dimensão EXATA do conteúdo capturado (em px, /scale pra reverter o 2x)
+    const pdfWidth = canvas.width / 2;
+    const pdfHeight = canvas.height / 2;
+
+    const pdf = new jsPDF({
+      orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
+      unit: 'px',
+      format: [pdfWidth, pdfHeight],
+      hotfixes: ['px_scaling'],
+      compress: true,
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+
+    const slug = link.slug.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const date = new Date().toISOString().slice(0, 10);
+    pdf.save(`audaza-links_relatorio_${slug}_${date}.pdf`);
+    toast('PDF salvo!', 'success');
+  } catch (e) {
+    console.error('PDF export error:', e);
+    toast('Erro ao gerar PDF: ' + e.message, 'error');
   }
 }
 
