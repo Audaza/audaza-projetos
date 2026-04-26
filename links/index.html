@@ -600,7 +600,7 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
 <!-- libs -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <script>
 /* ─── CONFIG ─── */
@@ -861,20 +861,22 @@ async function openDetail(id) {
   // ABRE O MODAL PRIMEIRO — depois faz QR + analytics (assim erros não bloqueiam)
   document.getElementById('detailModal').classList.add('open');
 
-  // QR Code (em try/catch porque a lib pode falhar e não pode bloquear o modal)
+  // QR Code (qrcodejs gera <img> ou <canvas> dentro do container)
   const qrEl = document.getElementById('qrCode');
   qrEl.innerHTML = '';
   try {
-    const canvas = document.createElement('canvas');
-    qrEl.appendChild(canvas);
-    if (typeof QRCode !== 'undefined' && QRCode.toCanvas) {
-      await QRCode.toCanvas(canvas, shortUrl, { width: 200, margin: 1, color: { dark: '#000', light: '#fff' } });
-    } else {
-      qrEl.innerHTML = `<div style="width:200px;height:200px;display:grid;place-items:center;background:var(--alt);border-radius:8px;color:var(--text-3);font-size:12px;">QR indisponível</div>`;
-    }
+    if (typeof QRCode === 'undefined') throw new Error('QRCode lib não carregou');
+    new QRCode(qrEl, {
+      text: shortUrl,
+      width: 200,
+      height: 200,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H,
+    });
   } catch (e) {
     console.error('QR error:', e);
-    qrEl.innerHTML = `<div style="width:200px;height:200px;display:grid;place-items:center;background:var(--alt);border-radius:8px;color:var(--danger);font-size:12px;">Erro ao gerar QR</div>`;
+    qrEl.innerHTML = `<div style="width:200px;height:200px;display:grid;place-items:center;background:var(--alt);border-radius:8px;color:var(--danger);font-size:12px;text-align:center;padding:12px;">Erro ao gerar QR<br/><small style="opacity:.6">${escapeHtml(e.message)}</small></div>`;
   }
 
   // Analytics
@@ -906,11 +908,21 @@ function deleteFromDetail() { deleteLink(currentLinkId); }
 
 async function copyShortUrl() { await copyText(document.getElementById('detailShortUrl').textContent); }
 function downloadQR() {
+  // qrcodejs gera <canvas> ou <img>, dependendo do browser
   const canvas = document.querySelector('#qrCode canvas');
-  if (!canvas) return;
+  const img = document.querySelector('#qrCode img');
+  let dataUrl;
+  if (canvas) {
+    dataUrl = canvas.toDataURL('image/png');
+  } else if (img) {
+    dataUrl = img.src;
+  } else {
+    toast('QR não disponível', 'error');
+    return;
+  }
   const a = document.createElement('a');
   a.download = `audaza-links-qr-${currentLinkId}.png`;
-  a.href = canvas.toDataURL('image/png');
+  a.href = dataUrl;
   a.click();
 }
 
@@ -938,14 +950,22 @@ function renderAnalytics(clicks) {
   drawDoughnut('chartDevice', countBy(clicks, 'device_type'));
   drawBarChart('chartHour', byHour.map((_,i) => `${i}h`), byHour);
 
-  renderBreakdown('breakdownCountry', countBy(clicks, 'country'), 'Sem dados de país (enriquecimento pendente).');
-  renderBreakdown('breakdownBrowser', countBy(clicks, 'browser'), 'Sem dados (enriquecimento pendente).');
-  renderBreakdown('breakdownReferer', countBy(clicks, 'referer_host'), 'Tráfego direto (sem referrer).');
+  renderBreakdown('breakdownCountry', countBy(clicks, 'country'), 'Sem dados de país.');
+  renderBreakdown('breakdownBrowser', countBy(clicks, 'browser'), 'Sem dados.');
+  renderBreakdown('breakdownReferer', countByReferer(clicks), 'Sem cliques ainda.');
 }
 
 function countBy(arr, key) {
   const m = {};
   arr.forEach(item => { const v = item[key] || '(desconhecido)'; m[v] = (m[v] || 0) + 1; });
+  return m;
+}
+function countByReferer(arr) {
+  const m = {};
+  arr.forEach(item => {
+    const v = item.referer_host || 'Direto / digitado';
+    m[v] = (m[v] || 0) + 1;
+  });
   return m;
 }
 function renderBreakdown(elId, map, emptyMsg) {

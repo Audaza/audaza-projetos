@@ -161,17 +161,39 @@ function log_click(int $link_id, string $host_used): void
     $ua  = $_SERVER['HTTP_USER_AGENT'] ?? '';
     $ref = $_SERVER['HTTP_REFERER']    ?? null;
 
-    // device básico (enriquecimento completo via job background)
+    // ─── Device (mobile/tablet/desktop/bot) ───
     $device = 'desktop';
-    if (preg_match('/bot|crawler|spider|crawl|http|wget|curl|preview/i', $ua)) {
+    if (preg_match('/bot|crawler|spider|crawl|http|wget|curl|preview|facebookexternalhit|whatsapp|telegram/i', $ua)) {
         $device = 'bot';
-    } elseif (preg_match('/iphone|ipod|android.*mobile|blackberry|opera mini|iemobile/i', $ua)) {
+    } elseif (preg_match('/iphone|ipod|android.*mobile|blackberry|opera mini|iemobile|windows phone/i', $ua)) {
         $device = 'mobile';
     } elseif (preg_match('/ipad|tablet|android(?!.*mobile)/i', $ua)) {
         $device = 'tablet';
     }
 
-    // IP real (cuida de proxies/CDN)
+    // ─── Browser ───
+    $browser = 'Outro';
+    if (stripos($ua, 'Edg/') !== false)                                              $browser = 'Edge';
+    elseif (stripos($ua, 'OPR/') !== false || stripos($ua, 'Opera') !== false)       $browser = 'Opera';
+    elseif (stripos($ua, 'SamsungBrowser') !== false)                                $browser = 'Samsung Internet';
+    elseif (stripos($ua, 'Firefox/') !== false)                                      $browser = 'Firefox';
+    elseif (stripos($ua, 'Chrome/') !== false && stripos($ua, 'Chromium') === false) $browser = 'Chrome';
+    elseif (stripos($ua, 'CriOS') !== false)                                         $browser = 'Chrome'; // iOS Chrome
+    elseif (stripos($ua, 'FxiOS') !== false)                                         $browser = 'Firefox'; // iOS Firefox
+    elseif (stripos($ua, 'Safari/') !== false)                                       $browser = 'Safari';
+    elseif (stripos($ua, 'MSIE') !== false || stripos($ua, 'Trident/') !== false)    $browser = 'IE';
+
+    // ─── OS ───
+    $os = 'Outro';
+    if (preg_match('/Windows NT 10/i', $ua))                $os = 'Windows 10/11';
+    elseif (stripos($ua, 'Windows') !== false)              $os = 'Windows';
+    elseif (preg_match('/iPhone OS|iOS/i', $ua) || stripos($ua, 'iPhone') !== false) $os = 'iOS';
+    elseif (stripos($ua, 'iPad') !== false)                 $os = 'iPadOS';
+    elseif (stripos($ua, 'Android') !== false)              $os = 'Android';
+    elseif (stripos($ua, 'Macintosh') !== false || stripos($ua, 'Mac OS') !== false) $os = 'macOS';
+    elseif (stripos($ua, 'Linux') !== false)                $os = 'Linux';
+
+    // ─── IP real (cuida de proxies/CDN) ───
     $ip = null;
     foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'REMOTE_ADDR'] as $k) {
         if (!empty($_SERVER[$k])) {
@@ -180,6 +202,10 @@ function log_click(int $link_id, string $host_used): void
         }
     }
 
+    // ─── Geo lookup (best-effort, 2s timeout) ───
+    $geo = geo_lookup($ip);
+
+    // ─── Referrer ───
     $referer_host = null;
     if ($ref) {
         $referer_host = parse_url($ref, PHP_URL_HOST);
@@ -188,11 +214,18 @@ function log_click(int $link_id, string $host_used): void
     $payload = [
         'link_id'      => $link_id,
         'ip'           => $ip,
+        'country'      => $geo['country']      ?? null,
+        'country_code' => $geo['country_code'] ?? null,
+        'region'       => $geo['region']       ?? null,
+        'city'         => $geo['city']         ?? null,
         'user_agent'   => mb_substr($ua, 0, 500),
         'device_type'  => $device,
+        'browser'      => $browser,
+        'os'           => $os,
         'referer'      => $ref ? mb_substr($ref, 0, 500) : null,
         'referer_host' => $referer_host,
         'host_used'    => $host_used,
+        'enriched'     => true,
     ];
 
     $ch = curl_init(SUPABASE_URL . '/rest/v1/audazalinks_clicks');
@@ -210,6 +243,33 @@ function log_click(int $link_id, string $host_used): void
     ]);
     curl_exec($ch);
     curl_close($ch);
+}
+
+function geo_lookup(?string $ip): ?array
+{
+    if (empty($ip) || $ip === '127.0.0.1' || strpos($ip, '192.168.') === 0 || strpos($ip, '10.') === 0) {
+        return null;
+    }
+    // ipapi.co — HTTPS, free 30k req/mês
+    $ch = curl_init('https://ipapi.co/' . urlencode($ip) . '/json/');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 2,
+        CURLOPT_CONNECTTIMEOUT => 1,
+        CURLOPT_USERAGENT      => 'audaza-links/1.0',
+    ]);
+    $body = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($code !== 200 || !$body) return null;
+    $d = json_decode($body, true);
+    if (!is_array($d) || !empty($d['error'])) return null;
+    return [
+        'country'      => $d['country_name'] ?? null,
+        'country_code' => $d['country_code'] ?? null,
+        'region'       => $d['region']       ?? null,
+        'city'         => $d['city']         ?? null,
+    ];
 }
 
 function not_found(): void
