@@ -250,25 +250,25 @@ function geo_lookup(?string $ip): ?array
     if (empty($ip) || $ip === '127.0.0.1' || strpos($ip, '192.168.') === 0 || strpos($ip, '10.') === 0) {
         return null;
     }
-    // ipapi.co — HTTPS, free 30k req/mês
-    $ch = curl_init('https://ipapi.co/' . urlencode($ip) . '/json/');
+    // ip-api.com — HTTP, free 45 req/min, sem token
+    $url = 'http://ip-api.com/json/' . urlencode($ip) . '?fields=status,country,countryCode,regionName,city';
+    $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT        => 2,
         CURLOPT_CONNECTTIMEOUT => 1,
-        CURLOPT_USERAGENT      => 'audaza-links/1.0',
     ]);
     $body = curl_exec($ch);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     if ($code !== 200 || !$body) return null;
     $d = json_decode($body, true);
-    if (!is_array($d) || !empty($d['error'])) return null;
+    if (!is_array($d) || ($d['status'] ?? '') !== 'success') return null;
     return [
-        'country'      => $d['country_name'] ?? null,
-        'country_code' => $d['country_code'] ?? null,
-        'region'       => $d['region']       ?? null,
-        'city'         => $d['city']         ?? null,
+        'country'      => $d['country']     ?? null,
+        'country_code' => $d['countryCode'] ?? null,
+        'region'       => $d['regionName']  ?? null,
+        'city'         => $d['city']        ?? null,
     ];
 }
 
