@@ -15,17 +15,39 @@
 require_once __DIR__ . '/config.php';
 
 // ─── 1. Extrair slug + host ─────────────────────────────────────
-$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-$slug = trim($path, '/');
-$host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+//
+// Suporta DOIS modos:
+//  (A) Subdomínio:  link.audaza.com/abc  → host="link.audaza.com",   slug="abc"
+//  (B) Path-based:  audaza.com/l/abc      → host="audaza.com/l",      slug="abc"
+//
+// Detecta pelo nome da pasta onde o index.php está.
+//   /domains/audaza.com/public_html/l/index.php   → modo B, prefixo "l"
+//   /domains/link.audaza.com/public_html/index.php → modo A
+//
+$path     = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$req_host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+$dir_name = basename(dirname(__FILE__));   // pasta onde mora o index.php
+$is_path_mode = ($req_host === 'audaza.com' || $req_host === 'www.audaza.com')
+                && in_array($dir_name, ['l', 'g', 'b'], true);
 
-// nada / index.php / paths com / → 404
+if ($is_path_mode) {
+    // /l/abc → slug = "abc"
+    $stripped = preg_replace('#^/' . preg_quote($dir_name, '#') . '/?#', '', $path);
+    $slug = trim($stripped, '/');
+    $host = 'audaza.com/' . $dir_name;
+} else {
+    $slug = trim($path, '/');
+    $host = $req_host;
+}
+
 if ($slug === '' || $slug === 'index.php' || strpos($slug, '/') !== false) {
     not_found();
 }
 
-// host inválido (alguém apontou DNS errado) → 404
-$allowed_hosts = ['link.audaza.com', 'go.audaza.com', 'bio.audaza.com'];
+$allowed_hosts = [
+    'link.audaza.com', 'go.audaza.com', 'bio.audaza.com',
+    'audaza.com/l',    'audaza.com/g',  'audaza.com/b',
+];
 if (!in_array($host, $allowed_hosts, true)) {
     not_found();
 }

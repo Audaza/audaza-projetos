@@ -351,7 +351,7 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
     <div class="page-head">
       <div class="eyebrow">Encurtador</div>
       <h1 class="page-title">Crie links curtos com <em>tracking</em> completo.</h1>
-      <p class="page-desc">Encurte URLs em <span class="mono">link.audaza.com</span>, <span class="mono">go.audaza.com</span> ou <span class="mono">bio.audaza.com</span> e veja cliques, países, devices e referrers em tempo real.</p>
+      <p class="page-desc">Encurte URLs em <span class="mono">audaza.com/l/</span>, <span class="mono">/g/</span> ou <span class="mono">/b/</span> e veja cliques, países, devices e referrers em tempo real.</p>
     </div>
 
     <!-- stats -->
@@ -432,11 +432,18 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
 
         <div class="field-row">
           <div class="field">
-            <label class="label">Domínio</label>
+            <label class="label">Prefixo</label>
             <select class="select" id="formHost">
-              <option value="link.audaza.com">link.audaza.com</option>
-              <option value="go.audaza.com">go.audaza.com</option>
-              <option value="bio.audaza.com">bio.audaza.com</option>
+              <optgroup label="Disponíveis agora">
+                <option value="audaza.com/l">audaza.com/l/ — geral</option>
+                <option value="audaza.com/g">audaza.com/g/ — campanhas curtas</option>
+                <option value="audaza.com/b">audaza.com/b/ — bio links</option>
+              </optgroup>
+              <optgroup label="Subdomínios (precisam ser criados no hPanel)">
+                <option value="link.audaza.com">link.audaza.com</option>
+                <option value="go.audaza.com">go.audaza.com</option>
+                <option value="bio.audaza.com">bio.audaza.com</option>
+              </optgroup>
             </select>
           </div>
           <div class="field">

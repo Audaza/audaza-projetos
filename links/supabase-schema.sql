@@ -10,7 +10,7 @@
 CREATE TABLE IF NOT EXISTS audazalinks_links (
   id            BIGSERIAL PRIMARY KEY,
   slug          TEXT NOT NULL,
-  host          TEXT NOT NULL CHECK (host IN ('link.audaza.com', 'go.audaza.com', 'bio.audaza.com')),
+  host          TEXT NOT NULL,  -- ex: 'audaza.com/l', 'link.audaza.com' — sem CHECK fixo (flexibilidade pra adicionar prefixos novos)
   destination   TEXT NOT NULL,
 
   -- metadados

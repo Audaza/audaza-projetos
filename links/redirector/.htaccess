@@ -1,24 +1,35 @@
 # audaza-links — redirector universal
-# Vale para link.audaza.com, go.audaza.com e bio.audaza.com.
+# Vale para:
+#   - audaza.com/l/{slug}, /g/{slug}, /b/{slug}    (path-based)
+#   - link.audaza.com/{slug}, go.audaza.com/{slug}, bio.audaza.com/{slug}
 #
-# - Se a URL bater com arquivo OU pasta existente → serve normal.
-#   (importante em bio.audaza.com pra não atrapalhar biolinks já publicados)
-# - Caso contrário → manda pra index.php que consulta o Supabase.
+# Comportamento: se a URL bater com arquivo OU pasta existente, serve normal
+# (importante p/ bio.audaza.com não atrapalhar biolinks publicados).
+# Caso contrário, manda pra index.php que consulta o Supabase.
 
-RewriteEngine On
-RewriteBase /
+Options -MultiViews -Indexes
+DirectoryIndex index.php
 
-# preserva files/folders existentes (biolinks)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [QSA,L]
+<IfModule mod_rewrite.c>
+  RewriteEngine On
 
-# bloqueia leitura direta do config
+  # Não rescreve files/folders existentes
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # Tudo o resto vai pro index.php (relativo ao diretório onde mora o .htaccess)
+  RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Bloqueia leitura direta do config
 <Files "config.php">
   Require all denied
 </Files>
+<Files "config.example.php">
+  Require all denied
+</Files>
 
-# headers de segurança básica
+# Headers de segurança básica
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
   Header set X-Frame-Options "SAMEORIGIN"
