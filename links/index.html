@@ -306,20 +306,21 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
 .export-menu button strong{display:block;font-size:13px;font-weight:500;color:var(--ink)}
 .export-menu button small{display:block;font-size:11.5px;color:var(--ink-faint);margin-top:1px;line-height:1.3}
 
-/* ─── QR STYLES MENU (variações de QR) ─── */
-.qr-styles-menu{min-width:340px;left:0;right:auto}
-.qr-styles-menu button{grid-template-columns:36px 1fr}
+/* ─── QR STYLES MENU (variações de QR com preview real) ─── */
+.qr-styles-menu{min-width:360px;left:0;right:auto}
+.qr-styles-menu button{grid-template-columns:52px 1fr}
 .qr-styles-menu button.featured{background:linear-gradient(135deg,rgba(91,158,255,.06),rgba(58,114,216,.04))}
 .qr-styles-menu button.featured strong{color:var(--brand)}
-.qr-swatch{width:36px;height:36px;border-radius:var(--r-sm);position:relative;overflow:hidden;border:1px solid var(--rule);background-position:center;background-size:cover}
-.qr-swatch::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cg fill='currentColor' opacity='.85'%3E%3Crect x='1' y='1' width='3' height='3' rx='.5'/%3E%3Crect x='8' y='1' width='3' height='3' rx='.5'/%3E%3Crect x='1' y='8' width='3' height='3' rx='.5'/%3E%3Crect x='5' y='5' width='1.4' height='1.4' rx='.4'/%3E%3Crect x='7' y='5' width='1.4' height='1.4' rx='.4'/%3E%3Crect x='5' y='7' width='1.4' height='1.4' rx='.4'/%3E%3C/g%3E%3C/svg%3E") center/100% no-repeat;opacity:.95}
-.qr-swatch-basic{background:#fff;color:#000}
-.qr-swatch-mono{background:#fafafa;color:#0a0a0a}
-.qr-swatch-mono::after{filter:blur(.2px)}
-.qr-swatch-audaza{background:linear-gradient(135deg,#0a0c12,#1a1f2e);color:#5b9eff}
-.qr-swatch-brand{background:#fff;color:#5b9eff}
-.qr-swatch-editorial{background:#fafafa;color:#0a0a0a}
-.qr-swatch-cyber{background:#06070b;color:#33ccdd}
+.qr-swatch{width:52px;height:52px;border-radius:var(--r-sm);position:relative;overflow:hidden;border:1px solid var(--rule);background-position:center;background-size:cover;background-repeat:no-repeat;flex-shrink:0}
+.qr-swatch::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);background-size:200% 100%;animation:qr-shimmer 1.4s infinite;pointer-events:none}
+.qr-swatch.has-real::after{display:none}
+@keyframes qr-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.qr-swatch-basic{background-color:#fff}
+.qr-swatch-mono{background-color:#fafafa}
+.qr-swatch-audaza{background-color:#0a0c12}
+.qr-swatch-brand{background-color:#fff}
+.qr-swatch-editorial{background-color:#fafafa}
+.qr-swatch-cyber{background-color:#06070b}
 
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:24px;right:24px;padding:11px 18px;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--r);font-size:13px;opacity:0;transform:translateY(10px);transition:all .2s;z-index:200;box-shadow:var(--sh)}
@@ -740,6 +741,65 @@ function loadQRStyling() {
   return qrModulePromise;
 }
 
+// Cache de previews dos 6 estilos (regerado a cada novo link)
+let qrPreviewCache = { linkId: null, dataUrls: {} };
+
+async function generateQRPreviews(linkId) {
+  if (qrPreviewCache.linkId === linkId && Object.keys(qrPreviewCache.dataUrls).length > 0) {
+    applyQRPreviews();
+    return;
+  }
+  const link = allLinks.find(l => l.id === linkId);
+  if (!link) return;
+  qrPreviewCache = { linkId, dataUrls: {} };
+
+  let QRCodeStyling;
+  try { QRCodeStyling = await loadQRStyling(); } catch { return; }
+
+  const shortUrl = `https://${link.host}/${link.slug}`;
+  const styleKeys = Object.keys(QR_STYLES);
+
+  await Promise.all(styleKeys.map(async (key) => {
+    try {
+      const cfg = { ...QR_STYLES[key].config(shortUrl), width: 200, height: 200 };
+      const qr = new QRCodeStyling(cfg);
+      const holder = document.createElement('div');
+      holder.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:200px;height:200px;';
+      document.body.appendChild(holder);
+      qr.append(holder);
+      // espera o canvas renderizar
+      await new Promise(r => setTimeout(r, 120));
+      const canvas = holder.querySelector('canvas');
+      if (canvas && canvas.width > 0) {
+        try { qrPreviewCache.dataUrls[key] = canvas.toDataURL('image/png'); } catch {}
+      }
+      holder.remove();
+    } catch (e) { /* skip */ }
+  }));
+
+  // Só aplica se ainda for o mesmo link (evita corrida com troca rápida)
+  if (qrPreviewCache.linkId === linkId) applyQRPreviews();
+}
+
+function applyQRPreviews() {
+  document.querySelectorAll('.qr-styles-menu button[data-style]').forEach(btn => {
+    const key = btn.dataset.style;
+    const url = qrPreviewCache.dataUrls[key];
+    if (!url) return;
+    const sw = btn.querySelector('.qr-swatch');
+    if (!sw) return;
+    sw.style.backgroundImage = `url(${url})`;
+    sw.classList.add('has-real');
+  });
+}
+
+function resetQRPreviewSwatches() {
+  document.querySelectorAll('.qr-styles-menu .qr-swatch').forEach(sw => {
+    sw.style.backgroundImage = '';
+    sw.classList.remove('has-real');
+  });
+}
+
 /* ─── THEME ─── */
 const savedTheme = localStorage.getItem('audazalinks-theme');
 if (savedTheme === 'light') document.body.classList.add('light');
@@ -1152,6 +1212,10 @@ async function openDetail(id) {
 
   // Globo (depois de tudo pra não bloquear o resto)
   initDetailGlobe(id);
+
+  // Previews do dropdown de QR — geração em background (~600ms)
+  resetQRPreviewSwatches();
+  generateQRPreviews(id);
 }
 
 async function reloadDetailCharts() {
