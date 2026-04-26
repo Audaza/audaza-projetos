@@ -295,6 +295,15 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
 .detail-stats .stat{padding:12px 14px}
 .detail-stats .stat-v{font-size:22px}
 
+/* ─── EXPORT MENU ─── */
+.export-menu{position:absolute;top:calc(100% + 6px);right:0;min-width:280px;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--r-md);box-shadow:var(--sh-lg);padding:6px;z-index:10;display:none;flex-direction:column;gap:2px;animation:slideUp .18s cubic-bezier(.22,1,.36,1) both}
+.export-menu.open{display:flex}
+.export-menu button{display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:center;padding:10px 12px;border-radius:var(--r-sm);text-align:left;color:var(--ink-soft);transition:.12s;width:100%}
+.export-menu button:hover{background:var(--hover);color:var(--ink)}
+.export-menu button svg{width:16px;height:16px;color:var(--brand)}
+.export-menu button strong{display:block;font-size:13px;font-weight:500;color:var(--ink)}
+.export-menu button small{display:block;font-size:11.5px;color:var(--ink-faint);margin-top:1px;line-height:1.3}
+
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:24px;right:24px;padding:11px 18px;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--r);font-size:13px;opacity:0;transform:translateY(10px);transition:all .2s;z-index:200;box-shadow:var(--sh)}
 .toast.show{opacity:1;transform:translateY(0)}
