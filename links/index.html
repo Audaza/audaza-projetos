@@ -520,6 +520,35 @@ details.adv .adv-body{padding:4px 14px 14px;border-top:1px dashed var(--rule);ba
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           Editar
         </button>
+        <div style="position:relative;display:inline-block">
+          <button class="btn btn-s btn-sm" onclick="toggleExportMenu(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar
+          </button>
+          <div id="exportMenu" class="export-menu">
+            <button onclick="exportClicksCSV()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <div>
+                <strong>Cliques (CSV)</strong>
+                <small>Tabela com timestamp, país, device, etc.</small>
+              </div>
+            </button>
+            <button onclick="exportClicksJSON()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+              <div>
+                <strong>Cliques (JSON)</strong>
+                <small>Dados completos pra integração</small>
+              </div>
+            </button>
+            <button onclick="exportSummaryPNG()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div>
+                <strong>QR Code (PNG)</strong>
+                <small>1024×1024, alta qualidade</small>
+              </div>
+            </button>
+          </div>
+        </div>
         <button class="btn btn-d btn-sm" onclick="deleteFromDetail()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
           Excluir
@@ -1089,6 +1118,95 @@ function closeDetailModal() {
 
 function editFromDetail() { closeDetailModal(); openEditModal(currentLinkId); }
 function deleteFromDetail() { deleteLink(currentLinkId); }
+
+/* ─── EXPORT ─── */
+function toggleExportMenu(e) {
+  e?.stopPropagation();
+  const m = document.getElementById('exportMenu');
+  m.classList.toggle('open');
+}
+document.addEventListener('click', (e) => {
+  const m = document.getElementById('exportMenu');
+  if (!m) return;
+  if (!m.classList.contains('open')) return;
+  if (m.contains(e.target) || e.target.closest('[onclick*="toggleExportMenu"]')) return;
+  m.classList.remove('open');
+});
+
+async function fetchAllClicks(linkId) {
+  const { data, error } = await supa
+    .from('audazalinks_clicks')
+    .select('clicked_at,country,country_code,region,city,latitude,longitude,device_type,browser,os,referer,referer_host,host_used,ip,user_agent')
+    .eq('link_id', linkId)
+    .order('clicked_at', { ascending: false });
+  if (error) { toast('Erro: ' + error.message, 'error'); return null; }
+  return data || [];
+}
+
+function csvEscape(v) {
+  if (v === null || v === undefined) return '';
+  const s = String(v);
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function downloadBlob(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+}
+
+async function exportClicksCSV() {
+  document.getElementById('exportMenu').classList.remove('open');
+  const link = allLinks.find(l => l.id === currentLinkId);
+  if (!link) return;
+  const clicks = await fetchAllClicks(currentLinkId);
+  if (clicks === null) return;
+
+  const cols = ['clicked_at','country','country_code','region','city','device_type','browser','os','referer_host','host_used','ip'];
+  const header = cols.join(',');
+  const rows = clicks.map(c => cols.map(k => csvEscape(c[k])).join(','));
+  const csv = '﻿' + [header, ...rows].join('\n');  // BOM pra Excel abrir UTF-8
+
+  const slug = `${link.host}-${link.slug}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+  const date = new Date().toISOString().slice(0, 10);
+  downloadBlob(csv, `audaza-links_${slug}_${date}.csv`, 'text/csv;charset=utf-8');
+  toast(`${clicks.length} cliques exportados`, 'success');
+}
+
+async function exportClicksJSON() {
+  document.getElementById('exportMenu').classList.remove('open');
+  const link = allLinks.find(l => l.id === currentLinkId);
+  if (!link) return;
+  const clicks = await fetchAllClicks(currentLinkId);
+  if (clicks === null) return;
+
+  const payload = {
+    link: {
+      id: link.id,
+      short_url: `https://${link.host}/${link.slug}`,
+      destination: link.destination,
+      title: link.title,
+      created_at: link.created_at,
+      click_count: link.click_count,
+    },
+    exported_at: new Date().toISOString(),
+    total: clicks.length,
+    clicks,
+  };
+
+  const slug = `${link.host}-${link.slug}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+  const date = new Date().toISOString().slice(0, 10);
+  downloadBlob(JSON.stringify(payload, null, 2), `audaza-links_${slug}_${date}.json`, 'application/json');
+  toast(`${clicks.length} cliques exportados`, 'success');
+}
+
+function exportSummaryPNG() {
+  document.getElementById('exportMenu').classList.remove('open');
+  downloadQR();  // já existe — baixa o QR em 1024×1024
+}
 
 async function copyShortUrl() { await copyText(document.getElementById('detailShortUrl').textContent); }
 function downloadQR() {
