@@ -340,13 +340,45 @@ body.light .chip-dot{border-color:rgba(0,0,0,.10)}
 .sub-field-wrap{margin-top:8px;display:none}
 .sub-field-wrap.open{display:block}
 
-/* mode switcher */
-.mode-switcher{display:flex;background:var(--alt);border:1px solid var(--rule);border-radius:var(--r);padding:3px;margin-bottom:18px}
-.mode-btn{flex:1;padding:8px 10px;border-radius:var(--r-sm);border:none;background:none;color:var(--ink-faint);cursor:pointer;font-family:var(--font);font-size:12.5px;font-weight:500;transition:.15s;display:flex;align-items:center;justify-content:center;gap:7px}
-.mode-btn:hover{color:var(--ink)}
-.mode-btn.active{background:var(--surface);color:var(--ink);box-shadow:var(--sh-sm)}
-.mode-btn-icon{display:inline-flex;align-items:center}
-.mode-btn-icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+/* wizard progress (header) */
+.wizard-progress{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 14px;margin-bottom:18px;
+  background:var(--alt);border:1px solid var(--rule);border-radius:var(--r);
+  position:relative;overflow:hidden;
+}
+.wizard-progress::before{content:'';position:absolute;inset:0;background:radial-gradient(50% 80% at 0% 50%, rgba(91,158,255,.07), transparent 70%);pointer-events:none}
+.wz-step-info{display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative;z-index:1}
+.wz-step-num{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--grad);color:#fff;display:grid;place-items:center;
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  box-shadow:0 4px 12px rgba(91,158,255,.32);
+}
+.wz-step-meta{display:flex;flex-direction:column;gap:1px;line-height:1.15}
+.wz-step-name{font-family:var(--font-d);font-size:13.5px;font-weight:500;color:var(--ink);letter-spacing:-0.01em}
+.wz-step-of{font-size:10.5px;color:var(--ink-faint);font-family:var(--mono);letter-spacing:.04em}
+.wz-dots{display:flex;gap:4px;flex:1;justify-content:flex-end;align-items:center;position:relative;z-index:1}
+.wz-dot{width:6px;height:6px;border-radius:999px;background:var(--surface-3);transition:.25s cubic-bezier(.2,.8,.2,1);border:1px solid var(--rule)}
+.wz-dot.done{background:var(--success);border-color:transparent}
+.wz-dot.active{background:var(--brand);width:18px;border-color:transparent;box-shadow:0 0 8px var(--brand-glow)}
+
+/* wizard nav (footer dentro do body) */
+.wizard-nav{
+  display:flex;gap:8px;align-items:center;
+  margin-top:18px;padding-top:16px;
+  border-top:1px dashed var(--rule);
+}
+.wizard-nav .btn{justify-content:center}
+.wizard-nav #wzBack{flex:0 0 auto}
+.wizard-nav #wzNext{flex:1}
+.wizard-final-hint{
+  margin-top:12px;padding:10px 14px;
+  font-size:12px;color:var(--success);
+  background:rgba(91,227,138,.08);border:1px solid rgba(91,227,138,.24);
+  border-radius:var(--r-sm);text-align:center;line-height:1.5;
+}
+.wizard-final-hint strong{color:var(--success);font-weight:600}
 
 /* required tag (modelar) */
 .m-stack{display:flex;flex-direction:column;gap:8px}
@@ -615,14 +647,16 @@ body.light .chip-dot{border-color:rgba(0,0,0,.10)}
         <!-- shared panel -->
         <div id="sharedPanel" style="display:none">
 
-          <!-- mode switcher -->
-          <div class="mode-switcher">
-            <button class="mode-btn active" id="btnClonar" onclick="setMode('clonar')">
-              <span class="mode-btn-icon"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span>Clonar
-            </button>
-            <button class="mode-btn" id="btnModelar" onclick="setMode('modelar')">
-              <span class="mode-btn-icon"><svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.5L20 10l-4 3.6L17 20l-5-3-5 3 1-6.4L4 10l5.6-1.5z"/></svg></span>Modelar
-            </button>
+          <!-- wizard progress -->
+          <div class="wizard-progress">
+            <div class="wz-step-info">
+              <span class="wz-step-num" id="wzStepNum">1</span>
+              <div class="wz-step-meta">
+                <span class="wz-step-name" id="wzStepName">—</span>
+                <span class="wz-step-of">Etapa <span id="wzStepCur">1</span> de <span id="wzStepTotal">1</span></span>
+              </div>
+            </div>
+            <div class="wz-dots" id="wzDots"></div>
           </div>
 
           <!-- proporção -->
@@ -647,9 +681,7 @@ body.light .chip-dot{border-color:rgba(0,0,0,.10)}
             </div>
           </div>
 
-          <!-- ── CLONAR ── -->
-          <div id="dynamicForm" style="display:block">
-
+          <!-- sections (uma por vez via wizard) -->
             <div class="ctrl-section" id="secTextos" style="display:none">
               <div class="section-head">
                 <span class="section-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16"/></svg></span>
@@ -736,74 +768,21 @@ body.light .chip-dot{border-color:rgba(0,0,0,.10)}
               <div class="summary-title">Alterações marcadas</div>
               <div id="summaryList"></div>
             </div>
-          </div>
 
-          <!-- ── MODELAR ── -->
-          <div id="modelarForm" style="display:none">
-            <div class="ctrl-section">
-              <div class="section-head">
-                <span class="section-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg></span>
-                <span class="section-name">Propósito</span>
-                <span class="m-required-tag">obrigatório</span>
-              </div>
-              <input class="m-input" id="mPurpose" placeholder="Ex: vaga de eletricista, promoção de plano, evento…" />
+            <!-- wizard nav -->
+            <div class="wizard-nav">
+              <button class="btn btn-s btn-sm" id="wzBack" style="visibility:hidden">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Voltar
+              </button>
+              <button class="btn btn-br btn-sm" id="wzNext">
+                Próximo
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
             </div>
-            <div class="ctrl-section">
-              <div class="section-head">
-                <span class="section-icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="1.5"/><path d="M9 22V13h6v9M9 6h.01M15 6h.01M9 10h.01M15 10h.01"/></svg></span>
-                <span class="section-name">Empresa / Marca</span>
-              </div>
-              <input class="m-input" id="mEmpresa" placeholder="Nome da empresa ou produto…" />
+            <div class="wizard-final-hint" id="wzFinalHint" style="display:none">
+              Pronto. Revise as alterações acima e clique em <strong>Gerar imagem</strong> abaixo.
             </div>
-            <div class="ctrl-section">
-              <div class="section-head">
-                <span class="section-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16"/></svg></span>
-                <span class="section-name">Conteúdo</span>
-              </div>
-              <div class="m-stack">
-                <input class="m-input" id="mTitulo" placeholder="Título / Headline principal…" />
-                <textarea class="m-input" id="mTextos" rows="3" placeholder="Subtítulo, detalhes, requisitos, informações complementares…"></textarea>
-              </div>
-            </div>
-            <div class="ctrl-section">
-              <div class="section-head">
-                <span class="section-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0116 0"/></svg></span>
-                <span class="section-name">Modelo / Profissional</span>
-              </div>
-              <label class="pessoa-upload-btn" id="mPessoaUploadBtn">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span>Enviar foto do modelo (opcional)</span>
-                <input type="file" id="mPessoaFotoInput" accept="image/*" />
-              </label>
-              <div class="pessoa-foto-preview" id="mPessoaFotoPreview" style="display:none">
-                <img class="pessoa-prev-img" id="mPessoaFotoImg" />
-                <span class="pessoa-prev-name" id="mPessoaFotoName"></span>
-                <button class="pessoa-clear" id="mPessoaFotoClear">✕</button>
-              </div>
-              <textarea class="m-input" id="mPessoa" rows="2" style="margin-top:6px" placeholder="Descreva o modelo: gênero, idade, aparência, roupa, expressão, etnia…"></textarea>
-            </div>
-            <div class="ctrl-section">
-              <div class="section-head">
-                <span class="section-icon"><svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 110-20c5.5 0 9.5 3.5 9.5 8 0 4-3.5 5-7 5-1.5 0-2.5 1-2.5 2 0 .5.5 1.5 1 2 .5.5.5 2 0 2.5-.5.5-1 .5-1 .5z"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1.2" fill="currentColor"/><circle cx="6.5" cy="12.5" r="1.2" fill="currentColor"/></svg></span>
-                <span class="section-name">Paleta de cores</span>
-              </div>
-              <label class="tog-row">
-                <input type="checkbox" class="hidden" id="mManterCores" checked />
-                <span class="tog"></span>
-                <span class="tog-label">Manter paleta da referência</span>
-              </label>
-              <div class="sub-field-wrap" id="mCorWrap">
-                <input class="m-input" id="mCor" placeholder="Ex: verde e dourado, tons terrosos, #ff6600…" />
-              </div>
-            </div>
-            <div class="ctrl-section">
-              <div class="section-head">
-                <span class="section-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
-                <span class="section-name">Instruções extras</span>
-              </div>
-              <textarea class="m-input" id="mExtra" rows="2" placeholder="Qualquer detalhe adicional sobre o resultado…"></textarea>
-            </div>
-          </div>
 
         </div>
       </div>
@@ -837,7 +816,6 @@ body.light .chip-dot{border-color:rgba(0,0,0,.10)}
 // ── CONFIG ──────────────────────────────────────────────────────
 const WH_ANALISE = 'https://audaza.app.n8n.cloud/webhook/analisar-imagem';
 const WH_GERACAO = 'https://audaza.app.n8n.cloud/webhook/receber-imagem';
-const WH_MODELAR = 'https://audaza.app.n8n.cloud/webhook/modelar-imagem';
 const LIB_KEY    = 'audaza_image_library';
 
 // ── STATE ───────────────────────────────────────────────────────
@@ -850,8 +828,8 @@ let estilo_original = '';
 let selectedFormato = 'story';
 let logosNovas      = {};
 let pessoaFoto      = null;
-let currentMode     = 'clonar';
-let mPessoaFoto     = null;
+let activeWizSteps  = [];
+let wzIdx           = 0;
 
 // ── REFS ────────────────────────────────────────────────────────
 const uploadZone    = document.getElementById('uploadZone');
@@ -867,7 +845,7 @@ const compOriginal  = document.getElementById('compOriginal');
 const compResult    = document.getElementById('compResult');
 const resultActions = document.getElementById('resultActionsBar');
 const ctrlEmpty     = document.getElementById('ctrlEmpty');
-const dynamicForm   = document.getElementById('dynamicForm');
+const sharedPanel   = document.getElementById('sharedPanel');
 const controlsSub   = document.getElementById('controlsSub');
 const gerarBtn      = document.getElementById('gerarBtn');
 const downloadBtn   = document.getElementById('downloadBtn');
@@ -912,40 +890,77 @@ document.getElementById('pessoaFotoClear').addEventListener('click', () => {
   updateSummary();
 });
 
-// Modelar — pessoa foto
-document.getElementById('mPessoaFotoInput').addEventListener('change', e => {
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    mPessoaFoto = ev.target.result;
-    document.getElementById('mPessoaFotoImg').src = ev.target.result;
-    document.getElementById('mPessoaFotoName').textContent = file.name;
-    document.getElementById('mPessoaFotoPreview').style.display = 'flex';
-    document.getElementById('mPessoaUploadBtn').querySelector('span').textContent = 'Trocar foto do modelo';
-  };
-  reader.readAsDataURL(file);
-});
-document.getElementById('mPessoaFotoClear').addEventListener('click', () => {
-  mPessoaFoto = null;
-  document.getElementById('mPessoaFotoPreview').style.display = 'none';
-  document.getElementById('mPessoaUploadBtn').querySelector('span').textContent = 'Enviar foto do modelo (opcional)';
-  document.getElementById('mPessoaFotoInput').value = '';
-});
-document.getElementById('mManterCores').addEventListener('change', e => {
-  document.getElementById('mCorWrap').classList.toggle('open', !e.target.checked);
-});
+// ── WIZARD (etapas dentro de Personalização) ────────────────────
+const WZ_NAMES = {
+  secFormato: 'Proporção',
+  secTextos:  'Textos',
+  secLogos:   'Logos & Marcas',
+  secCores:   'Cores',
+  secEstilo:  'Estilo visual',
+  secPessoa:  'Modelo / Profissional'
+};
+const WZ_ALL = ['secFormato','secTextos','secLogos','secCores','secEstilo','secPessoa'];
 
-// ── MODE ─────────────────────────────────────────────────────────
-function setMode(mode) {
-  currentMode = mode;
-  document.getElementById('btnClonar').classList.toggle('active', mode === 'clonar');
-  document.getElementById('btnModelar').classList.toggle('active', mode === 'modelar');
-  document.getElementById('dynamicForm').style.display  = mode === 'clonar'  ? 'block' : 'none';
-  document.getElementById('modelarForm').style.display  = mode === 'modelar' ? 'block' : 'none';
-  gerarBtn.disabled = !currentDataUrl;
+function buildWizardSteps(){
+  // só inclui seções que têm conteúdo (display !== 'none' definido em renderForm)
+  // secFormato e secPessoa são sempre incluídas após análise.
+  activeWizSteps = WZ_ALL.filter(id => {
+    const el = document.getElementById(id);
+    return el && el.style.display !== 'none';
+  });
+  if(activeWizSteps.length === 0) return;
+  document.getElementById('wzStepTotal').textContent = activeWizSteps.length;
+  // dots
+  const dots = document.getElementById('wzDots');
+  dots.innerHTML = activeWizSteps.map((_,i) => `<div class="wz-dot" data-i="${i}"></div>`).join('');
+  // reset
+  wzIdx = 0;
+  showWizardStep();
 }
 
-// ── STEPS ───────────────────────────────────────────────────────
+function showWizardStep(){
+  if(activeWizSteps.length === 0) return;
+  // mostra só a seção ativa
+  WZ_ALL.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(activeWizSteps.includes(id)){
+      el.style.display = (id === activeWizSteps[wzIdx]) ? 'block' : 'none';
+    }
+    // seções não-ativas (sem conteúdo) ficam permanentemente none
+  });
+  // labels
+  document.getElementById('wzStepNum').textContent = (wzIdx+1);
+  document.getElementById('wzStepCur').textContent = (wzIdx+1);
+  document.getElementById('wzStepName').textContent = WZ_NAMES[activeWizSteps[wzIdx]] || '—';
+  // dots
+  document.querySelectorAll('.wz-dot').forEach((d,i)=>{
+    d.classList.toggle('active', i === wzIdx);
+    d.classList.toggle('done', i < wzIdx);
+  });
+  // nav buttons
+  const back = document.getElementById('wzBack');
+  const next = document.getElementById('wzNext');
+  const hint = document.getElementById('wzFinalHint');
+  const summary = document.getElementById('changesSummary');
+  back.style.visibility = wzIdx > 0 ? 'visible' : 'hidden';
+  const isLast = wzIdx === activeWizSteps.length - 1;
+  next.style.display = isLast ? 'none' : 'inline-flex';
+  hint.style.display = isLast ? 'block' : 'none';
+  // resumo só na última etapa
+  if(summary) summary.style.display = isLast && summary.classList.contains('has-changes') ? 'block' : 'none';
+  // controlsSub feedback
+  controlsSub.textContent = isLast ? 'Revise e gere a imagem' : `Etapa ${wzIdx+1} de ${activeWizSteps.length}`;
+}
+
+document.getElementById('wzBack').addEventListener('click', () => {
+  if(wzIdx > 0){ wzIdx--; showWizardStep(); }
+});
+document.getElementById('wzNext').addEventListener('click', () => {
+  if(wzIdx < activeWizSteps.length - 1){ wzIdx++; showWizardStep(); }
+});
+
+// ── STEPS (header global) ───────────────────────────────────────
 function setStep(n) {
   [1,2,3].forEach(i => {
     const el = document.getElementById('step'+i);
@@ -1019,7 +1034,7 @@ function resetToUpload() {
   document.getElementById('sharedPanel').style.display = 'none';
   ctrlEmpty.style.display = 'flex';
   controlsSub.textContent = 'Selecione uma imagem para começar';
-  currentMode = 'clonar'; mPessoaFoto = null;
+  activeWizSteps = []; wzIdx = 0;
   gerarBtn.disabled = true;
   saveLibBtn.disabled = true;
   analysisData = null;
@@ -1030,7 +1045,7 @@ function resetToUpload() {
 
 // ── ANÁLISE ─────────────────────────────────────────────────────
 async function triggerAnalysis() {
-  dynamicForm.style.display = 'none';
+  sharedPanel.style.display = 'none';
   ctrlEmpty.style.display = 'none';
   controlsSub.textContent = 'Analisando imagem…';
   scanOverlay.classList.add('active');
@@ -1070,7 +1085,6 @@ async function triggerAnalysis() {
 // ── RENDER FORM ─────────────────────────────────────────────────
 function renderForm(data) {
   document.getElementById('sharedPanel').style.display = 'block';
-  setMode('clonar');
 
   // TEXTOS
   const textos = data.textos || [];
@@ -1206,6 +1220,7 @@ function renderForm(data) {
   gerarBtn.disabled = false;
   setStep(2);
   updateSummary();
+  buildWizardSteps();
 }
 
 // ── SUMMARY ─────────────────────────────────────────────────────
@@ -1238,6 +1253,9 @@ function updateSummary() {
   const list = document.getElementById('summaryList');
   box.classList.add('has-changes');
   list.innerHTML = items.map(i => `<div class="summary-item"><span class="summary-arrow">›</span><span>${i}</span></div>`).join('');
+  // resumo só visível na última etapa do wizard
+  const isLast = activeWizSteps.length > 0 && wzIdx === activeWizSteps.length - 1;
+  box.style.display = isLast ? 'block' : 'none';
 }
 
 // ── GERAR ────────────────────────────────────────────────────────
@@ -1251,53 +1269,7 @@ gerarBtn.addEventListener('click', async () => {
   setStatus('Gerando…', 'loading');
   setStep(3);
 
-  // ── MODELAR ──
-  if (currentMode === 'modelar') {
-    const proposito = document.getElementById('mPurpose').value.trim();
-    if (!proposito) {
-      toast('Informe o propósito da nova peça', true);
-      gerarBtn.disabled = false; genLoading.classList.remove('visible');
-      imageViewer.classList.add('visible'); setStep(2); return;
-    }
-    genLoading.querySelector('strong').textContent = 'Modelando com gpt-image-2';
-    genLoading.querySelector('.gen-text').lastChild.textContent = 'Criando nova peça baseada no estilo da referência.';
-    const mData = {
-      proposito,
-      empresa:      document.getElementById('mEmpresa').value.trim(),
-      titulo:       document.getElementById('mTitulo').value.trim(),
-      textos:       document.getElementById('mTextos').value.trim(),
-      pessoa:       document.getElementById('mPessoa').value.trim(),
-      pessoa_foto:  mPessoaFoto,
-      manter_cores: document.getElementById('mManterCores').checked,
-      cor:          document.getElementById('mCor').value.trim(),
-      extra:        document.getElementById('mExtra').value.trim()
-    };
-    try {
-      const res = await fetch(WH_MODELAR, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: currentDataUrl, formato: selectedFormato, analise: analysisData, modelar: mData }),
-        signal: AbortSignal.timeout(180000)
-      });
-      if (!res.ok) { const t = await res.text(); throw new Error('Erro n8n: ' + t.slice(0,120)); }
-      const blob = await res.blob();
-      if (!blob || blob.size < 1000) throw new Error('Imagem não retornada pelo servidor.');
-      const imageUrl = URL.createObjectURL(blob);
-      lastResultUrl  = imageUrl;
-      lastResultName = `modelar_${selectedFormato}_${Date.now()}.png`;
-      genLoading.classList.remove('visible');
-      compOriginal.src = currentDataUrl; compResult.src = imageUrl;
-      comparison.classList.add('visible'); resultActions.classList.add('visible');
-      setStatus('Modelagem completa', 'ok'); toast('✓ Nova peça gerada!');
-      setTimeout(() => setStatus(''), 4000);
-    } catch(e) {
-      genLoading.classList.remove('visible'); imageViewer.classList.add('visible');
-      setStatus('Erro na modelagem', 'err'); toast(e.message, true);
-      gerarBtn.disabled = false; setStep(2);
-    }
-    return;
-  }
-
-  // ── CLONAR ──
+  // ── CLONAR (replicação com edição) ──
   const textos = [];
   document.querySelectorAll('#textosContainer .text-row-input').forEach(inp => {
     textos.push({ id: inp.dataset.id, label: inp.dataset.label, posicao: inp.dataset.pos, valor_original: inp.dataset.original, valor_novo: inp.value.trim() });
