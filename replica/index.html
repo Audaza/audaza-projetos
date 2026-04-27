@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#06070b" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Audaza · Replica</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%235b9eff'/%3E%3Cstop offset='100%25' stop-color='%233a72d8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Cg stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3Crect x='22' y='22' width='56' height='56' rx='6'/%3E%3Ccircle cx='40' cy='40' r='5'/%3E%3Cpath d='M78 60l-16-16L26 78'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#06070b; --bg-2:#0a0c12;
+  --surface:rgba(255,255,255,0.035); --surface-2:rgba(255,255,255,0.06); --surface-3:rgba(255,255,255,0.09);
+  --alt:rgba(255,255,255,0.025); --hover:rgba(255,255,255,0.05);
+  --rule:rgba(245,245,247,.08); --rule-2:rgba(245,245,247,.16);
+  --ink:#f5f5f7; --text:#f5f5f7;
+  --text-2:rgba(245,245,247,.78); --text-3:rgba(245,245,247,.55); --text-4:rgba(245,245,247,.32);
+  --ink-soft:rgba(245,245,247,.72); --ink-faint:rgba(245,245,247,.42); --ink-dim:rgba(245,245,247,.20);
+  --brand:#5b9eff; --brand-2:#3a72d8; --brand-l:rgba(91,158,255,.14); --brand-glow:rgba(91,158,255,.22);
+  --cool:#7ec8ff; --grad:linear-gradient(135deg,#5b9eff,#3a72d8);
+  --success:#5be38a; --danger:#ff7a7a; --warn:#f5c45b; --warn-l:rgba(245,196,91,.10);
+  --r-xs:4px; --r-sm:7px; --r:9px; --r-md:11px; --r-lg:14px; --r-xl:20px;
+  --sh-sm:0 1px 2px rgba(0,0,0,.30);
+  --sh:0 8px 24px rgba(0,0,0,.32),0 2px 6px rgba(0,0,0,.20);
+  --sh-lg:0 24px 60px rgba(0,0,0,.45),0 8px 16px rgba(0,0,0,.25);
+  --sh-brand:0 10px 30px rgba(91,158,255,.32),0 4px 10px rgba(91,158,255,.18);
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+  --font-d:'Space Grotesk','Inter',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  /* legacy aliases (mantidos pra qualquer fallback) */
+  --border:var(--rule); --border-2:var(--rule-2);
+  --s1:var(--surface); --s2:var(--surface); --s3:var(--surface-2); --s4:var(--surface-3);
+  --accent:var(--warn); --accent-dim:var(--warn-l); --accent-glow:rgba(245,196,91,.18);
+  --blue:var(--brand); --blue-dim:var(--brand-l); --blue-glow:var(--brand-glow);
+  --green:var(--success); --red:var(--danger);
+  --muted:var(--ink-faint); --dim:var(--ink-dim);
+}
+body.light{
+  --bg:#fafafa; --bg-2:#ffffff;
+  --surface:#ffffff; --surface-2:#f5f5f5; --surface-3:#ebebeb;
+  --alt:#f9f9f9; --hover:#f0f0f0;
+  --rule:rgba(0,0,0,.10); --rule-2:rgba(0,0,0,.18);
+  --ink:#0a0a0a; --text:#0a0a0a;
+  --text-2:rgba(10,10,10,.78); --text-3:rgba(10,10,10,.55); --text-4:rgba(10,10,10,.32);
+  --ink-soft:rgba(10,10,10,.74); --ink-faint:rgba(10,10,10,.48); --ink-dim:rgba(10,10,10,.24);
+  --brand-l:rgba(91,158,255,.10); --warn-l:rgba(245,196,91,.14);
+  --sh-sm:0 1px 2px rgba(0,0,0,.05);
+  --sh:0 4px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.04);
+  --sh-lg:0 16px 40px rgba(0,0,0,.10),0 4px 10px rgba(0,0,0,.05);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
+html,body{background:var(--bg)}
+body{
+  font-family:var(--font); color:var(--text); font-size:13.5px; line-height:1.5;
+  min-height:100vh; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  background-image:
+    radial-gradient(60% 50% at 80% 0%, rgba(91,158,255,.08), transparent 60%),
+    radial-gradient(50% 50% at 0% 100%, rgba(126,200,255,.05), transparent 60%);
+  transition:background-color .25s, color .25s;
+}
+body.light{
+  background-image:
+    radial-gradient(60% 50% at 80% 0%, rgba(91,158,255,.05), transparent 60%),
+    radial-gradient(50% 50% at 0% 100%, rgba(126,200,255,.03), transparent 60%);
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:transparent;color:inherit}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+::selection{background:var(--brand);color:#fff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(245,245,247,.10);border-radius:999px;border:2px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(245,245,247,.22);background-clip:content-box;border:2px solid transparent}
+body.light ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);background-clip:content-box;border:2px solid transparent}
+
+/* ═══ TOPBAR ═══ */
+.topbar{
+  display:flex;align-items:center;gap:14px;padding:12px clamp(16px,3vw,32px);
+  background:rgba(6,7,11,0.72);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid var(--rule);
+  height:58px;position:sticky;top:0;z-index:50;
+}
+body.light .topbar{background:rgba(255,255,255,0.86);border-bottom:1px solid rgba(0,0,0,.08)}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand-mk{
+  width:28px;height:28px;border-radius:8px;background:var(--grad);
+  display:grid;place-items:center;color:#fff;box-shadow:var(--sh-brand);
+}
+.brand-mk svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand-nm{font-family:var(--font-d);font-weight:600;font-size:16px;letter-spacing:-0.02em;line-height:1;color:var(--ink);display:flex;align-items:baseline;gap:5px}
+.brand-nm span{color:var(--ink-faint);font-weight:400;font-size:15px}
+.div-v{width:1px;height:22px;background:var(--rule)}
+.user-tag{font-family:var(--mono);font-size:12px;color:var(--ink-faint);padding:0 10px}
+.tb-acts{display:flex;gap:6px;margin-left:auto;align-items:center}
+
+/* steps no centro do topbar */
+.steps{display:flex;align-items:center;gap:6px;flex:1;justify-content:center;min-width:0}
+.step{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;color:var(--ink-faint);transition:.2s;border:1px solid transparent;font-size:12px;white-space:nowrap}
+.step.active{background:rgba(91,158,255,.10);color:var(--brand);border-color:rgba(91,158,255,.22)}
+.step.done{color:var(--success)}
+.step-num{width:17px;height:17px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-size:10px;font-weight:600;font-family:var(--mono);border:1px solid var(--rule)}
+.step.active .step-num{background:var(--brand);color:#fff;border-color:transparent}
+.step.done .step-num{background:var(--success);color:#06070b;border-color:transparent}
+.step-sep{width:18px;height:1px;background:var(--rule)}
+
+/* ═══ BUTTONS (sistema do /apps/links) ═══ */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:0 14px;height:36px;border-radius:var(--r);font-size:13px;font-weight:500;border:1px solid transparent;transition:.15s;white-space:nowrap;font-family:var(--font)}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+.btn-g{color:var(--ink-soft)}
+.btn-g:hover{background:var(--hover);color:var(--ink)}
+.btn-s{background:var(--surface);border-color:var(--rule);color:var(--ink)}
+.btn-s:hover{border-color:var(--ink-dim);background:var(--surface-2)}
+.btn-p{background:#fff;color:#0a0a0a}
+.btn-p:hover{background:#e5e5e7}
+body.light .btn-p{background:#0a0a0a;color:#fff}
+body.light .btn-p:hover{background:#27272a}
+.btn-br{background:var(--grad);color:#fff;box-shadow:var(--sh-brand)}
+.btn-br:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-br:disabled{opacity:.32;cursor:default;transform:none;box-shadow:none;filter:none}
+.btn-d{color:var(--danger);border-color:var(--rule);background:var(--surface)}
+.btn-d:hover{background:rgba(255,122,122,.08);border-color:var(--danger)}
+.btn-i{width:32px;height:32px;padding:0;border-radius:var(--r-sm);justify-content:center;color:var(--ink-faint)}
+.btn-i:hover{background:var(--hover);color:var(--ink)}
+.btn-sm{height:30px;padding:0 12px;font-size:12px;border-radius:var(--r-sm)}
+
+/* theme icons */
+.theme-icon-light{display:none}
+body.light .theme-icon-light{display:block}
+body.light .theme-icon-dark{display:none}
+
+/* ═══ STATUS PILL ═══ */
+#status-pill{display:none;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;font-size:11.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--rule);color:var(--ink-faint);letter-spacing:.02em}
+#status-pill.visible{display:inline-flex}
+#status-pill .pulse{width:6px;height:6px;border-radius:50%;background:var(--ink-faint);animation:pulse 1.5s ease-in-out infinite}
+#status-pill.loading .pulse{background:var(--brand);box-shadow:0 0 8px var(--brand-glow)}
+#status-pill.loading{color:var(--brand);border-color:rgba(91,158,255,.25);background:rgba(91,158,255,.06)}
+#status-pill.ok .pulse{background:var(--success);animation:none;box-shadow:0 0 8px rgba(91,227,138,.6)}
+#status-pill.ok{color:var(--success);border-color:rgba(91,227,138,.22);background:rgba(91,227,138,.06)}
+#status-pill.err .pulse{background:var(--danger);animation:none;box-shadow:0 0 8px rgba(255,122,122,.6)}
+#status-pill.err{color:var(--danger);border-color:rgba(255,122,122,.22);background:rgba(255,122,122,.06)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ═══ WORKSPACE + PAGE-HEAD (idêntico /apps/links) ═══ */
+.workspace{max-width:1340px;margin:0 auto;padding:32px clamp(16px,3vw,32px) 80px}
+.page-head{margin-bottom:24px}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);margin-bottom:10px}
+.page-title{font-family:var(--font-d);font-size:clamp(28px,3.6vw,38px);font-weight:500;letter-spacing:-0.02em;line-height:1.06;color:var(--text)}
+.page-title em{font-style:normal;font-weight:500;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.page-desc{margin-top:10px;color:var(--text-2);font-size:13.5px;line-height:1.55;max-width:580px}
+
+/* ═══ BOARD (3 colunas em cards estilo links) ═══ */
+.board{display:grid;grid-template-columns:280px 1fr 380px;gap:18px;align-items:stretch}
+.board-card{
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
+  overflow:hidden;display:flex;flex-direction:column;position:relative;
+}
+.board-card::before{
+  content:'';position:absolute;inset:0;border-radius:var(--r-lg);
+  background:radial-gradient(50% 70% at 100% 0%, rgba(91,158,255,.04), transparent 70%);
+  pointer-events:none;
+}
+.board-card>*{position:relative;z-index:1}
+.board-card-h{
+  display:flex;align-items:center;gap:10px;padding:14px 16px;
+  border-bottom:1px solid var(--rule);background:rgba(255,255,255,.012);
+}
+body.light .board-card-h{background:rgba(0,0,0,.012)}
+.board-card-h .eyebrow{margin-bottom:0;color:var(--ink-faint)}
+.board-card-b{flex:1;padding:16px;overflow-y:auto;min-height:0}
+.board-card-f{padding:12px 16px;border-top:1px solid var(--rule);background:rgba(0,0,0,.06)}
+body.light .board-card-f{background:rgba(0,0,0,.012)}
+
+.preview-panel{min-height:560px;background:var(--bg-2)}
+.preview-panel .board-card-b{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:36px 24px}
+.lib-panel .board-card-b{padding:14px}
+.ctrl-panel .board-card-b{padding:18px}
+
+/* ═══ PILLS ═══ */
+.pill{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.04em}
+.pill.active{background:rgba(91,227,138,.12);color:var(--success)}
+.pill.danger{background:rgba(255,122,122,.14);color:var(--danger)}
+.pill.muted{background:var(--surface-2);color:var(--ink-faint);border:1px solid var(--rule);font-family:var(--mono)}
+.pill.warn{background:var(--warn-l);color:var(--warn)}
+
+/* ═══ LIBRARY ═══ */
+.lib-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 18px;text-align:center;gap:12px;min-height:220px}
+.lib-empty-icon{width:48px;height:48px;border-radius:var(--r-md);background:var(--brand-l);border:1px solid rgba(91,158,255,.22);display:grid;place-items:center;color:var(--brand)}
+.lib-empty-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.lib-empty-text{font-size:12px;color:var(--text-3);line-height:1.5;max-width:200px}
+.lib-grid-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lib-thumb{aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden;cursor:pointer;position:relative;border:1px solid var(--rule);transition:.18s;background:var(--surface)}
+.lib-thumb:hover{border-color:rgba(91,158,255,.35);transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.30)}
+.lib-thumb.active{border-color:var(--brand);box-shadow:0 0 0 2px rgba(91,158,255,.22)}
+.lib-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.lib-thumb-name{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent, rgba(0,0,0,0.88));padding:14px 6px 5px;font-size:9.5px;color:rgba(245,245,247,.82);font-family:var(--mono);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib-del-btn{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);border:1px solid rgba(245,245,247,.16);color:var(--danger);font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.lib-thumb:hover .lib-del-btn{display:flex}
+
+#saveLibBtn{
+  width:100%;padding:0 12px;height:36px;background:var(--alt);
+  border:1px solid var(--rule);color:var(--ink-soft);
+  font-size:13px;font-weight:500;border-radius:var(--r);cursor:pointer;transition:.15s;
+  display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font);
+}
+#saveLibBtn:hover:not(:disabled){background:var(--surface-2);color:var(--ink);border-color:var(--ink-dim)}
+#saveLibBtn:disabled{opacity:.32;cursor:default}
+
+/* ═══ UPLOAD ZONE ═══ */
+.upload-zone{
+  width:100%;max-width:520px;border:1.5px dashed var(--rule-2);border-radius:var(--r-xl);
+  padding:54px 32px;text-align:center;cursor:pointer;position:relative;transition:.25s;
+  background:var(--alt);overflow:hidden;
+}
+.upload-zone::before{content:'';position:absolute;inset:0;border-radius:var(--r-xl);background:radial-gradient(50% 60% at 50% 0%, rgba(91,158,255,.10), transparent 70%);opacity:0;transition:opacity .3s;pointer-events:none}
+.upload-zone:hover{border-color:rgba(91,158,255,.45);background:var(--surface)}
+.upload-zone:hover::before{opacity:1}
+.upload-zone.drag-over{border-color:var(--brand);background:rgba(91,158,255,.06)}
+.upload-zone.drag-over::before{opacity:1}
+.upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-icon-wrap{width:60px;height:60px;border-radius:var(--r-lg);background:var(--brand-l);border:1px solid rgba(91,158,255,.22);display:grid;place-items:center;margin:0 auto 18px;color:var(--brand)}
+.upload-icon-wrap svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.upload-title{font-family:var(--font-d);font-size:18px;font-weight:500;letter-spacing:-0.022em;margin-bottom:6px;color:var(--ink)}
+.upload-sub{font-size:13px;color:var(--text-2);line-height:1.55}
+.upload-formats{margin-top:18px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.fmt-tag{font-family:var(--mono);font-size:10px;color:var(--ink-faint);background:var(--surface-2);border:1px solid var(--rule);padding:3px 9px;border-radius:5px;letter-spacing:.04em}
+
+/* ═══ IMAGE VIEWER ═══ */
+.image-viewer{width:100%;max-width:520px;display:none}
+.image-viewer.visible{display:block}
+.viewer-label{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.viewer-label>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viewer-label button{background:var(--surface);border:1px solid var(--rule);color:var(--ink-faint);font-size:11px;font-family:var(--mono);padding:4px 10px;border-radius:var(--r-sm);transition:.15s;text-transform:none;letter-spacing:0;cursor:pointer;flex-shrink:0}
+.viewer-label button:hover{background:var(--surface-2);color:var(--ink);border-color:var(--rule-2)}
+.img-frame{border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--rule);position:relative;background:var(--bg-2);box-shadow:var(--sh)}
+.img-frame img{width:100%;display:block;max-height:420px;object-fit:contain}
+
+/* scan */
+.scan-overlay{position:absolute;inset:0;pointer-events:none;display:none;overflow:hidden;border-radius:var(--r-lg)}
+.scan-overlay.active{display:block}
+.scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg, transparent, var(--brand), var(--cool), var(--brand), transparent);box-shadow:0 0 22px 4px var(--brand-glow);animation:scan-move 1.8s ease-in-out infinite}
+.scan-bg{position:absolute;inset:0;background:linear-gradient(to bottom, transparent 0%, rgba(91,158,255,0.06) 50%, transparent 100%);animation:scan-bg-move 1.8s ease-in-out infinite}
+@keyframes scan-move{0%{top:0%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}
+@keyframes scan-bg-move{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+.scan-label{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:10.5px;color:var(--brand);letter-spacing:.06em;text-transform:uppercase;display:none}
+.scan-overlay.active .scan-label{display:block}
+
+/* ═══ COMPARISON ═══ */
+.comparison{width:100%;max-width:520px;display:none;gap:14px}
+.comparison.visible{display:grid;grid-template-columns:1fr 1fr}
+.comp-label{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px}
+.comp-img-frame{border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--rule);background:var(--bg-2)}
+.comp-img-frame img{width:100%;display:block}
+.comp-result-frame{border-radius:var(--r-lg);overflow:hidden;border:1px solid rgba(91,158,255,.45);background:var(--bg-2);box-shadow:0 0 32px rgba(91,158,255,.18)}
+.comp-result-frame img{width:100%;display:block}
+
+/* ═══ GEN LOADING ═══ */
+.gen-loading{width:100%;max-width:520px;display:none;flex-direction:column;align-items:center;gap:18px;padding:48px 0}
+.gen-loading.visible{display:flex}
+.gen-ring{width:52px;height:52px;border-radius:50%;border:2px solid var(--rule);border-top-color:var(--brand);animation:spin .9s linear infinite;box-shadow:0 0 24px rgba(91,158,255,.18)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gen-text{font-size:13px;color:var(--text-2);text-align:center;line-height:1.65}
+.gen-text strong{font-family:var(--font-d);font-weight:500;font-size:15px;color:var(--ink);display:block;margin-bottom:6px;letter-spacing:-0.018em}
+
+/* ═══ RESULT ACTIONS ═══ */
+.result-actions-bar{width:100%;max-width:520px;display:none;gap:8px}
+.result-actions-bar.visible{display:flex}
+.btn-download{
+  flex:1;padding:0 16px;height:42px;background:var(--grad);color:#fff;border:none;border-radius:var(--r);
+  font-family:var(--font);font-size:13.5px;font-weight:500;cursor:pointer;transition:.18s;
+  box-shadow:var(--sh-brand);display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:-0.01em;
+}
+.btn-download:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-sm-result{
+  padding:0 14px;height:42px;background:var(--surface);color:var(--ink-soft);
+  border:1px solid var(--rule);border-radius:var(--r);
+  font-family:var(--font);font-size:12.5px;cursor:pointer;transition:.15s;white-space:nowrap;
+}
+.btn-sm-result:hover{background:var(--surface-2);color:var(--ink);border-color:var(--rule-2)}
+
+/* ═══ CONTROLS PANEL ═══ */
+.ctrl-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;text-align:center;gap:12px;padding:28px 16px}
+.ctrl-empty-icon{width:52px;height:52px;border-radius:var(--r-lg);background:var(--brand-l);border:1px solid rgba(91,158,255,.22);display:grid;place-items:center;color:var(--brand);margin-bottom:4px}
+.ctrl-empty-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ctrl-empty-title{font-family:var(--font-d);font-size:16px;font-weight:500;letter-spacing:-0.018em;color:var(--ink)}
+.ctrl-empty-sub{font-size:12.5px;color:var(--text-3);line-height:1.6;max-width:240px}
+
+.ctrl-section{margin-bottom:22px}
+.ctrl-section:last-child{margin-bottom:0}
+.section-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.section-icon{width:24px;height:24px;border-radius:6px;background:var(--surface-2);border:1px solid var(--rule);display:grid;place-items:center;color:var(--ink-soft);flex-shrink:0}
+.section-icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.section-name{font-size:11.5px;font-weight:600;color:var(--ink-soft);letter-spacing:-.005em}
+.section-count{margin-left:auto;font-size:10.5px;font-family:var(--mono);background:var(--surface-2);padding:2px 7px;border-radius:999px;color:var(--ink-faint);border:1px solid var(--rule)}
+
+/* form fields — usa padrão .input do /apps/links */
+.field-input,.m-input,.pessoa-desc-textarea{
+  width:100%;padding:9px 12px;background:var(--alt);
+  border:1px solid var(--rule);border-radius:var(--r);
+  font-size:13px;color:var(--ink);transition:.12s;font-family:inherit;line-height:1.4;
+}
+.field-input::placeholder,.m-input::placeholder,.pessoa-desc-textarea::placeholder{color:var(--ink-dim)}
+.field-input:focus,.m-input:focus,.pessoa-desc-textarea:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px rgba(91,158,255,.18);background:var(--surface)}
+textarea.field-input,textarea.m-input,.pessoa-desc-textarea{resize:vertical;min-height:62px}
+.field-input.modified,.pessoa-desc-textarea.modified,.m-input.filled{
+  border-color:var(--warn);background:var(--warn-l);
+  border-left:3px solid var(--warn);padding-left:10px;
+}
+.field-input.modified:focus,.pessoa-desc-textarea.modified:focus{border-color:var(--warn);box-shadow:0 0 0 3px rgba(245,196,91,.18)}
+
+.field-item{margin-bottom:10px;opacity:0;transform:translateY(6px);animation:field-in .25s ease forwards}
+@keyframes field-in{to{opacity:1;transform:translateY(0)}}
+.field-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.field-name{font-size:11.5px;color:var(--ink-faint)}
+
+/* toggles */
+.tog-row{display:flex;align-items:center;gap:11px;padding:9px 0;cursor:pointer;user-select:none;border-bottom:1px solid var(--rule)}
+.tog-row:last-child{border-bottom:none}
+input[type="checkbox"].hidden{display:none}
+.tog{flex-shrink:0;width:32px;height:18px;border-radius:999px;background:var(--surface-3);position:relative;transition:.2s;border:1px solid var(--rule)}
+.tog::after{content:'';position:absolute;width:12px;height:12px;background:var(--ink-faint);border-radius:50%;top:2px;left:2px;transition:all .2s}
+.hidden:checked+.tog{background:var(--brand);border-color:var(--brand)}
+.hidden:checked+.tog::after{transform:translateX(14px);background:#fff}
+.tog-label{font-size:13px;color:var(--ink);flex:1}
+
+/* color chips */
+.color-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.color-chip{display:flex;align-items:center;gap:7px;padding:5px 10px 5px 5px;border-radius:999px;background:var(--surface);border:1px solid var(--rule);font-size:11px;color:var(--ink-soft)}
+.chip-dot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(255,255,255,0.12);flex-shrink:0}
+body.light .chip-dot{border-color:rgba(0,0,0,.10)}
+.chip-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.02em}
+
+.sub-field-wrap{margin-top:8px;display:none}
+.sub-field-wrap.open{display:block}
+
+/* mode switcher */
+.mode-switcher{display:flex;background:var(--alt);border:1px solid var(--rule);border-radius:var(--r);padding:3px;margin-bottom:18px}
+.mode-btn{flex:1;padding:8px 10px;border-radius:var(--r-sm);border:none;background:none;color:var(--ink-faint);cursor:pointer;font-family:var(--font);font-size:12.5px;font-weight:500;transition:.15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.mode-btn:hover{color:var(--ink)}
+.mode-btn.active{background:var(--surface);color:var(--ink);box-shadow:var(--sh-sm)}
+.mode-btn-icon{display:inline-flex;align-items:center}
+.mode-btn-icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* required tag (modelar) */
+.m-stack{display:flex;flex-direction:column;gap:8px}
+.m-required-tag{margin-left:auto;font-size:9.5px;font-family:var(--mono);font-weight:600;color:var(--warn);background:var(--warn-l);padding:2px 8px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase}
+
+/* format selector */
+.format-selector{display:flex;gap:7px}
+.fmt-opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px;border-radius:var(--r);border:1px solid var(--rule);cursor:pointer;transition:.18s;background:var(--alt);user-select:none}
+.fmt-opt:hover{border-color:var(--rule-2);background:var(--surface)}
+.fmt-opt.sel{border-color:var(--brand);background:rgba(91,158,255,.08);box-shadow:inset 0 0 0 1px rgba(91,158,255,.22)}
+.fmt-thumb{background:var(--surface-3);border-radius:3px;transition:.15s;border:1px solid var(--rule)}
+.fmt-opt.sel .fmt-thumb{background:var(--brand);border-color:transparent}
+.fmt-story .fmt-thumb{width:16px;height:28px}
+.fmt-feed .fmt-thumb{width:22px;height:22px}
+.fmt-yt .fmt-thumb{width:32px;height:18px}
+.fmt-name{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);text-align:center;line-height:1.4;letter-spacing:.04em}
+.fmt-opt.sel .fmt-name{color:var(--brand)}
+
+/* texts grid */
+.texts-grid{display:flex;flex-direction:column}
+.text-row{display:grid;grid-template-columns:78px 1fr;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--rule);opacity:0;animation:field-in .22s ease forwards}
+.text-row:last-child{border-bottom:none}
+.text-row-label{font-size:10.5px;color:var(--ink-faint);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 0;cursor:default;letter-spacing:.02em}
+.text-row-input{background:transparent;border:1px solid transparent;color:var(--ink);font-size:12.5px;font-family:var(--font);padding:6px 8px;border-radius:var(--r-sm);width:100%;transition:.15s}
+.text-row-input:focus{outline:none;background:var(--alt);border-color:var(--rule)}
+.text-row-input.modified{background:var(--warn-l);color:var(--warn);border-left:2px solid var(--warn);padding-left:8px}
+
+/* logo blocks */
+.logo-block{padding:10px 0;border-bottom:1px solid var(--rule)}
+.logo-block:last-child{border-bottom:none}
+.logo-row{display:flex;align-items:center;gap:8px}
+.logo-info{flex:1;min-width:0;margin-bottom:8px}
+.logo-info-name{font-size:12.5px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo-info-desc{font-size:11px;color:var(--ink-faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo-block .logo-sub{margin-top:4px;display:none;font:inherit;color:inherit;font-size:inherit;margin-left:0}
+.logo-block .logo-sub.open{display:block}
+.logo-upload-btn,.pessoa-upload-btn{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--alt);border:1px dashed var(--rule-2);border-radius:var(--r-sm);cursor:pointer;font-size:12px;color:var(--ink-faint);position:relative;width:100%;transition:.15s;font-family:var(--font)}
+.pessoa-upload-btn{margin-bottom:8px}
+.logo-upload-btn:hover,.pessoa-upload-btn:hover{border-color:var(--brand);color:var(--brand);background:rgba(91,158,255,.04)}
+.logo-upload-btn input[type="file"],.pessoa-upload-btn input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.logo-upload-btn svg,.pessoa-upload-btn svg{flex-shrink:0}
+.logo-preview-row,.pessoa-foto-preview{display:flex;align-items:center;gap:9px;margin-top:8px;background:var(--alt);border:1px solid var(--rule);padding:6px 9px;border-radius:var(--r-sm)}
+.pessoa-foto-preview{margin-top:0;margin-bottom:8px}
+.logo-prev-img{width:36px;height:36px;object-fit:contain;border-radius:5px;background:var(--surface);border:1px solid var(--rule)}
+.pessoa-prev-img{width:40px;height:40px;object-fit:cover;border-radius:50%;border:1px solid var(--rule-2)}
+.logo-prev-name,.pessoa-prev-name{font-size:11px;color:var(--ink-soft);flex:1;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logo-clear,.pessoa-clear{background:none;border:none;color:var(--ink-faint);cursor:pointer;font-size:13px;padding:4px 6px;border-radius:4px}
+.logo-clear:hover,.pessoa-clear:hover{color:var(--danger);background:rgba(255,122,122,.10)}
+
+/* pessoa detected */
+.pessoa-detected-card{display:flex;align-items:flex-start;gap:11px;background:var(--alt);border:1px solid var(--rule);border-radius:var(--r);padding:11px 13px;margin-bottom:12px;opacity:0;animation:field-in .28s ease forwards;position:relative;overflow:hidden}
+.pessoa-detected-card::before{content:'';position:absolute;inset:0;border-radius:var(--r);background:radial-gradient(40% 60% at 100% 0%, rgba(91,227,138,.07), transparent 70%);pointer-events:none}
+.pessoa-avatar{width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid var(--rule);display:grid;place-items:center;color:var(--ink-soft);flex-shrink:0;margin-top:1px}
+.pessoa-avatar svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.pessoa-card-body{flex:1;min-width:0;position:relative;z-index:1}
+.pessoa-card-tag{font-size:10px;font-family:var(--mono);font-weight:600;color:var(--success);text-transform:uppercase;letter-spacing:.10em;margin-bottom:4px;display:inline-flex;align-items:center;gap:6px}
+.pessoa-card-tag::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success)}
+.pessoa-card-desc{font-size:11.5px;color:var(--text-2);line-height:1.55}
+.pessoa-none-label{font-size:11.5px;color:var(--ink-dim);padding:4px 0 12px;font-style:italic}
+.pessoa-sub-wrap{margin-top:10px;display:none}
+.pessoa-sub-wrap.open{display:block}
+.pessoa-hint{font-size:11px;color:var(--ink-dim);margin-top:6px;line-height:1.5;font-family:var(--mono)}
+
+/* changes summary */
+.changes-summary{background:var(--alt);border:1px solid var(--rule);border-radius:var(--r);padding:13px;margin-bottom:16px;display:none;position:relative;overflow:hidden}
+.changes-summary::before{content:'';position:absolute;inset:0;border-radius:var(--r);background:radial-gradient(50% 60% at 100% 0%, rgba(245,196,91,.07), transparent 70%);pointer-events:none}
+.changes-summary.has-changes{display:block}
+.summary-title{font-family:var(--mono);font-size:10px;color:var(--warn);font-weight:600;letter-spacing:.10em;text-transform:uppercase;margin-bottom:9px;position:relative;display:inline-flex;align-items:center;gap:6px}
+.summary-title::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--warn);box-shadow:0 0 6px var(--warn)}
+.summary-item{font-size:11.5px;color:var(--text-2);padding:4px 0;border-bottom:1px solid var(--rule);display:flex;gap:7px;align-items:flex-start;position:relative}
+.summary-item:last-child{border-bottom:none}
+.summary-arrow{color:var(--warn);flex-shrink:0;font-family:var(--mono)}
+
+/* gerar btn (footer da ctrl-panel) */
+#gerarBtn{
+  width:100%;padding:0 16px;height:42px;
+  background:var(--grad);color:#fff;border:none;border-radius:var(--r);
+  font-family:var(--font);font-size:13.5px;font-weight:500;cursor:pointer;transition:.2s;letter-spacing:-0.01em;
+  position:relative;overflow:hidden;box-shadow:var(--sh-brand);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+#gerarBtn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 100%);opacity:0;transition:opacity .2s}
+#gerarBtn:hover:not(:disabled)::after{opacity:1}
+#gerarBtn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 14px 34px rgba(91,158,255,0.34), 0 4px 10px rgba(91,158,255,0.20);filter:brightness(1.05)}
+#gerarBtn:disabled{opacity:.32;cursor:default;transform:none;box-shadow:none}
+
+/* ═══ TOAST (canto inferior direito, padrão links) ═══ */
+.toast{position:fixed;bottom:24px;right:24px;padding:11px 18px;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--r);font-size:13px;opacity:0;transform:translateY(10px);transition:all .2s;z-index:200;box-shadow:var(--sh);display:flex;align-items:center;gap:9px;color:var(--ink)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-dot{width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0;box-shadow:0 0 8px var(--success)}
+.toast.err{border-color:rgba(255,122,122,.4);color:var(--danger)}
+.toast.err .toast-dot{background:var(--danger);box-shadow:0 0 8px var(--danger)}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 1180px){
+  .board{grid-template-columns:240px 1fr 340px;gap:14px}
+}
+@media (max-width: 980px){
+  .board{grid-template-columns:1fr}
+  .preview-panel{min-height:420px}
+  .steps{display:none}
+}
+@media (max-width: 640px){
+  .topbar{padding:10px 14px;gap:10px}
+  .brand-nm span{display:none}
+  .user-tag{display:none}
+  .div-v{display:none}
+  .workspace{padding:20px 14px 60px}
+  .preview-panel .board-card-b{padding:24px 14px}
+  .upload-zone{padding:36px 22px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="/apps/" class="brand" title="Voltar para apps">
+    <div class="brand-mk">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 16l-5-5L5 21"/></svg>
+    </div>
+    <div class="brand-nm">Audaza <span>Replica</span></div>
+  </a>
+  <div class="div-v"></div>
+  <div class="user-tag">/apps/replica</div>
+
+  <div class="steps">
+    <div class="step active" id="step1"><div class="step-num">1</div><span>Referência</span></div>
+    <div class="step-sep"></div>
+    <div class="step" id="step2"><div class="step-num">2</div><span>Personalizar</span></div>
+    <div class="step-sep"></div>
+    <div class="step" id="step3"><div class="step-num">3</div><span>Gerar</span></div>
+  </div>
+
+  <div class="tb-acts">
+    <div id="status-pill"><div class="pulse"></div><span id="status-text">Pronto</span></div>
+    <button class="btn btn-i" id="themeToggle" title="Trocar tema">
+      <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+    </button>
+    <a class="btn btn-s btn-sm" href="/apps/" title="Voltar para apps">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Apps
+    </a>
+  </div>
+</header>
+
+<main class="workspace">
+
+  <div class="page-head">
+    <div class="eyebrow">Replica · Imagem com IA</div>
+    <h1 class="page-title">Replique uma <em>imagem</em> com edição inteligente.</h1>
+    <p class="page-desc">Suba uma referência. A IA detecta textos, logos, cores e modelo. Edite só o que importa e gere uma nova versão pronta pra publicar.</p>
+  </div>
+
+  <section class="board">
+
+    <!-- ── BIBLIOTECA ── -->
+    <aside class="board-card lib-panel">
+      <div class="board-card-h">
+        <span class="eyebrow">Biblioteca</span>
+        <span class="pill muted" id="libBadge" style="margin-left:auto">0</span>
+      </div>
+      <div class="board-card-b">
+        <div id="libEmpty" class="lib-empty-state">
+          <div class="lib-empty-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          </div>
+          <p class="lib-empty-text">Suas imagens salvas aparecerão aqui.</p>
+        </div>
+        <div class="lib-grid-wrap" id="libGrid"></div>
+      </div>
+      <div class="board-card-f">
+        <button id="saveLibBtn" disabled>+ Salvar atual</button>
+      </div>
+    </aside>
+
+    <!-- ── PREVIEW ── -->
+    <main class="board-card preview-panel">
+      <div class="board-card-h">
+        <span class="eyebrow">Preview</span>
+      </div>
+      <div class="board-card-b">
+
+        <!-- upload zone -->
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" accept="image/*" />
+          <div class="upload-icon-wrap">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </div>
+          <div class="upload-title">Solte a imagem aqui</div>
+          <p class="upload-sub">ou clique para escolher do computador</p>
+          <div class="upload-formats">
+            <span class="fmt-tag">JPG</span>
+            <span class="fmt-tag">PNG</span>
+            <span class="fmt-tag">WEBP</span>
+          </div>
+        </div>
+
+        <!-- image viewer -->
+        <div class="image-viewer" id="imageViewer">
+          <div class="viewer-label">
+            <span id="imgFilename">—</span>
+            <button id="changeImgBtn">↩ trocar imagem</button>
+          </div>
+          <div class="img-frame" id="imgFrame">
+            <img id="refImg" alt="Referência" />
+            <div class="scan-overlay" id="scanOverlay">
+              <div class="scan-bg"></div>
+              <div class="scan-line"></div>
+              <div class="scan-label">Analisando com GPT-4o…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- gen loading -->
+        <div class="gen-loading" id="genLoading">
+          <div class="gen-ring"></div>
+          <div class="gen-text">
+            <strong>Gerando com gpt-image-2</strong>
+            Aplicando personalizações com máxima fidelidade.<br/>Isso pode levar até 1 minuto.
+          </div>
+        </div>
+
+        <!-- comparison -->
+        <div class="comparison" id="comparison">
+          <div class="comp-panel">
+            <div class="comp-label">Original</div>
+            <div class="comp-img-frame"><img id="compOriginal" alt="Original" /></div>
+          </div>
+          <div class="comp-panel">
+            <div class="comp-label" style="color:var(--brand)">Resultado</div>
+            <div class="comp-result-frame"><img id="compResult" alt="Resultado" /></div>
+          </div>
+        </div>
+
+        <!-- result actions -->
+        <div class="result-actions-bar" id="resultActionsBar">
+          <button class="btn-download" id="downloadBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar imagem
+          </button>
+          <button class="btn-sm-result" id="saveResultBtn">+ Biblioteca</button>
+          <button class="btn-sm-result" id="novaGeracaoBtn">↩ Nova edição</button>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ── PERSONALIZAÇÃO ── -->
+    <aside class="board-card ctrl-panel">
+      <div class="board-card-h">
+        <span class="eyebrow">Personalização</span>
+        <span id="controlsSub" style="margin-left:auto;font-size:11px;color:var(--ink-faint);font-family:var(--font);text-transform:none;letter-spacing:normal;font-weight:400">Selecione uma imagem</span>
+      </div>
+      <div class="board-card-b" id="controlsBody">
+
+        <!-- empty -->
+        <div class="ctrl-empty" id="ctrlEmpty">
+          <div class="ctrl-empty-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.5L20 10l-4 3.6L17 20l-5-3-5 3 1-6.4L4 10l5.6-1.5z"/></svg>
+          </div>
+          <div class="ctrl-empty-title">Nenhuma imagem</div>
+          <div class="ctrl-empty-sub">Suba uma imagem de referência e a IA detectará automaticamente os campos editáveis.</div>
+        </div>
+
+        <!-- shared panel -->
+        <div id="sharedPanel" style="display:none">
+
+          <!-- mode switcher -->
+          <div class="mode-switcher">
+            <button class="mode-btn active" id="btnClonar" onclick="setMode('clonar')">
+              <span class="mode-btn-icon"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span>Clonar
+            </button>
+            <button class="mode-btn" id="btnModelar" onclick="setMode('modelar')">
+              <span class="mode-btn-icon"><svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.5L20 10l-4 3.6L17 20l-5-3-5 3 1-6.4L4 10l5.6-1.5z"/></svg></span>Modelar
+            </button>
+          </div>
+
+          <!-- proporção -->
+          <div class="ctrl-section" id="secFormato">
+            <div class="section-head">
+              <span class="section-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
+              <span class="section-name">Proporção</span>
+            </div>
+            <div class="format-selector">
+              <div class="fmt-opt fmt-story sel" data-fmt="story" onclick="selectFormato(this)">
+                <div class="fmt-thumb"></div>
+                <div class="fmt-name">Story<br/>1024×1536</div>
+              </div>
+              <div class="fmt-opt fmt-feed" data-fmt="feed" onclick="selectFormato(this)">
+                <div class="fmt-thumb"></div>
+                <div class="fmt-name">Feed<br/>1024×1024</div>
+              </div>
+              <div class="fmt-opt fmt-yt" data-fmt="youtube" onclick="selectFormato(this)">
+                <div class="fmt-thumb"></div>
+                <div class="fmt-name">YouTube<br/>1536×1024</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── CLONAR ── -->
+          <div id="dynamicForm" style="display:block">
+
+            <div class="ctrl-section" id="secTextos" style="display:none">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16"/></svg></span>
+                <span class="section-name">Textos</span>
+                <span class="section-count" id="countTextos">0</span>
+              </div>
+              <div id="textosContainer"></div>
+            </div>
+
+            <div class="ctrl-section" id="secLogos" style="display:none">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.2" fill="currentColor"/></svg></span>
+                <span class="section-name">Logos & Marcas</span>
+              </div>
+              <div id="logosContainer"></div>
+            </div>
+
+            <div class="ctrl-section" id="secCores" style="display:none">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 110-20c5.5 0 9.5 3.5 9.5 8 0 4-3.5 5-7 5-1.5 0-2.5 1-2.5 2 0 .5.5 1.5 1 2 .5.5.5 2 0 2.5-.5.5-1 .5-1 .5z"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1.2" fill="currentColor"/><circle cx="6.5" cy="12.5" r="1.2" fill="currentColor"/></svg></span>
+                <span class="section-name">Cores</span>
+              </div>
+              <div id="coresContainer"></div>
+              <label class="tog-row" style="margin-top:8px;border-top:1px solid var(--rule);padding-top:10px">
+                <input type="checkbox" class="hidden" id="chkCor" />
+                <span class="tog"></span>
+                <span class="tog-label">Alterar paleta de cores</span>
+              </label>
+              <div class="sub-field-wrap" id="corWrap">
+                <input class="field-input" id="inputCor" placeholder="Ex: azul marinho, #ff6600, verde esmeralda…" />
+              </div>
+            </div>
+
+            <div class="ctrl-section" id="secEstilo" style="display:none">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg></span>
+                <span class="section-name">Estilo visual</span>
+              </div>
+              <div class="field-item">
+                <div class="field-meta"><span class="field-name">Estilo detectado — edite se quiser alterar</span></div>
+                <input class="field-input" id="inputEstilo" placeholder="Estilo visual…" />
+              </div>
+            </div>
+
+            <div class="ctrl-section" id="secPessoa" style="display:none">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0116 0"/></svg></span>
+                <span class="section-name">Modelo / Profissional</span>
+              </div>
+              <div id="pessoaDetectedCard" style="display:none">
+                <div class="pessoa-detected-card">
+                  <div class="pessoa-avatar">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0116 0"/></svg>
+                  </div>
+                  <div class="pessoa-card-body">
+                    <div class="pessoa-card-tag">Detectado</div>
+                    <div class="pessoa-card-desc" id="pessoaDesc"></div>
+                  </div>
+                </div>
+              </div>
+              <div id="pessoaNoneLabel" class="pessoa-none-label" style="display:none">Nenhuma pessoa detectada na imagem.</div>
+              <label class="tog-row">
+                <input type="checkbox" class="hidden" id="chkPessoa" />
+                <span class="tog"></span>
+                <span class="tog-label">Substituir modelo</span>
+              </label>
+              <div class="pessoa-sub-wrap" id="pessoaWrap">
+                <label class="pessoa-upload-btn" id="pessoaUploadBtn">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Enviar foto do novo modelo (opcional)</span>
+                  <input type="file" id="pessoaFotoInput" accept="image/*" />
+                </label>
+                <div class="pessoa-foto-preview" id="pessoaFotoPreview" style="display:none">
+                  <img class="pessoa-prev-img" id="pessoaFotoImg" />
+                  <span class="pessoa-prev-name" id="pessoaFotoName"></span>
+                  <button class="pessoa-clear" id="pessoaFotoClear">✕</button>
+                </div>
+                <textarea class="pessoa-desc-textarea" id="inputPessoa" placeholder="Descreva o novo modelo: gênero, faixa etária, aparência, roupa, expressão, etnia…&#10;Ex: mulher jovem, ~30 anos, cabelo liso preto, jaleco branco, sorrindo, profissional de saúde"></textarea>
+                <div class="pessoa-hint">Quanto mais detalhe, melhor o resultado</div>
+              </div>
+            </div>
+
+            <div class="changes-summary" id="changesSummary">
+              <div class="summary-title">Alterações marcadas</div>
+              <div id="summaryList"></div>
+            </div>
+          </div>
+
+          <!-- ── MODELAR ── -->
+          <div id="modelarForm" style="display:none">
+            <div class="ctrl-section">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg></span>
+                <span class="section-name">Propósito</span>
+                <span class="m-required-tag">obrigatório</span>
+              </div>
+              <input class="m-input" id="mPurpose" placeholder="Ex: vaga de eletricista, promoção de plano, evento…" />
+            </div>
+            <div class="ctrl-section">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="1.5"/><path d="M9 22V13h6v9M9 6h.01M15 6h.01M9 10h.01M15 10h.01"/></svg></span>
+                <span class="section-name">Empresa / Marca</span>
+              </div>
+              <input class="m-input" id="mEmpresa" placeholder="Nome da empresa ou produto…" />
+            </div>
+            <div class="ctrl-section">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16"/></svg></span>
+                <span class="section-name">Conteúdo</span>
+              </div>
+              <div class="m-stack">
+                <input class="m-input" id="mTitulo" placeholder="Título / Headline principal…" />
+                <textarea class="m-input" id="mTextos" rows="3" placeholder="Subtítulo, detalhes, requisitos, informações complementares…"></textarea>
+              </div>
+            </div>
+            <div class="ctrl-section">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0116 0"/></svg></span>
+                <span class="section-name">Modelo / Profissional</span>
+              </div>
+              <label class="pessoa-upload-btn" id="mPessoaUploadBtn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Enviar foto do modelo (opcional)</span>
+                <input type="file" id="mPessoaFotoInput" accept="image/*" />
+              </label>
+              <div class="pessoa-foto-preview" id="mPessoaFotoPreview" style="display:none">
+                <img class="pessoa-prev-img" id="mPessoaFotoImg" />
+                <span class="pessoa-prev-name" id="mPessoaFotoName"></span>
+                <button class="pessoa-clear" id="mPessoaFotoClear">✕</button>
+              </div>
+              <textarea class="m-input" id="mPessoa" rows="2" style="margin-top:6px" placeholder="Descreva o modelo: gênero, idade, aparência, roupa, expressão, etnia…"></textarea>
+            </div>
+            <div class="ctrl-section">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 110-20c5.5 0 9.5 3.5 9.5 8 0 4-3.5 5-7 5-1.5 0-2.5 1-2.5 2 0 .5.5 1.5 1 2 .5.5.5 2 0 2.5-.5.5-1 .5-1 .5z"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1.2" fill="currentColor"/><circle cx="6.5" cy="12.5" r="1.2" fill="currentColor"/></svg></span>
+                <span class="section-name">Paleta de cores</span>
+              </div>
+              <label class="tog-row">
+                <input type="checkbox" class="hidden" id="mManterCores" checked />
+                <span class="tog"></span>
+                <span class="tog-label">Manter paleta da referência</span>
+              </label>
+              <div class="sub-field-wrap" id="mCorWrap">
+                <input class="m-input" id="mCor" placeholder="Ex: verde e dourado, tons terrosos, #ff6600…" />
+              </div>
+            </div>
+            <div class="ctrl-section">
+              <div class="section-head">
+                <span class="section-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+                <span class="section-name">Instruções extras</span>
+              </div>
+              <textarea class="m-input" id="mExtra" rows="2" placeholder="Qualquer detalhe adicional sobre o resultado…"></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="board-card-f">
+        <button id="gerarBtn" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+          Gerar imagem
+        </button>
+      </div>
+    </aside>
+
+  </section>
+</main>
+
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg">—</span>
+</div>
+
+<script>
+// ── THEME TOGGLE (padrão /apps/links) ───────────────────────────
+(function(){
+  const KEY='audaza_theme';
+  if(localStorage.getItem(KEY)==='light') document.body.classList.add('light');
+  document.getElementById('themeToggle').addEventListener('click', ()=>{
+    document.body.classList.toggle('light');
+    localStorage.setItem(KEY, document.body.classList.contains('light')?'light':'dark');
+  });
+})();
+
+// ── CONFIG ──────────────────────────────────────────────────────
+const WH_ANALISE = 'https://audaza.app.n8n.cloud/webhook/analisar-imagem';
+const WH_GERACAO = 'https://audaza.app.n8n.cloud/webhook/receber-imagem';
+const WH_MODELAR = 'https://audaza.app.n8n.cloud/webhook/modelar-imagem';
+const LIB_KEY    = 'audaza_image_library';
+
+// ── STATE ───────────────────────────────────────────────────────
+let currentDataUrl  = null;
+let currentFile     = null;
+let analysisData    = null;
+let lastResultUrl   = null;
+let lastResultName  = 'gerada.png';
+let estilo_original = '';
+let selectedFormato = 'story';
+let logosNovas      = {};
+let pessoaFoto      = null;
+let currentMode     = 'clonar';
+let mPessoaFoto     = null;
+
+// ── REFS ────────────────────────────────────────────────────────
+const uploadZone    = document.getElementById('uploadZone');
+const fileInput     = document.getElementById('fileInput');
+const imageViewer   = document.getElementById('imageViewer');
+const imgFilename   = document.getElementById('imgFilename');
+const refImg        = document.getElementById('refImg');
+const scanOverlay   = document.getElementById('scanOverlay');
+const changeImgBtn  = document.getElementById('changeImgBtn');
+const genLoading    = document.getElementById('genLoading');
+const comparison    = document.getElementById('comparison');
+const compOriginal  = document.getElementById('compOriginal');
+const compResult    = document.getElementById('compResult');
+const resultActions = document.getElementById('resultActionsBar');
+const ctrlEmpty     = document.getElementById('ctrlEmpty');
+const dynamicForm   = document.getElementById('dynamicForm');
+const controlsSub   = document.getElementById('controlsSub');
+const gerarBtn      = document.getElementById('gerarBtn');
+const downloadBtn   = document.getElementById('downloadBtn');
+const saveResultBtn = document.getElementById('saveResultBtn');
+const novaGeracaoBtn= document.getElementById('novaGeracaoBtn');
+const saveLibBtn    = document.getElementById('saveLibBtn');
+
+// toggles with sub-fields
+document.getElementById('chkCor').addEventListener('change', e => {
+  document.getElementById('corWrap').classList.toggle('open', e.target.checked);
+  updateSummary();
+});
+document.getElementById('chkPessoa').addEventListener('change', e => {
+  document.getElementById('pessoaWrap').classList.toggle('open', e.target.checked);
+  updateSummary();
+});
+document.getElementById('inputPessoa').addEventListener('input', () => {
+  document.getElementById('inputPessoa').classList.toggle('modified', !!document.getElementById('inputPessoa').value.trim());
+  updateSummary();
+});
+
+// pessoa foto upload
+document.getElementById('pessoaFotoInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pessoaFoto = ev.target.result;
+    document.getElementById('pessoaFotoImg').src = ev.target.result;
+    document.getElementById('pessoaFotoName').textContent = file.name;
+    document.getElementById('pessoaFotoPreview').style.display = 'flex';
+    document.getElementById('pessoaUploadBtn').querySelector('span').textContent = 'Trocar foto do modelo';
+    updateSummary();
+  };
+  reader.readAsDataURL(file);
+});
+document.getElementById('pessoaFotoClear').addEventListener('click', () => {
+  pessoaFoto = null;
+  document.getElementById('pessoaFotoPreview').style.display = 'none';
+  document.getElementById('pessoaUploadBtn').querySelector('span').textContent = 'Enviar foto do novo modelo (opcional)';
+  document.getElementById('pessoaFotoInput').value = '';
+  updateSummary();
+});
+
+// Modelar — pessoa foto
+document.getElementById('mPessoaFotoInput').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    mPessoaFoto = ev.target.result;
+    document.getElementById('mPessoaFotoImg').src = ev.target.result;
+    document.getElementById('mPessoaFotoName').textContent = file.name;
+    document.getElementById('mPessoaFotoPreview').style.display = 'flex';
+    document.getElementById('mPessoaUploadBtn').querySelector('span').textContent = 'Trocar foto do modelo';
+  };
+  reader.readAsDataURL(file);
+});
+document.getElementById('mPessoaFotoClear').addEventListener('click', () => {
+  mPessoaFoto = null;
+  document.getElementById('mPessoaFotoPreview').style.display = 'none';
+  document.getElementById('mPessoaUploadBtn').querySelector('span').textContent = 'Enviar foto do modelo (opcional)';
+  document.getElementById('mPessoaFotoInput').value = '';
+});
+document.getElementById('mManterCores').addEventListener('change', e => {
+  document.getElementById('mCorWrap').classList.toggle('open', !e.target.checked);
+});
+
+// ── MODE ─────────────────────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btnClonar').classList.toggle('active', mode === 'clonar');
+  document.getElementById('btnModelar').classList.toggle('active', mode === 'modelar');
+  document.getElementById('dynamicForm').style.display  = mode === 'clonar'  ? 'block' : 'none';
+  document.getElementById('modelarForm').style.display  = mode === 'modelar' ? 'block' : 'none';
+  gerarBtn.disabled = !currentDataUrl;
+}
+
+// ── STEPS ───────────────────────────────────────────────────────
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('step'+i);
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  });
+}
+
+// ── STATUS PILL ─────────────────────────────────────────────────
+function setStatus(msg, type='') {
+  const pill = document.getElementById('status-pill');
+  const txt  = document.getElementById('status-text');
+  pill.className = 'status-pill visible' + (type ? ' '+type : '');
+  pill.classList.add('visible');
+  txt.textContent = msg;
+  if (!msg) pill.classList.remove('visible');
+}
+
+// ── TOAST ───────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, isErr=false) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  el.className = 'toast show' + (isErr ? ' err' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── UPLOAD ──────────────────────────────────────────────────────
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) processFile(file);
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) processFile(fileInput.files[0]); });
+changeImgBtn.addEventListener('click', () => { resetToUpload(); });
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    currentDataUrl = e.target.result;
+    currentFile = file;
+    showImageViewer(e.target.result, file.name);
+    saveLibBtn.disabled = false;
+    triggerAnalysis();
+  };
+  reader.readAsDataURL(file);
+}
+
+function showImageViewer(dataUrl, name) {
+  uploadZone.style.display = 'none';
+  imageViewer.classList.add('visible');
+  refImg.src = dataUrl;
+  imgFilename.textContent = name;
+  comparison.classList.remove('visible');
+  resultActions.classList.remove('visible');
+  genLoading.classList.remove('visible');
+  setStep(1);
+}
+
+function resetToUpload() {
+  uploadZone.style.display = '';
+  imageViewer.classList.remove('visible');
+  comparison.classList.remove('visible');
+  resultActions.classList.remove('visible');
+  genLoading.classList.remove('visible');
+  scanOverlay.classList.remove('active');
+  document.getElementById('sharedPanel').style.display = 'none';
+  ctrlEmpty.style.display = 'flex';
+  controlsSub.textContent = 'Selecione uma imagem para começar';
+  currentMode = 'clonar'; mPessoaFoto = null;
+  gerarBtn.disabled = true;
+  saveLibBtn.disabled = true;
+  analysisData = null;
+  currentDataUrl = null; currentFile = null;
+  setStep(1); setStatus('');
+  fileInput.value = '';
+}
+
+// ── ANÁLISE ─────────────────────────────────────────────────────
+async function triggerAnalysis() {
+  dynamicForm.style.display = 'none';
+  ctrlEmpty.style.display = 'none';
+  controlsSub.textContent = 'Analisando imagem…';
+  scanOverlay.classList.add('active');
+  setStatus('Analisando com GPT-4o…', 'loading');
+  gerarBtn.disabled = true;
+  setStep(2);
+
+  try {
+    const res = await fetch(WH_ANALISE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: currentDataUrl }),
+      signal: AbortSignal.timeout(60000)
+    });
+    const text = await res.text();
+    if (!text.trim()) throw new Error('Resposta vazia da análise.');
+    let data;
+    try { data = JSON.parse(text); } catch { throw new Error('JSON inválido: ' + text.slice(0,80)); }
+
+    analysisData = data;
+    scanOverlay.classList.remove('active');
+    renderForm(data);
+    setStatus('Análise completa', 'ok');
+    controlsSub.textContent = 'Edite os campos e clique em Gerar';
+    setTimeout(() => setStatus(''), 3000);
+
+  } catch(e) {
+    scanOverlay.classList.remove('active');
+    ctrlEmpty.style.display = 'flex';
+    ctrlEmpty.querySelector('.ctrl-empty-title').textContent = 'Erro na análise';
+    ctrlEmpty.querySelector('.ctrl-empty-sub').textContent = e.message;
+    setStatus('Erro na análise', 'err');
+    toast('Erro: ' + e.message, true);
+  }
+}
+
+// ── RENDER FORM ─────────────────────────────────────────────────
+function renderForm(data) {
+  document.getElementById('sharedPanel').style.display = 'block';
+  setMode('clonar');
+
+  // TEXTOS
+  const textos = data.textos || [];
+  const secTextos = document.getElementById('secTextos');
+  const textosContainer = document.getElementById('textosContainer');
+  textosContainer.innerHTML = '';
+  if (textos.length > 0) {
+    secTextos.style.display = 'block';
+    document.getElementById('countTextos').textContent = textos.length;
+    const grid = document.createElement('div');
+    grid.className = 'texts-grid';
+    textos.forEach((t, i) => {
+      const row = document.createElement('div');
+      row.className = 'text-row';
+      row.style.animationDelay = (i * 40) + 'ms';
+      row.innerHTML = `
+        <div class="text-row-label" title="${esc(t.label)}">${esc(t.label)}</div>
+        <input class="text-row-input" id="txt_${t.id}"
+          data-id="${t.id}" data-original="${esc(t.valor)}" data-label="${esc(t.label)}" data-pos="${esc(t.posicao||'')}"
+          value="${esc(t.valor)}" placeholder="${esc(t.valor)}" />
+      `;
+      const inp = row.querySelector('input');
+      inp.addEventListener('input', () => {
+        inp.classList.toggle('modified', inp.value.trim() !== inp.dataset.original.trim());
+        updateSummary();
+      });
+      grid.appendChild(row);
+    });
+    textosContainer.appendChild(grid);
+  } else { secTextos.style.display = 'none'; }
+
+  // LOGOS
+  logosNovas = {};
+  const logos = data.logos || [];
+  const secLogos = document.getElementById('secLogos');
+  const logosContainer = document.getElementById('logosContainer');
+  logosContainer.innerHTML = '';
+  if (logos.length > 0) {
+    secLogos.style.display = 'block';
+    logos.forEach((l, i) => {
+      const block = document.createElement('div');
+      block.className = 'logo-block';
+      block.style.animationDelay = (i * 40) + 'ms';
+      block.innerHTML = `
+        <div class="logo-row">
+          <div class="logo-info">
+            <div class="logo-info-name">${esc(l.label)}</div>
+            <div class="logo-info-desc">${esc(l.descricao || '')}${l.posicao ? ' · ' + esc(l.posicao) : ''}</div>
+          </div>
+        </div>
+        <div class="logo-sub open">
+          <label class="logo-upload-btn" id="logobtn_${l.id}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Enviar nova logo</span>
+            <input type="file" accept="image/*" data-logo-id="${l.id}" />
+          </label>
+          <div class="logo-preview-row" id="logoprev_${l.id}" style="display:none">
+            <img class="logo-prev-img" id="logoimg_${l.id}" />
+            <span class="logo-prev-name" id="logoname_${l.id}"></span>
+            <button class="logo-clear" data-logo-id="${l.id}" title="Remover">✕</button>
+          </div>
+        </div>
+      `;
+      const fileInput = block.querySelector('input[type="file"]');
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          logosNovas[l.id] = ev.target.result;
+          document.getElementById('logoimg_'+l.id).src = ev.target.result;
+          document.getElementById('logoname_'+l.id).textContent = file.name;
+          document.getElementById('logoprev_'+l.id).style.display = 'flex';
+          document.getElementById('logobtn_'+l.id).querySelector('span').textContent = 'Trocar logo';
+          updateSummary();
+        };
+        reader.readAsDataURL(file);
+      });
+      block.querySelector('.logo-clear').addEventListener('click', () => {
+        delete logosNovas[l.id];
+        document.getElementById('logoprev_'+l.id).style.display = 'none';
+        document.getElementById('logobtn_'+l.id).querySelector('span').textContent = 'Enviar nova logo';
+        fileInput.value = '';
+        updateSummary();
+      });
+      logosContainer.appendChild(block);
+    });
+  } else { secLogos.style.display = 'none'; }
+
+  // CORES
+  const cores = data.cores || {};
+  const secCores = document.getElementById('secCores');
+  const coresContainer = document.getElementById('coresContainer');
+  coresContainer.innerHTML = '';
+  const coreKeys = Object.keys(cores).filter(k => cores[k]);
+  if (coreKeys.length > 0) {
+    secCores.style.display = 'block';
+    const chips = document.createElement('div');
+    chips.className = 'color-chips';
+    const labels = { primaria:'Primária', secundaria:'Secundária', fundo:'Fundo' };
+    coreKeys.forEach(k => {
+      chips.innerHTML += `<div class="color-chip"><div class="chip-dot" style="background:${cores[k]}"></div><span class="chip-label">${labels[k]||k} ${cores[k]}</span></div>`;
+    });
+    coresContainer.appendChild(chips);
+  } else { secCores.style.display = 'none'; }
+
+  // ESTILO
+  if (data.estilo) {
+    document.getElementById('secEstilo').style.display = 'block';
+    document.getElementById('inputEstilo').value = data.estilo;
+    estilo_original = data.estilo;
+  } else { document.getElementById('secEstilo').style.display = 'none'; }
+
+  // PESSOA
+  document.getElementById('secPessoa').style.display = 'block';
+  pessoaFoto = null;
+  document.getElementById('pessoaFotoPreview').style.display = 'none';
+  document.getElementById('pessoaFotoInput').value = '';
+  document.getElementById('pessoaUploadBtn').querySelector('span').textContent = 'Enviar foto do novo modelo (opcional)';
+  document.getElementById('chkPessoa').checked = false;
+  document.getElementById('pessoaWrap').classList.remove('open');
+  document.getElementById('inputPessoa').value = '';
+  document.getElementById('inputPessoa').classList.remove('modified');
+  if (data.tem_pessoa && data.descricao_pessoa) {
+    document.getElementById('pessoaDetectedCard').style.display = 'block';
+    document.getElementById('pessoaNoneLabel').style.display = 'none';
+    document.getElementById('pessoaDesc').textContent = data.descricao_pessoa;
+  } else {
+    document.getElementById('pessoaDetectedCard').style.display = 'none';
+    document.getElementById('pessoaNoneLabel').style.display = 'block';
+  }
+
+  gerarBtn.disabled = false;
+  setStep(2);
+  updateSummary();
+}
+
+// ── SUMMARY ─────────────────────────────────────────────────────
+function updateSummary() {
+  const items = [];
+  const fmtLabels = { story: 'Story 9:16', feed: 'Feed 1:1', youtube: 'YouTube 16:9' };
+  items.push(`Formato: ${fmtLabels[selectedFormato] || selectedFormato}`);
+  document.querySelectorAll('#textosContainer .text-row-input').forEach(inp => {
+    if (inp.value.trim() !== inp.dataset.original.trim()) {
+      items.push(`"${inp.dataset.original.slice(0,18)}" → "${inp.value.slice(0,18)}"`);
+    }
+  });
+  Object.keys(logosNovas).forEach(id => {
+    const nameEl = document.getElementById('logoname_'+id);
+    const name = nameEl ? nameEl.textContent : 'logo';
+    items.push(`Nova logo: ${name}`);
+  });
+  if (document.getElementById('chkCor').checked) {
+    const v = document.getElementById('inputCor').value.trim();
+    if (v) items.push(`Cor → ${v}`);
+  }
+  const est = document.getElementById('inputEstilo').value.trim();
+  if (est && est !== estilo_original) items.push(`Estilo → ${est.slice(0,30)}`);
+  if (document.getElementById('chkPessoa').checked) {
+    const v = document.getElementById('inputPessoa').value.trim();
+    if (pessoaFoto) items.push('Foto do modelo: enviada');
+    if (v) items.push(`Modelo → ${v.slice(0,28)}`);
+  }
+  const box = document.getElementById('changesSummary');
+  const list = document.getElementById('summaryList');
+  box.classList.add('has-changes');
+  list.innerHTML = items.map(i => `<div class="summary-item"><span class="summary-arrow">›</span><span>${i}</span></div>`).join('');
+}
+
+// ── GERAR ────────────────────────────────────────────────────────
+gerarBtn.addEventListener('click', async () => {
+  if (!currentDataUrl) return;
+  gerarBtn.disabled = true;
+  imageViewer.classList.remove('visible');
+  comparison.classList.remove('visible');
+  resultActions.classList.remove('visible');
+  genLoading.classList.add('visible');
+  setStatus('Gerando…', 'loading');
+  setStep(3);
+
+  // ── MODELAR ──
+  if (currentMode === 'modelar') {
+    const proposito = document.getElementById('mPurpose').value.trim();
+    if (!proposito) {
+      toast('Informe o propósito da nova peça', true);
+      gerarBtn.disabled = false; genLoading.classList.remove('visible');
+      imageViewer.classList.add('visible'); setStep(2); return;
+    }
+    genLoading.querySelector('strong').textContent = 'Modelando com gpt-image-2';
+    genLoading.querySelector('.gen-text').lastChild.textContent = 'Criando nova peça baseada no estilo da referência.';
+    const mData = {
+      proposito,
+      empresa:      document.getElementById('mEmpresa').value.trim(),
+      titulo:       document.getElementById('mTitulo').value.trim(),
+      textos:       document.getElementById('mTextos').value.trim(),
+      pessoa:       document.getElementById('mPessoa').value.trim(),
+      pessoa_foto:  mPessoaFoto,
+      manter_cores: document.getElementById('mManterCores').checked,
+      cor:          document.getElementById('mCor').value.trim(),
+      extra:        document.getElementById('mExtra').value.trim()
+    };
+    try {
+      const res = await fetch(WH_MODELAR, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: currentDataUrl, formato: selectedFormato, analise: analysisData, modelar: mData }),
+        signal: AbortSignal.timeout(180000)
+      });
+      if (!res.ok) { const t = await res.text(); throw new Error('Erro n8n: ' + t.slice(0,120)); }
+      const blob = await res.blob();
+      if (!blob || blob.size < 1000) throw new Error('Imagem não retornada pelo servidor.');
+      const imageUrl = URL.createObjectURL(blob);
+      lastResultUrl  = imageUrl;
+      lastResultName = `modelar_${selectedFormato}_${Date.now()}.png`;
+      genLoading.classList.remove('visible');
+      compOriginal.src = currentDataUrl; compResult.src = imageUrl;
+      comparison.classList.add('visible'); resultActions.classList.add('visible');
+      setStatus('Modelagem completa', 'ok'); toast('✓ Nova peça gerada!');
+      setTimeout(() => setStatus(''), 4000);
+    } catch(e) {
+      genLoading.classList.remove('visible'); imageViewer.classList.add('visible');
+      setStatus('Erro na modelagem', 'err'); toast(e.message, true);
+      gerarBtn.disabled = false; setStep(2);
+    }
+    return;
+  }
+
+  // ── CLONAR ──
+  const textos = [];
+  document.querySelectorAll('#textosContainer .text-row-input').forEach(inp => {
+    textos.push({ id: inp.dataset.id, label: inp.dataset.label, posicao: inp.dataset.pos, valor_original: inp.dataset.original, valor_novo: inp.value.trim() });
+  });
+
+  const mudarPessoa = document.getElementById('chkPessoa').checked;
+  const changes = {
+    textos,
+    logos_novas: logosNovas,
+    mudar_cor:   document.getElementById('chkCor').checked,
+    cor_desejada: document.getElementById('inputCor').value.trim(),
+    estilo_personalizado: (() => { const v = document.getElementById('inputEstilo').value.trim(); return v !== estilo_original ? v : ''; })(),
+    mudar_pessoa: mudarPessoa,
+    descricao_pessoa_nova: document.getElementById('inputPessoa').value.trim(),
+    pessoa_foto: mudarPessoa ? pessoaFoto : null
+  };
+
+  const changedTextoIds = new Set();
+  document.querySelectorAll('#textosContainer .text-row-input').forEach(inp => {
+    if (inp.value.trim() !== inp.dataset.original.trim()) changedTextoIds.add(inp.dataset.id);
+  });
+  const maskDataUrl = await createEditMask(analysisData, changedTextoIds, mudarPessoa);
+
+  try {
+    const res = await fetch(WH_GERACAO, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: currentDataUrl, formato: selectedFormato, changes, mask: maskDataUrl }),
+      signal: AbortSignal.timeout(180000)
+    });
+
+    if (!res.ok) { const t = await res.text(); throw new Error('Erro n8n: ' + t.slice(0,120)); }
+    const blob = await res.blob();
+    if (!blob || blob.size < 1000) throw new Error('Imagem não retornada pelo servidor.');
+    const imageUrl = URL.createObjectURL(blob);
+
+    const finalUrl = await applyLogoOverlay(imageUrl, currentDataUrl, analysisData?.logos || []);
+    const fmtNames = { story: 'story_1024x1536', feed: 'feed_1024x1024', youtube: 'youtube_1536x1024' };
+    lastResultUrl  = finalUrl;
+    lastResultName = `replica_${fmtNames[selectedFormato] || selectedFormato}_${Date.now()}.png`;
+
+    genLoading.classList.remove('visible');
+    compOriginal.src = currentDataUrl;
+    compResult.src   = finalUrl;
+    comparison.classList.add('visible');
+    resultActions.classList.add('visible');
+
+    setStatus('Geração completa', 'ok');
+    toast('✓ Imagem gerada com sucesso!');
+    setTimeout(() => setStatus(''), 4000);
+
+  } catch(e) {
+    genLoading.classList.remove('visible');
+    imageViewer.classList.add('visible');
+    setStatus('Erro na geração', 'err');
+    toast(e.message, true);
+    gerarBtn.disabled = false;
+    setStep(2);
+  }
+});
+
+// ── DOWNLOAD ────────────────────────────────────────────────────
+downloadBtn.addEventListener('click', async () => {
+  if (!lastResultUrl) return;
+  try {
+    if (lastResultUrl.startsWith('data:')) {
+      const a = document.createElement('a'); a.href = lastResultUrl; a.download = lastResultName; a.click();
+    } else {
+      const res = await fetch(lastResultUrl);
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = lastResultName; a.click();
+    }
+  } catch { window.open(lastResultUrl, '_blank'); }
+});
+
+saveResultBtn.addEventListener('click', async () => {
+  if (!lastResultUrl) return;
+  try {
+    let dataUrl = lastResultUrl;
+    if (!dataUrl.startsWith('data:')) {
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      dataUrl = await blobToDataUrl(blob);
+    }
+    addToLib({ name: lastResultName, dataUrl, size: 0, type: 'image/png' });
+    toast('✓ Salvo na biblioteca!');
+  } catch { toast('Erro ao salvar', true); }
+});
+
+novaGeracaoBtn.addEventListener('click', () => {
+  comparison.classList.remove('visible');
+  resultActions.classList.remove('visible');
+  imageViewer.classList.add('visible');
+  setStep(2);
+  gerarBtn.disabled = false;
+  setStatus('');
+});
+
+function blobToDataUrl(blob) {
+  return new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(blob); });
+}
+
+// ── BIBLIOTECA ──────────────────────────────────────────────────
+function loadLib() { return JSON.parse(localStorage.getItem(LIB_KEY) || '[]'); }
+function saveLib(lib) { localStorage.setItem(LIB_KEY, JSON.stringify(lib)); }
+
+function renderLib() {
+  const lib = loadLib();
+  document.getElementById('libBadge').textContent = lib.length;
+  document.getElementById('libEmpty').style.display = lib.length === 0 ? 'flex' : 'none';
+  const grid = document.getElementById('libGrid');
+  grid.innerHTML = '';
+  if (lib.length === 0) return;
+  lib.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'lib-thumb';
+    el.innerHTML = `<img src="${item.dataUrl}" alt="${item.name}"/><div class="lib-thumb-name">${item.name}</div><button class="lib-del-btn">✕</button>`;
+    el.querySelector('img').addEventListener('click', () => pickFromLib(item, el));
+    el.querySelector('.lib-del-btn').addEventListener('click', ev => { ev.stopPropagation(); removeFromLib(i); });
+    grid.appendChild(el);
+  });
+}
+
+function addToLib(item) {
+  const lib = loadLib();
+  if (!lib.find(i => i.dataUrl === item.dataUrl)) { lib.push(item); saveLib(lib); renderLib(); }
+}
+
+function removeFromLib(i) {
+  const lib = loadLib(); lib.splice(i,1); saveLib(lib); renderLib();
+}
+
+function pickFromLib(item, el) {
+  document.querySelectorAll('.lib-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentDataUrl = item.dataUrl;
+  currentFile = { name: item.name, size: item.size, type: item.type };
+  showImageViewer(item.dataUrl, item.name);
+  saveLibBtn.disabled = true;
+  triggerAnalysis();
+}
+
+saveLibBtn.addEventListener('click', () => {
+  if (!currentFile || !currentDataUrl) return;
+  addToLib({ name: currentFile.name || 'imagem', size: currentFile.size || 0, type: currentFile.type, dataUrl: currentDataUrl });
+  toast('✓ Salvo na biblioteca!');
+});
+
+// ── OVERLAY DE LOGOS ────────────────────────────────────────────
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function applyLogoOverlay(generatedDataUrl, referenceDataUrl, logos) {
+  if (!logos || logos.length === 0) return generatedDataUrl;
+  const hasLogoWithBbox = logos.some(l => l.bbox);
+  if (!hasLogoWithBbox) return generatedDataUrl;
+
+  try {
+    const genImg = await loadImage(generatedDataUrl);
+    const refImg = await loadImage(referenceDataUrl);
+
+    const canvas = document.createElement('canvas');
+    canvas.width  = genImg.width;
+    canvas.height = genImg.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(genImg, 0, 0);
+
+    for (const logo of logos) {
+      if (!logo.bbox) continue;
+
+      const { x, y, w, h } = logo.bbox;
+      const dx = Math.round(x * canvas.width);
+      const dy = Math.round(y * canvas.height);
+      const dw = Math.round(w * canvas.width);
+      const dh = Math.round(h * canvas.height);
+
+      if (logosNovas[logo.id]) {
+        const newLogoImg = await loadImage(logosNovas[logo.id]);
+        const cx = dx + dw / 2;
+        const cy = dy + dh / 2;
+        const scale = Math.min(dw / newLogoImg.width, dh / newLogoImg.height);
+        const fw = newLogoImg.width * scale;
+        const fh = newLogoImg.height * scale;
+        ctx.drawImage(newLogoImg, cx - fw / 2, cy - fh / 2, fw, fh);
+      } else {
+        const srcX = Math.round(x * refImg.width);
+        const srcY = Math.round(y * refImg.height);
+        const srcW = Math.round(w * refImg.width);
+        const srcH = Math.round(h * refImg.height);
+        ctx.drawImage(refImg, srcX, srcY, srcW, srcH, dx, dy, dw, dh);
+      }
+    }
+
+    return canvas.toDataURL('image/png');
+  } catch (e) {
+    console.warn('Logo overlay falhou:', e);
+    return generatedDataUrl;
+  }
+}
+
+// ── MÁSCARA DE EDIÇÃO ───────────────────────────────────────────
+async function createEditMask(analysisData, changedTextoIds, mudarPessoa) {
+  if (!currentDataUrl || !analysisData) return null;
+  const hasSpecific = changedTextoIds.size > 0 || (mudarPessoa && analysisData.pessoa_bbox);
+  if (!hasSpecific) return null;
+
+  try {
+    const img = await loadImage(currentDataUrl);
+    const cv = document.createElement('canvas');
+    cv.width = img.width; cv.height = img.height;
+    const ctx = cv.getContext('2d');
+
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(255,255,255,1)';
+
+    const pad = 0.008;
+
+    (analysisData.textos || []).forEach(t => {
+      if (!changedTextoIds.has(t.id) || !t.bbox) return;
+      const {x, y, w, h} = t.bbox;
+      ctx.fillRect(
+        Math.max(0, (x - pad)) * cv.width,
+        Math.max(0, (y - pad)) * cv.height,
+        Math.min(cv.width, (w + pad * 2) * cv.width),
+        Math.min(cv.height, (h + pad * 2) * cv.height)
+      );
+    });
+
+    if (mudarPessoa && analysisData.pessoa_bbox) {
+      const {x, y, w, h} = analysisData.pessoa_bbox;
+      const p = 0.025;
+      ctx.fillRect(
+        Math.max(0, (x - p)) * cv.width,
+        Math.max(0, (y - p)) * cv.height,
+        Math.min(cv.width, (w + p * 2) * cv.width),
+        Math.min(cv.height, (h + p * 2) * cv.height)
+      );
+    }
+
+    return cv.toDataURL('image/png');
+  } catch(e) {
+    console.warn('createEditMask falhou:', e);
+    return null;
+  }
+}
+
+// ── RESIZE PARA FORMATO SOCIAL ──────────────────────────────────
+function resizeToSocialFormat(src, format) {
+  return new Promise((resolve) => {
+    const targets = { story: { w: 1080, h: 1920 }, feed: { w: 1080, h: 1080 }, youtube: { w: 1920, h: 1080 } };
+    const t = targets[format] || targets.feed;
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.max(t.w / img.width, t.h / img.height);
+      const sw = img.width * scale;
+      const sh = img.height * scale;
+      const canvas = document.createElement('canvas');
+      canvas.width = t.w; canvas.height = t.h;
+      canvas.getContext('2d').drawImage(img, (t.w - sw) / 2, (t.h - sh) / 2, sw, sh);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = () => resolve(src);
+    img.src = src;
+  });
+}
+
+// ── FORMATO ─────────────────────────────────────────────────────
+function selectFormato(el) {
+  document.querySelectorAll('.fmt-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedFormato = el.dataset.fmt;
+  updateSummary();
+}
+
+// ── UTILS ────────────────────────────────────────────────────────
+function esc(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+renderLib();
+</script>
+</body>
+</html>
