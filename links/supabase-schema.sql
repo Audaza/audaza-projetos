@@ -32,13 +32,21 @@ CREATE TABLE IF NOT EXISTS audazalinks_links (
 
   -- controle
   is_active     BOOLEAN NOT NULL DEFAULT TRUE,
+  is_favorite   BOOLEAN NOT NULL DEFAULT FALSE,
   click_count   INTEGER NOT NULL DEFAULT 0,
   created_by    UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
+  -- Open Graph (preview no WhatsApp/Insta/Twitter)
+  og_title      TEXT,
+  og_description TEXT,
+  og_image      TEXT,
+
   UNIQUE (host, slug)
 );
+
+CREATE INDEX IF NOT EXISTS idx_audazalinks_links_tags ON audazalinks_links USING gin (tags);
 
 CREATE INDEX IF NOT EXISTS idx_audazalinks_links_lookup
   ON audazalinks_links (host, slug)
@@ -166,6 +174,32 @@ CREATE POLICY "audazalinks_clicks_authenticated_read"
   USING (TRUE);
 
 -- service_role (PHP redirector) bypassa RLS automaticamente. Sem policy pública.
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 5b. NOTIFICAÇÕES Z-API
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE IF NOT EXISTS audazalinks_notifications (
+  id BIGSERIAL PRIMARY KEY,
+  link_id BIGINT REFERENCES audazalinks_links(id) ON DELETE CASCADE,
+  rule_type TEXT NOT NULL CHECK (rule_type IN ('milestone','good_performance','bad_performance','system_error')),
+  threshold_clicks INTEGER,
+  threshold_window_hours INTEGER,
+  notify_phone TEXT NOT NULL,
+  custom_message TEXT,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  last_triggered_at TIMESTAMPTZ,
+  triggered_count INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_audazalinks_notif_link ON audazalinks_notifications(link_id) WHERE is_active = TRUE;
+ALTER TABLE audazalinks_notifications ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "audazalinks_notif_authenticated_full" ON audazalinks_notifications;
+CREATE POLICY "audazalinks_notif_authenticated_full" ON audazalinks_notifications FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+
+CREATE OR REPLACE FUNCTION audazalinks_get_active_rules(p_link_id BIGINT)
+RETURNS SETOF audazalinks_notifications AS $$
+  SELECT * FROM audazalinks_notifications WHERE link_id = p_link_id AND is_active = TRUE;
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 6. VIEWS para dashboard (agregações rápidas)

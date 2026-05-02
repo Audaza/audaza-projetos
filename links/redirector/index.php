@@ -64,6 +64,15 @@ if (!is_array($rows) || empty($rows)) {
 
 $link = $rows[0];
 
+// ─── 2.5. Crawler social? Servir página com OG meta tags ────────
+$ua_check = $_SERVER['HTTP_USER_AGENT'] ?? '';
+if (is_social_crawler($ua_check) && (
+    !empty($link['og_title']) || !empty($link['og_description']) || !empty($link['og_image'])
+)) {
+    serve_og_preview($link, $req_host, $slug);
+    exit;
+}
+
 // ─── 3. Verificar expiração ─────────────────────────────────────
 if (!empty($link['expires_at']) && strtotime($link['expires_at']) < time()) {
     expired();
@@ -123,7 +132,12 @@ if (function_exists('fastcgi_finish_request')) {
 ignore_user_abort(true);
 @set_time_limit(10);
 
-log_click((int)$link['id'], $host);
+$new_count = log_click((int)$link['id'], $host);
+
+// ─── 8. Avaliar regras de notificação Z-API ─────────────────────
+if ($new_count !== null) {
+    evaluate_notification_rules((int)$link['id'], $new_count, $host . '/' . $slug, $destination);
+}
 
 exit;
 
@@ -156,7 +170,77 @@ function supabase_rpc(string $fn, array $params)
     return json_decode($body, true);
 }
 
-function log_click(int $link_id, string $host_used): void
+function is_social_crawler(string $ua): bool
+{
+    return (bool) preg_match(
+        '/facebookexternalhit|whatsapp|twitterbot|telegrambot|skype|linkedinbot|slackbot|discordbot|line\/|googlebot|bingbot|yandexbot|baiduspider|pinterestbot|redditbot|applebot|googleimageproxy/i',
+        $ua
+    );
+}
+
+function html_escape($v): string {
+    return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+function serve_og_preview(array $link, string $req_host, string $slug): void
+{
+    $title       = $link['og_title']       ?: 'Audaza Links';
+    $description = $link['og_description'] ?: '';
+    $image       = $link['og_image']       ?: '';
+    $shortUrl    = 'https://' . $req_host . '/' . $slug;
+    $destination = $link['destination'];
+    if (!preg_match('#^https?://#i', $destination)) {
+        $destination = 'https://' . ltrim($destination, '/');
+    }
+
+    $titleE = html_escape($title);
+    $descE  = html_escape($description);
+    $imageE = html_escape($image);
+    $shortE = html_escape($shortUrl);
+    $destE  = html_escape($destination);
+
+    header('Content-Type: text/html; charset=utf-8');
+    echo <<<HTML
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{$titleE}</title>
+<meta name="description" content="{$descE}">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="{$shortE}">
+<meta property="og:title" content="{$titleE}">
+<meta property="og:description" content="{$descE}">
+HTML;
+    if (!empty($image)) {
+        echo "<meta property=\"og:image\" content=\"{$imageE}\">";
+        echo "<meta property=\"og:image:secure_url\" content=\"{$imageE}\">";
+    }
+    echo <<<HTML
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{$titleE}">
+<meta name="twitter:description" content="{$descE}">
+HTML;
+    if (!empty($image)) {
+        echo "<meta name=\"twitter:image\" content=\"{$imageE}\">";
+    }
+
+    // Fallback: navegador comum (caso por algum motivo passe aqui) redireciona via meta refresh
+    echo "<meta http-equiv=\"refresh\" content=\"0; url={$destE}\">";
+    echo "<link rel=\"canonical\" href=\"{$destE}\">";
+
+    $destJson = json_encode($destination, JSON_UNESCAPED_SLASHES);
+    echo <<<HTML
+</head><body>
+<p>Redirecionando para <a href="{$destE}">{$destE}</a>…</p>
+<script>location.replace({$destJson});</script>
+</body></html>
+HTML;
+}
+
+function log_click(int $link_id, string $host_used): ?int
 {
     $ua  = $_SERVER['HTTP_USER_AGENT'] ?? '';
     $ref = $_SERVER['HTTP_REFERER']    ?? null;
@@ -242,6 +326,175 @@ function log_click(int $link_id, string $host_used): void
             'Prefer: return=minimal',
         ],
         CURLOPT_POSTFIELDS     => json_encode($payload),
+    ]);
+    curl_exec($ch);
+    curl_close($ch);
+
+    // Busca click_count atualizado (trigger já incrementou)
+    return fetch_click_count($link_id);
+}
+
+function fetch_click_count(int $link_id): ?int
+{
+    $ch = curl_init(SUPABASE_URL . '/rest/v1/audazalinks_links?id=eq.' . $link_id . '&select=click_count');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 3,
+        CURLOPT_HTTPHEADER     => [
+            'apikey: ' . SUPABASE_SERVICE_KEY,
+            'Authorization: Bearer ' . SUPABASE_SERVICE_KEY,
+        ],
+    ]);
+    $body = curl_exec($ch);
+    curl_close($ch);
+    $rows = json_decode($body, true);
+    if (!is_array($rows) || empty($rows)) return null;
+    return (int)($rows[0]['click_count'] ?? 0);
+}
+
+function evaluate_notification_rules(int $link_id, int $click_count, string $short_url, string $destination): void
+{
+    // Busca regras ativas pra esse link
+    $ch = curl_init(SUPABASE_URL . '/rest/v1/audazalinks_notifications?link_id=eq.' . $link_id . '&is_active=eq.true');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 3,
+        CURLOPT_HTTPHEADER     => [
+            'apikey: ' . SUPABASE_SERVICE_KEY,
+            'Authorization: Bearer ' . SUPABASE_SERVICE_KEY,
+        ],
+    ]);
+    $body = curl_exec($ch);
+    curl_close($ch);
+    $rules = json_decode($body, true);
+    if (!is_array($rules)) return;
+
+    foreach ($rules as $rule) {
+        $type = $rule['rule_type'] ?? '';
+        $threshold = (int)($rule['threshold_clicks'] ?? 0);
+        if ($threshold <= 0) continue;
+
+        $should_fire = false;
+
+        if ($type === 'milestone') {
+            // Dispara quando atinge EXATAMENTE o threshold (ou múltiplos: 100, 200...)
+            if ($click_count === $threshold) {
+                $should_fire = true;
+            } elseif ($threshold >= 10 && $click_count > 0 && ($click_count % $threshold === 0)) {
+                $should_fire = true;
+            }
+        } elseif ($type === 'good_performance') {
+            // Cliques no janela > threshold
+            $window = max(1, (int)($rule['threshold_window_hours'] ?? 24));
+            $count_in_window = count_clicks_in_window($link_id, $window);
+            // Dispara só uma vez por janela (last_triggered_at)
+            $last = $rule['last_triggered_at'] ?? null;
+            $can_fire_again = !$last || (time() - strtotime($last)) > ($window * 3600);
+            if ($count_in_window >= $threshold && $can_fire_again) {
+                $should_fire = true;
+            }
+        }
+
+        if ($should_fire) {
+            $msg = build_notification_message($rule, $click_count, $short_url, $destination);
+            send_zapi_message($rule['notify_phone'], $msg);
+            mark_rule_triggered((int)$rule['id']);
+        }
+    }
+}
+
+function count_clicks_in_window(int $link_id, int $hours): int
+{
+    $since = gmdate('Y-m-d\TH:i:s\Z', time() - ($hours * 3600));
+    $url = SUPABASE_URL . '/rest/v1/audazalinks_clicks?link_id=eq.' . $link_id
+         . '&clicked_at=gte.' . urlencode($since) . '&select=id';
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 3,
+        CURLOPT_HTTPHEADER     => [
+            'apikey: ' . SUPABASE_SERVICE_KEY,
+            'Authorization: Bearer ' . SUPABASE_SERVICE_KEY,
+            'Prefer: count=exact',
+        ],
+        CURLOPT_HEADER         => true,
+    ]);
+    $resp = curl_exec($ch);
+    curl_close($ch);
+    if (!$resp) return 0;
+    if (preg_match('/content-range:\s*\d+-\d+\/(\d+)/i', $resp, $m)) return (int)$m[1];
+    // fallback: conta JSON
+    $body_pos = strpos($resp, "\r\n\r\n");
+    if ($body_pos !== false) {
+        $body = substr($resp, $body_pos + 4);
+        $rows = json_decode($body, true);
+        return is_array($rows) ? count($rows) : 0;
+    }
+    return 0;
+}
+
+function build_notification_message(array $rule, int $count, string $short_url, string $destination): string
+{
+    $type = $rule['rule_type'];
+    $tpl  = $rule['custom_message'] ?? '';
+    if (empty($tpl)) {
+        if ($type === 'milestone') {
+            $tpl = "🎯 *{count} cliques* no link {short_url}\n→ {destination}";
+        } elseif ($type === 'good_performance') {
+            $w = (int)($rule['threshold_window_hours'] ?? 24);
+            $tpl = "🚀 *Bom desempenho!* {short_url} bateu {count} cliques nas últimas {$w}h.";
+        } elseif ($type === 'bad_performance') {
+            $tpl = "⚠️ Link {short_url} com desempenho abaixo do esperado: {count} cliques.";
+        } elseif ($type === 'system_error') {
+            $tpl = "🛑 Erro no sistema audaza-links em {short_url}";
+        } else {
+            $tpl = "Audaza Links: {count} cliques em {short_url}";
+        }
+    }
+    return strtr($tpl, [
+        '{count}' => (string)$count,
+        '{short_url}' => 'https://' . $short_url,
+        '{destination}' => $destination,
+    ]);
+}
+
+function send_zapi_message(string $phone, string $message): bool
+{
+    $clean = preg_replace('/\D+/', '', $phone);
+    if ($clean === '') return false;
+    $ch = curl_init(ZAPI_BASE . '/send-text');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 6,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'Client-Token: ' . ZAPI_CLIENT_TOKEN,
+        ],
+        CURLOPT_POSTFIELDS     => json_encode([
+            'phone'   => $clean,
+            'message' => $message,
+        ]),
+    ]);
+    $body = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    return $code >= 200 && $code < 300;
+}
+
+function mark_rule_triggered(int $rule_id): void
+{
+    $ch = curl_init(SUPABASE_URL . '/rest/v1/rpc/audazalinks_mark_rule_triggered');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 3,
+        CURLOPT_HTTPHEADER     => [
+            'apikey: ' . SUPABASE_SERVICE_KEY,
+            'Authorization: Bearer ' . SUPABASE_SERVICE_KEY,
+            'Content-Type: application/json',
+        ],
+        CURLOPT_POSTFIELDS     => json_encode(['p_rule_id' => $rule_id]),
     ]);
     curl_exec($ch);
     curl_close($ch);

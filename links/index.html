@@ -296,6 +296,43 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
 .detail-stats .stat{padding:12px 14px}
 .detail-stats .stat-v{font-size:22px}
 
+/* ─── TAGS INPUT ─── */
+.tag-input{background:var(--alt);border:1px solid var(--rule);border-radius:var(--r);padding:6px 8px;display:flex;flex-wrap:wrap;gap:4px;min-height:36px;align-items:center;cursor:text;transition:.12s}
+.tag-input:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(91,158,255,.18);background:var(--surface)}
+.tag-chips{display:flex;flex-wrap:wrap;gap:4px}
+.tag-chip{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 4px 0 10px;background:var(--brand-l);border:1px solid rgba(91,158,255,.3);border-radius:999px;font-size:11.5px;color:var(--brand);font-weight:500}
+.tag-chip button{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;color:var(--brand);opacity:.6;font-size:14px;line-height:1}
+.tag-chip button:hover{opacity:1;background:rgba(91,158,255,.2)}
+#formTagsInput{flex:1;min-width:120px;border:0;outline:0;background:transparent;font-size:13px;color:var(--ink);padding:4px}
+#formTagsInput::placeholder{color:var(--ink-dim)}
+
+/* Filter bar */
+.filter-bar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;align-items:center}
+.filter-chip{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;background:var(--surface);border:1px solid var(--rule);border-radius:999px;font-size:12px;color:var(--ink-soft);cursor:pointer;transition:.12s}
+.filter-chip:hover{border-color:var(--ink-dim);color:var(--ink)}
+.filter-chip.active{background:var(--brand-l);border-color:rgba(91,158,255,.35);color:var(--brand);font-weight:500}
+.filter-chip .count{opacity:.6;font-family:var(--mono);font-size:11px}
+.filter-clear{font-size:11.5px;color:var(--ink-faint);text-decoration:underline;cursor:pointer;padding:0 8px}
+.filter-clear:hover{color:var(--brand)}
+
+/* Favorito */
+.btn-fav{width:28px;height:28px;padding:0;border-radius:50%;display:grid;place-items:center;color:var(--ink-faint);transition:.12s}
+.btn-fav:hover{color:var(--warn);transform:scale(1.1)}
+.btn-fav.active{color:var(--warn)}
+.btn-fav svg{width:14px;height:14px}
+.link-row.favorite{border-left:3px solid var(--warn)}
+
+/* Notification rules section */
+.notif-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.notif-rule{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px 12px;background:var(--alt);border:1px solid var(--rule);border-radius:var(--r-sm)}
+.notif-rule-info{font-size:12.5px}
+.notif-rule-info strong{color:var(--ink);display:block;margin-bottom:2px}
+.notif-rule-info small{color:var(--ink-faint);font-size:11px}
+.notif-add{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:10px;background:var(--alt);border:1px dashed var(--rule);border-radius:var(--r-sm)}
+.notif-add select,.notif-add input{height:32px;font-size:12.5px;padding:0 8px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-xs);color:var(--ink);width:auto}
+.notif-add input[type=number]{width:80px}
+.notif-add input[type=tel]{width:160px}
+
 /* ─── EXPORT MENU ─── */
 .export-menu{position:absolute;top:calc(100% + 6px);right:0;min-width:280px;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--r-md);box-shadow:var(--sh-lg);padding:6px;z-index:10;display:none;flex-direction:column;gap:2px;animation:slideUp .18s cubic-bezier(.22,1,.36,1) both}
 .export-menu.open{display:flex}
@@ -432,6 +469,9 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
       </div>
     </div>
 
+    <!-- Filtros -->
+    <div class="filter-bar" id="filterBar"></div>
+
     <!-- list -->
     <div id="linksList" class="links-grid"></div>
 
@@ -496,6 +536,34 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
           <input type="text" class="input" id="formTitle" placeholder="Ex: Black Friday — Cartão Tadeu" />
           <div class="help">Só você vê. Ajuda a achar o link depois.</div>
         </div>
+
+        <div class="field">
+          <label class="label">Tags <small>vírgula ou Enter pra separar</small></label>
+          <div class="tag-input" id="formTagsWrap">
+            <div class="tag-chips" id="formTagChips"></div>
+            <input type="text" id="formTagsInput" placeholder="Ex: cartao-tadeu, black-friday, instagram..." />
+          </div>
+          <div class="help">Use pra organizar por cliente, campanha, canal.</div>
+        </div>
+
+        <details class="adv">
+          <summary>Preview no WhatsApp/Instagram (Open Graph)</summary>
+          <div class="adv-body">
+            <div class="field">
+              <label class="label">Título do preview</label>
+              <input type="text" class="input" id="formOgTitle" placeholder="Ex: Cartão Tadeu — assine agora" />
+            </div>
+            <div class="field">
+              <label class="label">Descrição do preview</label>
+              <textarea class="textarea" id="formOgDescription" placeholder="Texto que aparece embaixo do título"></textarea>
+            </div>
+            <div class="field">
+              <label class="label">URL da imagem do preview</label>
+              <input type="url" class="input" id="formOgImage" placeholder="https://..." />
+              <div class="help">1200×630 funciona melhor. Pode usar imagem hospedada em qualquer lugar.</div>
+            </div>
+          </div>
+        </details>
 
         <details class="adv">
           <summary>UTMs (Google Analytics / Meta Ads)</summary>
@@ -721,6 +789,23 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
               <h4>Top referrers</h4>
               <div class="bd-list" id="breakdownReferer"></div>
             </div>
+            <div class="chart-card full">
+              <h4>Notificações via WhatsApp (Z-API)</h4>
+              <div class="notif-list" id="notifList"></div>
+              <div class="notif-add">
+                <select id="notifType">
+                  <option value="milestone">Marco de cliques</option>
+                  <option value="good_performance">Bom desempenho (cliques na janela)</option>
+                  <option value="bad_performance">Ruim desempenho</option>
+                  <option value="system_error">Sistema com erro</option>
+                </select>
+                <input type="number" id="notifThreshold" placeholder="ex: 100" min="1" />
+                <input type="number" id="notifWindow" placeholder="janela (h)" min="1" style="display:none" />
+                <input type="tel" id="notifPhone" placeholder="WhatsApp (5565...)" />
+                <button class="btn btn-br btn-sm" onclick="addNotificationRule()">Adicionar</button>
+              </div>
+              <div class="help" style="margin-top:6px">Formato do telefone: 55 + DDD + número, sem espaços. Mensagens enviadas via Z-API a partir do número Mirante.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -877,6 +962,7 @@ async function loadLinks() {
   allLinks = links || [];
   await loadStats();
   renderLinks();
+  renderFilterBar();
 }
 
 /* ─── GLOBE (cobe via ESM dynamic import) — agora dentro do modal de detalhes ─── */
@@ -1029,11 +1115,81 @@ async function loadStats() {
   }
 }
 
-function renderLinks() {
+/* Filtros ativos */
+const activeFilters = { host: null, status: null, tag: null };
+
+function renderFilterBar() {
+  const bar = document.getElementById('filterBar');
+  if (!bar) return;
+  const hosts = [...new Set(allLinks.map(l => l.host))].sort();
+  const allTags = [...new Set(allLinks.flatMap(l => l.tags || []))].sort();
+  const statusCounts = {
+    active: allLinks.filter(l => l.is_active && !isExpired(l)).length,
+    paused: allLinks.filter(l => !l.is_active).length,
+    expired: allLinks.filter(l => isExpired(l)).length,
+    favorite: allLinks.filter(l => l.is_favorite).length,
+  };
+
+  let html = '';
+  if (statusCounts.favorite > 0) html += chipHTML('★ Favoritos', 'status', 'favorite', statusCounts.favorite);
+  html += chipHTML('Ativos', 'status', 'active', statusCounts.active);
+  if (statusCounts.paused > 0) html += chipHTML('Pausados', 'status', 'paused', statusCounts.paused);
+  if (statusCounts.expired > 0) html += chipHTML('Expirados', 'status', 'expired', statusCounts.expired);
+
+  hosts.forEach(h => {
+    const c = allLinks.filter(l => l.host === h).length;
+    html += chipHTML(h, 'host', h, c);
+  });
+
+  allTags.forEach(t => {
+    const c = allLinks.filter(l => (l.tags || []).includes(t)).length;
+    html += chipHTML('#' + t, 'tag', t, c);
+  });
+
+  if (Object.values(activeFilters).some(v => v !== null)) {
+    html += `<span class="filter-clear" onclick="clearFilters()">Limpar filtros</span>`;
+  }
+
+  bar.innerHTML = html;
+}
+
+function chipHTML(label, type, value, count) {
+  const isActive = activeFilters[type] === value;
+  const safeVal = String(value).replace(/'/g, "&#39;");
+  return `<span class="filter-chip ${isActive ? 'active' : ''}" onclick="toggleFilter('${type}','${safeVal}')">${escapeHtml(label)} <span class="count">${count}</span></span>`;
+}
+
+function toggleFilter(type, value) {
+  activeFilters[type] = activeFilters[type] === value ? null : value;
+  renderLinks();
+  renderFilterBar();
+}
+function clearFilters() {
+  activeFilters.host = activeFilters.status = activeFilters.tag = null;
+  renderLinks(); renderFilterBar();
+}
+
+function applyFilters(links) {
   const q = (document.getElementById('searchInput').value || '').toLowerCase();
-  const filtered = allLinks.filter(l =>
-    !q || (l.title||'').toLowerCase().includes(q) || l.slug.toLowerCase().includes(q) || (l.destination||'').toLowerCase().includes(q)
-  );
+  return links.filter(l => {
+    if (q && !((l.title||'').toLowerCase().includes(q) || l.slug.toLowerCase().includes(q) || (l.destination||'').toLowerCase().includes(q) || (l.tags||[]).some(t => t.toLowerCase().includes(q)))) return false;
+    if (activeFilters.host && l.host !== activeFilters.host) return false;
+    if (activeFilters.tag && !(l.tags || []).includes(activeFilters.tag)) return false;
+    if (activeFilters.status === 'favorite' && !l.is_favorite) return false;
+    if (activeFilters.status === 'active' && (!l.is_active || isExpired(l))) return false;
+    if (activeFilters.status === 'paused' && l.is_active) return false;
+    if (activeFilters.status === 'expired' && !isExpired(l)) return false;
+    return true;
+  });
+}
+
+function renderLinks() {
+  const filtered = applyFilters(allLinks);
+  // Ordena: favoritos primeiro, depois por data desc
+  filtered.sort((a, b) => {
+    if (!!a.is_favorite !== !!b.is_favorite) return a.is_favorite ? -1 : 1;
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
 
   const list = document.getElementById('linksList');
   const empty = document.getElementById('emptyState');
@@ -1045,16 +1201,21 @@ function renderLinks() {
   }
   empty.classList.add('hidden');
 
-  list.innerHTML = filtered.map(l => `
-    <div class="link-row" onclick="openDetail(${l.id})">
-      <div class="link-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-      </div>
+  list.innerHTML = filtered.map(l => {
+    const tagsHTML = (l.tags && l.tags.length)
+      ? l.tags.map(t => `<span class="pill muted" style="cursor:pointer" onclick="event.stopPropagation();toggleFilter('tag','${escapeHtml(t).replace(/'/g,'&#39;')}');">#${escapeHtml(t)}</span>`).join(' ')
+      : '';
+    return `
+    <div class="link-row ${l.is_favorite ? 'favorite' : ''}" onclick="openDetail(${l.id})">
+      <button class="btn-fav ${l.is_favorite ? 'active' : ''}" onclick="event.stopPropagation();toggleFavorite(${l.id})" title="${l.is_favorite ? 'Desfavoritar' : 'Favoritar'}">
+        <svg viewBox="0 0 24 24" fill="${l.is_favorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </button>
       <div class="link-meta">
         <div class="link-title">
           ${escapeHtml(l.title || '(sem título)')}
           ${!l.is_active ? '<span class="pill danger">pausado</span>' : ''}
           ${isExpired(l) ? '<span class="pill danger">expirado</span>' : ''}
+          ${tagsHTML}
         </div>
         <div class="link-url">
           <span class="lu-host">${l.host}/</span><strong>${l.slug}</strong>
@@ -1074,10 +1235,57 @@ function renderLinks() {
         </button>
       </div>
     </div>
-  `).join('');
+  `;}).join('');
 }
 
-document.getElementById('searchInput').addEventListener('input', renderLinks);
+async function toggleFavorite(id) {
+  const link = allLinks.find(l => l.id === id);
+  if (!link) return;
+  const newVal = !link.is_favorite;
+  link.is_favorite = newVal;  // optimistic
+  renderLinks(); renderFilterBar();
+  const { error } = await supa.from('audazalinks_links').update({ is_favorite: newVal }).eq('id', id);
+  if (error) {
+    link.is_favorite = !newVal;  // revert
+    renderLinks(); renderFilterBar();
+    toast('Erro: ' + error.message, 'error');
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', () => { renderLinks(); });
+
+/* ─── TAGS INPUT ─── */
+let formTags = [];
+function setFormTags(tags) {
+  formTags = Array.from(new Set((tags || []).map(t => t.trim().toLowerCase()).filter(Boolean)));
+  renderFormTagChips();
+}
+function renderFormTagChips() {
+  const wrap = document.getElementById('formTagChips');
+  if (!wrap) return;
+  wrap.innerHTML = formTags.map((t, i) =>
+    `<span class="tag-chip">#${escapeHtml(t)}<button type="button" onclick="removeFormTag(${i})" aria-label="remover">×</button></span>`
+  ).join('');
+}
+function removeFormTag(i) { formTags.splice(i, 1); renderFormTagChips(); }
+function bindTagsInput() {
+  const inp = document.getElementById('formTagsInput');
+  if (!inp || inp.dataset.bound) return;
+  inp.dataset.bound = '1';
+  const commit = () => {
+    const v = inp.value.trim().replace(/^#/, '').toLowerCase();
+    if (!v) return;
+    if (!formTags.includes(v)) formTags.push(v);
+    inp.value = '';
+    renderFormTagChips();
+  };
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ',' || e.key === ';') { e.preventDefault(); commit(); }
+    else if (e.key === 'Backspace' && !inp.value && formTags.length) { formTags.pop(); renderFormTagChips(); }
+  });
+  inp.addEventListener('blur', commit);
+  document.getElementById('formTagsWrap').addEventListener('click', () => inp.focus());
+}
 
 /* ─── CREATE / EDIT ─── */
 function openCreateModal() {
@@ -1085,6 +1293,8 @@ function openCreateModal() {
   document.getElementById('formSubmitBtn').textContent = 'Criar link';
   document.getElementById('linkForm').reset();
   document.getElementById('formLinkId').value = '';
+  setFormTags([]);
+  bindTagsInput();
   updatePreview();
   document.getElementById('formModal').classList.add('open');
 }
@@ -1098,12 +1308,17 @@ function openEditModal(id) {
   document.getElementById('formHost').value = l.host;
   document.getElementById('formSlug').value = l.slug;
   document.getElementById('formTitle').value = l.title || '';
+  document.getElementById('formOgTitle').value = l.og_title || '';
+  document.getElementById('formOgDescription').value = l.og_description || '';
+  document.getElementById('formOgImage').value = l.og_image || '';
   document.getElementById('formUtmSource').value = l.utm_source || '';
   document.getElementById('formUtmMedium').value = l.utm_medium || '';
   document.getElementById('formUtmCampaign').value = l.utm_campaign || '';
   document.getElementById('formUtmContent').value = l.utm_content || '';
   document.getElementById('formExpiresAt').value = l.expires_at ? l.expires_at.slice(0,16) : '';
   document.getElementById('formIsActive').value = String(l.is_active);
+  setFormTags(l.tags || []);
+  bindTagsInput();
   updatePreview();
   document.getElementById('formModal').classList.add('open');
 }
@@ -1139,6 +1354,10 @@ async function submitLinkForm() {
   const payload = {
     destination: normalizedDest, host, slug,
     title: title || null,
+    tags: formTags.length ? formTags : null,
+    og_title: document.getElementById('formOgTitle').value.trim() || null,
+    og_description: document.getElementById('formOgDescription').value.trim() || null,
+    og_image: document.getElementById('formOgImage').value.trim() || null,
     utm_source: document.getElementById('formUtmSource').value.trim() || null,
     utm_medium: document.getElementById('formUtmMedium').value.trim() || null,
     utm_campaign: document.getElementById('formUtmCampaign').value.trim() || null,
@@ -1231,6 +1450,9 @@ async function openDetail(id) {
   // Previews do dropdown de QR — geração em background (~600ms)
   resetQRPreviewSwatches();
   generateQRPreviews(id);
+
+  // Notificações
+  loadNotificationRules(id);
 }
 
 async function reloadDetailCharts() {
@@ -1701,6 +1923,89 @@ function drawDoughnut(id, map) {
       plugins: { legend: { position: 'right', labels: { color: chartTextColor(), font: { size: 11 }, boxWidth: 10 } } },
     },
   });
+}
+
+/* ─── NOTIFICATION RULES (Z-API) ─── */
+async function loadNotificationRules(linkId) {
+  const { data, error } = await supa.from('audazalinks_notifications').select('*').eq('link_id', linkId).order('created_at', { ascending: false });
+  if (error) { console.error(error); return; }
+  renderNotificationRules(data || []);
+}
+
+function renderNotificationRules(rules) {
+  const el = document.getElementById('notifList');
+  if (!rules.length) {
+    el.innerHTML = `<div class="bd-empty">Nenhuma regra ativa. Adicione abaixo pra receber WhatsApp ao bater metas.</div>`;
+    return;
+  }
+  const labels = {
+    milestone: '🎯 Marco de cliques',
+    good_performance: '🚀 Bom desempenho',
+    bad_performance: '⚠️ Ruim desempenho',
+    system_error: '🛑 Erro de sistema',
+  };
+  el.innerHTML = rules.map(r => {
+    const detail = r.rule_type === 'milestone'
+      ? `Avisa a cada ${r.threshold_clicks} cliques`
+      : r.rule_type === 'good_performance'
+        ? `${r.threshold_clicks}+ cliques em ${r.threshold_window_hours||24}h`
+        : r.rule_type === 'bad_performance'
+          ? `< ${r.threshold_clicks} cliques em ${r.threshold_window_hours||24}h`
+          : 'Erro no redirector';
+    const last = r.last_triggered_at ? `disparada ${new Date(r.last_triggered_at).toLocaleString('pt-BR')}` : 'nunca disparada';
+    const triggered = (r.triggered_count > 0) ? ` · ${r.triggered_count}× disparada` : '';
+    return `
+      <div class="notif-rule">
+        <div class="notif-rule-info">
+          <strong>${labels[r.rule_type] || r.rule_type}</strong>
+          <small>${escapeHtml(detail)} · ${escapeHtml(r.notify_phone)}${triggered}<br/>${last}</small>
+        </div>
+        <button class="btn btn-i danger" onclick="deleteNotificationRule(${r.id})" title="Excluir">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+        </button>
+      </div>`;
+  }).join('');
+}
+
+document.addEventListener('change', (e) => {
+  if (e.target?.id === 'notifType') {
+    const needsWindow = ['good_performance','bad_performance'].includes(e.target.value);
+    document.getElementById('notifWindow').style.display = needsWindow ? '' : 'none';
+  }
+});
+
+async function addNotificationRule() {
+  const type = document.getElementById('notifType').value;
+  const threshold = parseInt(document.getElementById('notifThreshold').value, 10);
+  const window = parseInt(document.getElementById('notifWindow').value, 10) || null;
+  const phone = document.getElementById('notifPhone').value.replace(/\D/g, '');
+
+  if (!threshold || threshold < 1) { toast('Defina um valor de cliques', 'error'); return; }
+  if (!phone || phone.length < 10) { toast('Telefone inválido (use 5565... formato completo)', 'error'); return; }
+
+  const payload = {
+    link_id: currentLinkId,
+    rule_type: type,
+    threshold_clicks: threshold,
+    threshold_window_hours: ['good_performance','bad_performance'].includes(type) ? (window || 24) : null,
+    notify_phone: phone,
+    is_active: true,
+  };
+  const { error } = await supa.from('audazalinks_notifications').insert(payload);
+  if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  toast('Regra criada!', 'success');
+  document.getElementById('notifThreshold').value = '';
+  document.getElementById('notifWindow').value = '';
+  document.getElementById('notifPhone').value = '';
+  await loadNotificationRules(currentLinkId);
+}
+
+async function deleteNotificationRule(id) {
+  if (!confirm('Excluir esta regra de notificação?')) return;
+  const { error } = await supa.from('audazalinks_notifications').delete().eq('id', id);
+  if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  toast('Regra excluída', 'success');
+  await loadNotificationRules(currentLinkId);
 }
 
 /* ─── HELPERS ─── */
