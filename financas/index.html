@@ -180,7 +180,8 @@
   .progress-fill{height:100%;background:linear-gradient(90deg,var(--income),#7ec8ff);transition:width .3s ease}
 
   /* Columns */
-  .columns{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:80px}
+  .columns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:80px}
+  @media (max-width:1100px){.columns{grid-template-columns:1fr 1fr}}
   @media (max-width:760px){
     .columns{grid-template-columns:1fr}
     .summary{grid-template-columns:1fr 1fr}
@@ -189,59 +190,61 @@
   }
 
   .col{
-    background:var(--surface);border:1px solid var(--rule);border-radius:20px;
-    padding:18px;backdrop-filter:blur(8px);
+    background:var(--surface);border:1px solid var(--rule);border-radius:16px;
+    padding:12px 12px 10px;backdrop-filter:blur(8px);
   }
-  .col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 6px}
-  .col-title{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px}
-  .col-title .dot{width:8px;height:8px;border-radius:99px}
+  .col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:2px 4px 6px;border-bottom:1px solid var(--rule)}
+  .col-title{display:flex;align-items:center;gap:7px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:-.005em}
+  .col-title .dot{width:6px;height:6px;border-radius:99px}
+  .col-title .col-owner{color:var(--ink-faint);font-weight:500;margin-left:2px}
   .col.income .dot{background:var(--income)}
   .col.expense .dot{background:var(--expense)}
-  .col-total{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px}
+  .col-total{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:-.01em}
   .col.income .col-total{color:var(--income)}
   .col.expense .col-total{color:var(--expense)}
 
-  .item-list{display:flex;flex-direction:column;gap:6px}
+  .item-list{display:flex;flex-direction:column;gap:1px}
   .item{
-    display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;
-    background:transparent;border:1px solid transparent;transition:all .15s ease;
+    display:flex;align-items:center;gap:9px;padding:6px 7px;border-radius:7px;
+    background:transparent;border:1px solid transparent;transition:background .12s ease;
     cursor:pointer;
   }
-  .item:hover{background:var(--surface-2);border-color:var(--rule)}
-  .item.paid{opacity:.55}
+  .item:hover{background:var(--surface-2)}
+  .item.paid{opacity:.45}
   .item.paid .item-name{text-decoration:line-through}
 
   .check{
-    width:22px;height:22px;border-radius:7px;border:1.5px solid var(--ink-dim);
+    width:16px;height:16px;border-radius:5px;border:1.5px solid var(--ink-dim);
     display:grid;place-items:center;flex-shrink:0;transition:all .15s ease;
     background:transparent;
   }
-  .check svg{opacity:0;transition:opacity .15s ease}
+  .check svg{opacity:0;transition:opacity .15s ease;width:9px;height:9px}
   .item.paid .check{background:var(--income);border-color:var(--income)}
   .item.paid .check svg{opacity:1}
   .col.expense .item.paid .check{background:var(--expense);border-color:var(--expense)}
 
-  .item-body{flex:1;min-width:0}
-  .item-name{font-size:14px;font-weight:500;letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .item-meta{font-size:11px;color:var(--ink-faint);margin-top:2px;display:flex;align-items:center;gap:8px}
-  .item-day{display:inline-flex;align-items:center;gap:4px}
+  .item-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:0}
+  .item-name{font-size:12.5px;font-weight:500;letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
+  .item-meta{font-size:10.5px;color:var(--ink-faint);display:flex;align-items:center;gap:5px;line-height:1.3}
+  .item-day{display:inline-flex;align-items:center}
   .item-overdue{color:var(--expense);font-weight:500}
-  .item-amount{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;flex-shrink:0;letter-spacing:-.01em}
+  .item-amount{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12.5px;flex-shrink:0;letter-spacing:-.01em}
   .col.income .item-amount{color:var(--income)}
   .col.expense .item-amount{color:var(--expense)}
 
   .empty{
-    text-align:center;padding:32px 16px;color:var(--ink-faint);font-size:13px;
-    border:1px dashed var(--rule);border-radius:12px;
+    text-align:center;padding:18px 10px;color:var(--ink-faint);font-size:11.5px;
+    border:1px dashed var(--rule);border-radius:8px;
   }
   .add-btn{
-    width:100%;margin-top:10px;padding:11px;border-radius:11px;
-    background:var(--surface-2);border:1px dashed var(--rule-strong);
-    color:var(--ink-soft);font-size:13px;font-weight:500;
-    display:flex;align-items:center;justify-content:center;gap:6px;
+    width:100%;margin-top:6px;padding:6px;border-radius:7px;
+    background:transparent;border:1px dashed var(--rule);
+    color:var(--ink-faint);font-size:11.5px;font-weight:500;
+    display:flex;align-items:center;justify-content:center;gap:5px;
     transition:all .15s ease;
   }
-  .add-btn:hover{background:var(--surface-3);color:var(--ink);border-color:var(--ink-dim);border-style:solid}
+  .add-btn:hover{background:var(--surface-2);color:var(--ink-soft);border-color:var(--rule-strong)}
+  .add-btn svg{width:11px;height:11px}
 
   /* Modal */
   .modal-bg{
@@ -349,8 +352,9 @@
   .cat-chip:hover{background:var(--surface-3)}
   .cat-chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
-  /* Recurrence segmented control */
+  /* Segmented controls */
   .rec-list{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--surface-2);padding:4px;border-radius:11px;border:1px solid var(--rule)}
+  #ownerList{grid-template-columns:repeat(2,1fr)}
   .rec-chip{
     padding:9px 10px;border-radius:8px;font-size:12px;font-weight:500;color:var(--ink-faint);
     transition:all .15s ease;text-align:center;
@@ -369,9 +373,10 @@
   }
   .rec-months-row .rec-info{flex:1;font-size:11px;color:var(--ink-faint);text-align:right}
   .install-badge{
-    display:inline-flex;align-items:center;padding:1px 6px;border-radius:4px;
-    background:rgba(91,158,255,.12);color:var(--brand);font-size:10px;font-weight:600;
-    font-family:'Space Grotesk',sans-serif;letter-spacing:.02em;
+    display:inline-flex;align-items:center;padding:0 4px;border-radius:3px;
+    background:rgba(91,158,255,.14);color:var(--brand);font-size:9.5px;font-weight:600;
+    font-family:'Space Grotesk',sans-serif;letter-spacing:.02em;line-height:1.5;
+    margin-left:5px;vertical-align:1px;
   }
 
   /* Hidden values mode */
@@ -503,18 +508,29 @@
       </div>
       <div class="item-list" id="incomeList"></div>
       <button class="add-btn" data-add="income">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         Adicionar receita
       </button>
     </div>
-    <div class="col expense">
+    <div class="col expense" data-owner="audaza">
       <div class="col-head">
-        <div class="col-title"><span class="dot"></span>Despesas</div>
-        <div class="col-total" id="expenseTotal">R$ 0</div>
+        <div class="col-title"><span class="dot"></span>Despesas <span class="col-owner">— Audaza</span></div>
+        <div class="col-total" id="expenseTotalAudaza">R$ 0</div>
       </div>
-      <div class="item-list" id="expenseList"></div>
-      <button class="add-btn" data-add="expense">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      <div class="item-list" id="expenseListAudaza"></div>
+      <button class="add-btn" data-add="expense" data-owner="audaza">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Adicionar despesa
+      </button>
+    </div>
+    <div class="col expense" data-owner="vinicius">
+      <div class="col-head">
+        <div class="col-title"><span class="dot"></span>Despesas <span class="col-owner">— Vinicius</span></div>
+        <div class="col-total" id="expenseTotalVinicius">R$ 0</div>
+      </div>
+      <div class="item-list" id="expenseListVinicius"></div>
+      <button class="add-btn" data-add="expense" data-owner="vinicius">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         Adicionar despesa
       </button>
     </div>
@@ -538,6 +554,14 @@
     <div class="type-toggle">
       <button id="typeIncome" class="income-mode">Receita</button>
       <button id="typeExpense" class="expense-mode">Despesa</button>
+    </div>
+
+    <div class="field" id="ownerField" style="display:none">
+      <label>Conta</label>
+      <div class="rec-list" id="ownerList">
+        <button type="button" class="rec-chip" data-owner="audaza">Audaza</button>
+        <button type="button" class="rec-chip" data-owner="vinicius">Vinicius</button>
+      </div>
     </div>
 
     <div class="field">
@@ -744,6 +768,7 @@ const state = {
   formCategory: null,
   formRecurrence: 'monthly',
   formMonthsCount: 12,
+  formOwner: 'audaza',
   // crypto session
   key: null,
   salt: null,
@@ -852,7 +877,8 @@ function installmentInfo(item, mKey){
 function monthSummary(mKey){
   const items = state.data.items.filter(i => isItemActiveInMonth(i, mKey));
   let income=0, expense=0, incomePaid=0, expensePaid=0,
-      incomeCount=0, expenseCount=0, incomeDoneCount=0, expenseDoneCount=0;
+      incomeCount=0, expenseCount=0, incomeDoneCount=0, expenseDoneCount=0,
+      expenseAudaza=0, expenseVinicius=0;
   items.forEach(i=>{
     const paid = !!getStatus(mKey, i.id);
     if(i.type === 'income'){
@@ -860,10 +886,12 @@ function monthSummary(mKey){
       if(paid){ incomePaid += i.amount; incomeDoneCount++; }
     }else{
       expense += i.amount; expenseCount++;
+      if((i.owner||'audaza') === 'vinicius') expenseVinicius += i.amount;
+      else expenseAudaza += i.amount;
       if(paid){ expensePaid += i.amount; expenseDoneCount++; }
     }
   });
-  return {income, expense, incomePaid, expensePaid,
+  return {income, expense, incomePaid, expensePaid, expenseAudaza, expenseVinicius,
     balance: income-expense, balanceRealized: incomePaid-expensePaid,
     incomeCount, expenseCount, incomeDoneCount, expenseDoneCount};
 }
@@ -889,16 +917,13 @@ function renderSummary(){
   $('#sumIncome').textContent  = fmtBRL(s.income);
   $('#sumExpense').textContent = fmtBRL(s.expense);
   $('#sumBalance').textContent = fmtBRL(s.balance);
-  $('#subIncome').textContent  = `${s.incomeDoneCount}/${s.incomeCount} recebidas · ${fmtBRLshort(s.incomePaid)}`;
-  $('#subExpense').textContent = `${s.expenseDoneCount}/${s.expenseCount} pagas · ${fmtBRLshort(s.expensePaid)}`;
+  $('#subIncome').textContent  = `${s.incomeDoneCount}/${s.incomeCount} recebidas`;
+  $('#subExpense').textContent = `A: ${fmtBRLshort(s.expenseAudaza)} · V: ${fmtBRLshort(s.expenseVinicius)}`;
   $('#subBalance').textContent = `realizado ${fmtBRLshort(s.balanceRealized)}`;
 
   const balCell = $('.sum-cell.balance');
   balCell.classList.toggle('positive', s.balance >= 0);
   balCell.classList.toggle('negative', s.balance < 0);
-
-  $('#incomeTotal').textContent  = fmtBRL(s.income);
-  $('#expenseTotal').textContent = fmtBRL(s.expense);
 
   const totalCount = s.incomeCount + s.expenseCount;
   const doneCount  = s.incomeDoneCount + s.expenseDoneCount;
@@ -920,11 +945,20 @@ function todayInfo(mKey){
 
 function renderLists(){
   const t = todayInfo(state.current);
-  ['income','expense'].forEach(type=>{
-    const list = $('#'+type+'List');
+  const buckets = [
+    { type:'income',  owner:null,        listId:'incomeList',           totalId:'incomeTotal' },
+    { type:'expense', owner:'audaza',    listId:'expenseListAudaza',    totalId:'expenseTotalAudaza' },
+    { type:'expense', owner:'vinicius',  listId:'expenseListVinicius',  totalId:'expenseTotalVinicius' },
+  ];
+  buckets.forEach(({type, owner, listId, totalId})=>{
+    const list = $('#'+listId);
     const items = state.data.items
-      .filter(i => i.type === type && isItemActiveInMonth(i, state.current))
+      .filter(i => i.type === type
+        && (owner === null || (i.owner||'audaza') === owner)
+        && isItemActiveInMonth(i, state.current))
       .sort((a,b)=> a.dayOfMonth - b.dayOfMonth || a.name.localeCompare(b.name));
+    const total = items.reduce((s,i)=> s + i.amount, 0);
+    if(totalId) $('#'+totalId).textContent = fmtBRL(total);
 
     if(items.length === 0){
       list.innerHTML = `<div class="empty">Nenhuma ${type==='income'?'receita':'despesa'} ainda</div>`;
@@ -986,6 +1020,7 @@ function openModal(opts={}){
     state.formCategory = it.categoryId;
     state.formRecurrence = it.recurrence || 'monthly';
     state.formMonthsCount = it.monthsCount || 12;
+    state.formOwner = it.owner || 'audaza';
   }else{
     $('#fName').value = '';
     $('#fAmount').value = '';
@@ -993,9 +1028,11 @@ function openModal(opts={}){
     state.formCategory = null;
     state.formRecurrence = 'monthly';
     state.formMonthsCount = 12;
+    state.formOwner = opts.owner || 'audaza';
   }
   $('#fMonths').value = state.formMonthsCount;
   renderTypeToggle();
+  renderOwner();
   renderRecurrence();
   renderCategories();
   $('#modalBg').classList.add('open');
@@ -1009,6 +1046,16 @@ function closeModal(){
 function renderTypeToggle(){
   $('#typeIncome').classList.toggle('active', state.formType==='income');
   $('#typeExpense').classList.toggle('active', state.formType==='expense');
+  renderOwner();
+}
+
+function renderOwner(){
+  const isExpense = state.formType === 'expense';
+  $('#ownerField').style.display = isExpense ? '' : 'none';
+  if(!isExpense) return;
+  $$('#ownerList .rec-chip').forEach(b=>{
+    b.classList.toggle('active', b.dataset.owner === state.formOwner);
+  });
 }
 
 function renderRecurrence(){
@@ -1065,6 +1112,7 @@ async function saveItem(){
     it.categoryId = state.formCategory;
     it.recurrence = state.formRecurrence;
     it.monthsCount = monthsCount;
+    it.owner = state.formType === 'expense' ? state.formOwner : null;
     if(!it.anchorMonth) it.anchorMonth = (it.createdAt||'').slice(0,7) || state.current;
     toast('Atualizado');
   }else{
@@ -1075,6 +1123,7 @@ async function saveItem(){
       categoryId: state.formCategory,
       recurrence: state.formRecurrence,
       monthsCount,
+      owner: state.formType === 'expense' ? state.formOwner : null,
       anchorMonth: state.current,
       createdAt: new Date().toISOString(),
     });
@@ -1424,7 +1473,10 @@ function bind(){
 
   // fab + add buttons
   $('#fab').onclick = ()=> openModal({type: state.formType || 'expense'});
-  $$('[data-add]').forEach(b=> b.onclick = ()=> openModal({type: b.dataset.add}));
+  $$('[data-add]').forEach(b=> b.onclick = ()=> openModal({
+    type: b.dataset.add,
+    owner: b.dataset.owner || 'audaza',
+  }));
 
   // modal
   $('#modalClose').onclick = closeModal;
@@ -1432,6 +1484,10 @@ function bind(){
   $('#modalBg').onclick = (e)=>{ if(e.target.id==='modalBg') closeModal(); };
   $('#typeIncome').onclick = ()=>{ state.formType='income';  state.formCategory=null; renderTypeToggle(); renderCategories(); };
   $('#typeExpense').onclick= ()=>{ state.formType='expense'; state.formCategory=null; renderTypeToggle(); renderCategories(); };
+  $('#ownerList').onclick = (e)=>{
+    const b = e.target.closest('[data-owner]'); if(!b) return;
+    state.formOwner = b.dataset.owner; renderOwner();
+  };
   $('#catList').onclick = (e)=>{
     const b = e.target.closest('[data-cat]'); if(!b) return;
     state.formCategory = b.dataset.cat; renderCategories();
