@@ -180,10 +180,16 @@
   .progress-fill{height:100%;background:linear-gradient(90deg,var(--income),#7ec8ff);transition:width .3s ease}
 
   /* Columns */
-  .columns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:80px}
-  @media (max-width:1100px){.columns{grid-template-columns:1fr 1fr}}
-  @media (max-width:760px){
+  .columns{display:grid;gap:12px;margin-bottom:80px;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .col.income{grid-column:1/-1}
+  @media (min-width:1400px){
+    .columns{grid-template-columns:1fr repeat(4,minmax(0,1fr))}
+    .col.income{grid-column:auto}
+  }
+  @media (max-width:880px){.columns{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:560px){
     .columns{grid-template-columns:1fr}
+    .col.income{grid-column:auto}
     .summary{grid-template-columns:1fr 1fr}
     .sum-cell.balance{grid-column:span 2}
     .shell{padding:20px 16px 96px}
@@ -354,7 +360,8 @@
 
   /* Segmented controls */
   .rec-list{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--surface-2);padding:4px;border-radius:11px;border:1px solid var(--rule)}
-  #ownerList{grid-template-columns:repeat(2,1fr)}
+  #ownerList{grid-template-columns:repeat(4,1fr)}
+  @media (max-width:480px){#ownerList{grid-template-columns:repeat(2,1fr)}}
   .rec-chip{
     padding:9px 10px;border-radius:8px;font-size:12px;font-weight:500;color:var(--ink-faint);
     transition:all .15s ease;text-align:center;
@@ -534,6 +541,28 @@
         Adicionar despesa
       </button>
     </div>
+    <div class="col expense" data-owner="lais">
+      <div class="col-head">
+        <div class="col-title"><span class="dot"></span>Despesas <span class="col-owner">— Lais</span></div>
+        <div class="col-total" id="expenseTotalLais">R$ 0</div>
+      </div>
+      <div class="item-list" id="expenseListLais"></div>
+      <button class="add-btn" data-add="expense" data-owner="lais">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Adicionar despesa
+      </button>
+    </div>
+    <div class="col expense" data-owner="apolo">
+      <div class="col-head">
+        <div class="col-title"><span class="dot"></span>Despesas <span class="col-owner">— Apolo</span></div>
+        <div class="col-total" id="expenseTotalApolo">R$ 0</div>
+      </div>
+      <div class="item-list" id="expenseListApolo"></div>
+      <button class="add-btn" data-add="expense" data-owner="apolo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Adicionar despesa
+      </button>
+    </div>
   </section>
 </div>
 
@@ -561,6 +590,8 @@
       <div class="rec-list" id="ownerList">
         <button type="button" class="rec-chip" data-owner="audaza">Audaza</button>
         <button type="button" class="rec-chip" data-owner="vinicius">Vinicius</button>
+        <button type="button" class="rec-chip" data-owner="lais">Lais</button>
+        <button type="button" class="rec-chip" data-owner="apolo">Apolo</button>
       </div>
     </div>
 
@@ -877,8 +908,8 @@ function installmentInfo(item, mKey){
 function monthSummary(mKey){
   const items = state.data.items.filter(i => isItemActiveInMonth(i, mKey));
   let income=0, expense=0, incomePaid=0, expensePaid=0,
-      incomeCount=0, expenseCount=0, incomeDoneCount=0, expenseDoneCount=0,
-      expenseAudaza=0, expenseVinicius=0;
+      incomeCount=0, expenseCount=0, incomeDoneCount=0, expenseDoneCount=0;
+  const byOwner = { audaza:0, vinicius:0, lais:0, apolo:0 };
   items.forEach(i=>{
     const paid = !!getStatus(mKey, i.id);
     if(i.type === 'income'){
@@ -886,12 +917,13 @@ function monthSummary(mKey){
       if(paid){ incomePaid += i.amount; incomeDoneCount++; }
     }else{
       expense += i.amount; expenseCount++;
-      if((i.owner||'audaza') === 'vinicius') expenseVinicius += i.amount;
-      else expenseAudaza += i.amount;
+      const o = i.owner || 'audaza';
+      if(byOwner[o] !== undefined) byOwner[o] += i.amount;
+      else byOwner.audaza += i.amount;
       if(paid){ expensePaid += i.amount; expenseDoneCount++; }
     }
   });
-  return {income, expense, incomePaid, expensePaid, expenseAudaza, expenseVinicius,
+  return {income, expense, incomePaid, expensePaid, byOwner,
     balance: income-expense, balanceRealized: incomePaid-expensePaid,
     incomeCount, expenseCount, incomeDoneCount, expenseDoneCount};
 }
@@ -918,7 +950,7 @@ function renderSummary(){
   $('#sumExpense').textContent = fmtBRL(s.expense);
   $('#sumBalance').textContent = fmtBRL(s.balance);
   $('#subIncome').textContent  = `${s.incomeDoneCount}/${s.incomeCount} recebidas`;
-  $('#subExpense').textContent = `A: ${fmtBRLshort(s.expenseAudaza)} · V: ${fmtBRLshort(s.expenseVinicius)}`;
+  $('#subExpense').textContent = `A ${fmtBRLshort(s.byOwner.audaza)} · V ${fmtBRLshort(s.byOwner.vinicius)} · L ${fmtBRLshort(s.byOwner.lais)} · Ap ${fmtBRLshort(s.byOwner.apolo)}`;
   $('#subBalance').textContent = `realizado ${fmtBRLshort(s.balanceRealized)}`;
 
   const balCell = $('.sum-cell.balance');
@@ -949,6 +981,8 @@ function renderLists(){
     { type:'income',  owner:null,        listId:'incomeList',           totalId:'incomeTotal' },
     { type:'expense', owner:'audaza',    listId:'expenseListAudaza',    totalId:'expenseTotalAudaza' },
     { type:'expense', owner:'vinicius',  listId:'expenseListVinicius',  totalId:'expenseTotalVinicius' },
+    { type:'expense', owner:'lais',      listId:'expenseListLais',      totalId:'expenseTotalLais' },
+    { type:'expense', owner:'apolo',     listId:'expenseListApolo',     totalId:'expenseTotalApolo' },
   ];
   buckets.forEach(({type, owner, listId, totalId})=>{
     const list = $('#'+listId);
