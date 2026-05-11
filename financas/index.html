@@ -240,14 +240,14 @@
   .bal-bar-fill.expense{background:var(--expense)}
 
   /* Columns */
-  .columns{display:grid;gap:12px;margin-bottom:80px;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .columns{display:grid;gap:12px;margin-bottom:80px;grid-template-columns:repeat(5,minmax(0,1fr))}
   .col.income{grid-column:1/-1}
   .columns[data-view="income"] .col.expense{display:none}
   .columns[data-view="expense"] .col.income{display:none}
   @media (min-width:1400px){
-    .columns{grid-template-columns:1fr repeat(4,minmax(0,1fr))}
+    .columns{grid-template-columns:1fr repeat(5,minmax(0,1fr))}
     .col.income{grid-column:auto}
-    .columns[data-view="expense"]{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .columns[data-view="expense"]{grid-template-columns:repeat(5,minmax(0,1fr))}
     .columns[data-view="income"] .col.income{grid-column:1/-1}
   }
   @media (max-width:880px){.columns{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -273,7 +273,7 @@
   .col.income .col-total{color:var(--income)}
   .col.expense .col-total{color:var(--expense)}
 
-  .item-list{display:flex;flex-direction:column;gap:1px}
+  .item-list{display:flex;flex-direction:column;gap:1px;min-height:8px}
   .item{
     display:flex;align-items:center;gap:9px;padding:6px 7px;border-radius:7px;
     background:transparent;border:1px solid transparent;transition:background .12s ease;
@@ -282,6 +282,13 @@
   .item:hover{background:var(--surface-2)}
   .item.paid{opacity:.45}
   .item.paid .item-name{text-decoration:line-through}
+  .item[draggable="true"]{cursor:grab}
+  .item.dragging{opacity:.35;cursor:grabbing}
+  .col.drop-target{
+    border-color:var(--brand);background:rgba(91,158,255,.05);
+    box-shadow:0 0 0 1px var(--brand) inset;
+  }
+  .col.drop-target .item-list{outline:1px dashed rgba(91,158,255,.4);outline-offset:4px;border-radius:6px}
 
   .check{
     width:16px;height:16px;border-radius:5px;border:1.5px solid var(--ink-dim);
@@ -424,8 +431,8 @@
 
   /* Segmented controls */
   .rec-list{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--surface-2);padding:4px;border-radius:11px;border:1px solid var(--rule)}
-  #ownerList{grid-template-columns:repeat(4,1fr)}
-  @media (max-width:480px){#ownerList{grid-template-columns:repeat(2,1fr)}}
+  #ownerList{grid-template-columns:repeat(5,1fr)}
+  @media (max-width:480px){#ownerList{grid-template-columns:repeat(3,1fr)}}
   .rec-chip{
     padding:9px 10px;border-radius:8px;font-size:12px;font-weight:500;color:var(--ink-faint);
     transition:all .15s ease;text-align:center;
@@ -633,6 +640,17 @@
         Adicionar despesa
       </button>
     </div>
+    <div class="col expense" data-owner="casa">
+      <div class="col-head">
+        <div class="col-title"><span class="dot"></span>Despesas <span class="col-owner">— Casa</span></div>
+        <div class="col-total" id="expenseTotalCasa">R$ 0</div>
+      </div>
+      <div class="item-list" id="expenseListCasa"></div>
+      <button class="add-btn" data-add="expense" data-owner="casa">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Adicionar despesa
+      </button>
+    </div>
   </section>
 
   <section class="balance-view" id="balanceView">
@@ -666,6 +684,7 @@
         <button type="button" class="rec-chip" data-owner="vinicius">Vinicius</button>
         <button type="button" class="rec-chip" data-owner="lais">Lais</button>
         <button type="button" class="rec-chip" data-owner="apolo">Apolo</button>
+        <button type="button" class="rec-chip" data-owner="casa">Casa</button>
       </div>
     </div>
 
@@ -985,7 +1004,7 @@ function monthSummary(mKey){
   const items = state.data.items.filter(i => isItemActiveInMonth(i, mKey));
   let income=0, expense=0, incomePaid=0, expensePaid=0,
       incomeCount=0, expenseCount=0, incomeDoneCount=0, expenseDoneCount=0;
-  const byOwner = { audaza:0, vinicius:0, lais:0, apolo:0 };
+  const byOwner = { audaza:0, vinicius:0, lais:0, apolo:0, casa:0 };
   items.forEach(i=>{
     const paid = !!getStatus(mKey, i.id);
     if(i.type === 'income'){
@@ -1078,6 +1097,7 @@ function renderBalance(){
     {id:'vinicius', label:'Vinicius'},
     {id:'lais',     label:'Lais'},
     {id:'apolo',    label:'Apolo'},
+    {id:'casa',     label:'Casa'},
   ];
   owners.forEach(o => {
     const own = expenses.filter(i => (i.owner||'audaza') === o.id);
@@ -1140,7 +1160,7 @@ function renderSummary(){
   $('#sumExpense').textContent = fmtBRL(s.expense);
   $('#sumBalance').textContent = fmtBRL(s.balance);
   $('#subIncome').textContent  = `${s.incomeDoneCount}/${s.incomeCount} recebidas`;
-  $('#subExpense').textContent = `A ${fmtBRLshort(s.byOwner.audaza)} · V ${fmtBRLshort(s.byOwner.vinicius)} · L ${fmtBRLshort(s.byOwner.lais)} · Ap ${fmtBRLshort(s.byOwner.apolo)}`;
+  $('#subExpense').textContent = `A ${fmtBRLshort(s.byOwner.audaza)} · V ${fmtBRLshort(s.byOwner.vinicius)} · L ${fmtBRLshort(s.byOwner.lais)} · Ap ${fmtBRLshort(s.byOwner.apolo)} · C ${fmtBRLshort(s.byOwner.casa)}`;
   $('#subBalance').textContent = `realizado ${fmtBRLshort(s.balanceRealized)}`;
 
   const balCell = $('.sum-cell.balance');
@@ -1173,6 +1193,7 @@ function renderLists(){
     { type:'expense', owner:'vinicius',  listId:'expenseListVinicius',  totalId:'expenseTotalVinicius' },
     { type:'expense', owner:'lais',      listId:'expenseListLais',      totalId:'expenseTotalLais' },
     { type:'expense', owner:'apolo',     listId:'expenseListApolo',     totalId:'expenseTotalApolo' },
+    { type:'expense', owner:'casa',      listId:'expenseListCasa',      totalId:'expenseTotalCasa' },
   ];
   buckets.forEach(({type, owner, listId, totalId})=>{
     const list = $('#'+listId);
@@ -1202,8 +1223,9 @@ function renderLists(){
       const recBadge = inst
         ? `<span class="install-badge">${inst.current}/${inst.total}</span>`
         : (rec === 'none' ? `<span class="install-badge" style="background:rgba(245,196,91,.12);color:var(--warn)">único</span>` : '');
+      const drag = type === 'expense' ? 'draggable="true"' : '';
       return `
-        <div class="item ${paid?'paid':''}" data-id="${escapeHtml(i.id)}">
+        <div class="item ${paid?'paid':''}" data-id="${escapeHtml(i.id)}" ${drag}>
           <button class="check" data-action="toggle" aria-label="Marcar">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#06070b" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>
           </button>
@@ -1759,6 +1781,51 @@ function bind(){
     } else if(action === 'edit'){
       openModal({editing:id});
     }
+  });
+
+  // drag & drop between expense columns
+  let dragId = null;
+  document.addEventListener('dragstart', e=>{
+    const item = e.target.closest('.item[draggable="true"]');
+    if(!item) return;
+    dragId = item.dataset.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', dragId); } catch(_) {}
+  });
+  document.addEventListener('dragend', e=>{
+    const item = e.target.closest('.item');
+    if(item) item.classList.remove('dragging');
+    document.querySelectorAll('.col.drop-target').forEach(c=>c.classList.remove('drop-target'));
+    dragId = null;
+  });
+  document.addEventListener('dragover', e=>{
+    if(!dragId) return;
+    const col = e.target.closest('.col.expense[data-owner]');
+    if(!col) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    document.querySelectorAll('.col.drop-target').forEach(c=>{ if(c !== col) c.classList.remove('drop-target'); });
+    col.classList.add('drop-target');
+  });
+  document.addEventListener('dragleave', e=>{
+    const col = e.target.closest('.col.expense[data-owner]');
+    if(!col) return;
+    if(!col.contains(e.relatedTarget)) col.classList.remove('drop-target');
+  });
+  document.addEventListener('drop', e=>{
+    if(!dragId) return;
+    const col = e.target.closest('.col.expense[data-owner]');
+    if(!col) return;
+    e.preventDefault();
+    const newOwner = col.dataset.owner;
+    const id = dragId;
+    document.querySelectorAll('.col.drop-target').forEach(c=>c.classList.remove('drop-target'));
+    dragId = null;
+    const it = state.data.items.find(x => x.id === id);
+    if(!it || it.type !== 'expense' || (it.owner||'audaza') === newOwner) return;
+    it.owner = newOwner;
+    save().then(render);
   });
 
   // menu
