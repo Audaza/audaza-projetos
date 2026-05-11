@@ -272,6 +272,16 @@
   .col-total{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:-.01em}
   .col.income .col-total{color:var(--income)}
   .col.expense .col-total{color:var(--expense)}
+  .col-foot{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:8px;padding:8px 4px 2px;border-top:1px solid var(--rule);
+    font-size:11px;
+  }
+  .col-foot-label{color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .col-foot-value{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:var(--ink)}
+  .col-foot-value.zero{color:var(--ink-faint);opacity:.55}
+  .col.expense .col-foot-value:not(.zero){color:var(--expense)}
+  .col.income  .col-foot-value:not(.zero){color:var(--warn)}
 
   .item-list{display:flex;flex-direction:column;gap:1px;min-height:8px}
   .item{
@@ -591,6 +601,7 @@
         <div class="col-total" id="incomeTotal">R$ 0</div>
       </div>
       <div class="item-list" id="incomeList"></div>
+      <div class="col-foot"><span class="col-foot-label">Pendente</span><span class="col-foot-value zero" id="incomePending">R$ 0</span></div>
       <button class="add-btn" data-add="income">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         Adicionar receita
@@ -602,6 +613,7 @@
         <div class="col-total" id="expenseTotalAudaza">R$ 0</div>
       </div>
       <div class="item-list" id="expenseListAudaza"></div>
+      <div class="col-foot"><span class="col-foot-label">Pendente</span><span class="col-foot-value zero" id="expensePendingAudaza">R$ 0</span></div>
       <button class="add-btn" data-add="expense" data-owner="audaza">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         Adicionar despesa
@@ -613,6 +625,7 @@
         <div class="col-total" id="expenseTotalVinicius">R$ 0</div>
       </div>
       <div class="item-list" id="expenseListVinicius"></div>
+      <div class="col-foot"><span class="col-foot-label">Pendente</span><span class="col-foot-value zero" id="expensePendingVinicius">R$ 0</span></div>
       <button class="add-btn" data-add="expense" data-owner="vinicius">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         Adicionar despesa
@@ -624,6 +637,7 @@
         <div class="col-total" id="expenseTotalLais">R$ 0</div>
       </div>
       <div class="item-list" id="expenseListLais"></div>
+      <div class="col-foot"><span class="col-foot-label">Pendente</span><span class="col-foot-value zero" id="expensePendingLais">R$ 0</span></div>
       <button class="add-btn" data-add="expense" data-owner="lais">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         Adicionar despesa
@@ -635,6 +649,7 @@
         <div class="col-total" id="expenseTotalApolo">R$ 0</div>
       </div>
       <div class="item-list" id="expenseListApolo"></div>
+      <div class="col-foot"><span class="col-foot-label">Pendente</span><span class="col-foot-value zero" id="expensePendingApolo">R$ 0</span></div>
       <button class="add-btn" data-add="expense" data-owner="apolo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         Adicionar despesa
@@ -646,6 +661,7 @@
         <div class="col-total" id="expenseTotalCasa">R$ 0</div>
       </div>
       <div class="item-list" id="expenseListCasa"></div>
+      <div class="col-foot"><span class="col-foot-label">Pendente</span><span class="col-foot-value zero" id="expensePendingCasa">R$ 0</span></div>
       <button class="add-btn" data-add="expense" data-owner="casa">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         Adicionar despesa
@@ -1188,14 +1204,14 @@ function todayInfo(mKey){
 function renderLists(){
   const t = todayInfo(state.current);
   const buckets = [
-    { type:'income',  owner:null,        listId:'incomeList',           totalId:'incomeTotal' },
-    { type:'expense', owner:'audaza',    listId:'expenseListAudaza',    totalId:'expenseTotalAudaza' },
-    { type:'expense', owner:'vinicius',  listId:'expenseListVinicius',  totalId:'expenseTotalVinicius' },
-    { type:'expense', owner:'lais',      listId:'expenseListLais',      totalId:'expenseTotalLais' },
-    { type:'expense', owner:'apolo',     listId:'expenseListApolo',     totalId:'expenseTotalApolo' },
-    { type:'expense', owner:'casa',      listId:'expenseListCasa',      totalId:'expenseTotalCasa' },
+    { type:'income',  owner:null,        listId:'incomeList',           totalId:'incomeTotal',          pendingId:'incomePending' },
+    { type:'expense', owner:'audaza',    listId:'expenseListAudaza',    totalId:'expenseTotalAudaza',   pendingId:'expensePendingAudaza' },
+    { type:'expense', owner:'vinicius',  listId:'expenseListVinicius',  totalId:'expenseTotalVinicius', pendingId:'expensePendingVinicius' },
+    { type:'expense', owner:'lais',      listId:'expenseListLais',      totalId:'expenseTotalLais',     pendingId:'expensePendingLais' },
+    { type:'expense', owner:'apolo',     listId:'expenseListApolo',     totalId:'expenseTotalApolo',    pendingId:'expensePendingApolo' },
+    { type:'expense', owner:'casa',      listId:'expenseListCasa',      totalId:'expenseTotalCasa',     pendingId:'expensePendingCasa' },
   ];
-  buckets.forEach(({type, owner, listId, totalId})=>{
+  buckets.forEach(({type, owner, listId, totalId, pendingId})=>{
     const list = $('#'+listId);
     const items = state.data.items
       .filter(i => i.type === type
@@ -1207,7 +1223,12 @@ function renderLists(){
         return pa - pb || a.dayOfMonth - b.dayOfMonth || a.name.localeCompare(b.name);
       });
     const total = items.reduce((s,i)=> s + i.amount, 0);
+    const pending = items.filter(i => !getStatus(state.current, i.id)).reduce((s,i)=> s + i.amount, 0);
     if(totalId) $('#'+totalId).textContent = fmtBRL(total);
+    if(pendingId){
+      const el = $('#'+pendingId);
+      if(el){ el.textContent = fmtBRL(pending); el.classList.toggle('zero', pending === 0); }
+    }
 
     if(items.length === 0){
       list.innerHTML = `<div class="empty">Nenhuma ${type==='income'?'receita':'despesa'} ainda</div>`;
