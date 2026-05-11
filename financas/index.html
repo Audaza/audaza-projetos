@@ -181,9 +181,9 @@
 
   /* Section nav */
   .section-nav{
-    display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface-2);
+    display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--surface-2);
     padding:4px;border-radius:13px;margin-bottom:18px;border:1px solid var(--rule);
-    max-width:420px;
+    max-width:560px;
   }
   .section-nav button{
     padding:11px 14px;border-radius:9px;font-size:13px;font-weight:500;color:var(--ink-faint);
@@ -198,6 +198,46 @@
   .section-nav button.active[data-view="income"] .nav-count{background:rgba(91,227,138,.18);color:var(--income)}
   .section-nav button.active[data-view="expense"]{background:var(--expense-soft);color:var(--expense)}
   .section-nav button.active[data-view="expense"] .nav-count{background:rgba(255,122,138,.18);color:var(--expense)}
+  .section-nav button.active[data-view="balance"]{background:rgba(91,158,255,.14);color:var(--brand)}
+  .section-nav button.active[data-view="balance"] .nav-count{background:rgba(91,158,255,.2);color:var(--brand)}
+
+  /* Balance view */
+  .balance-view{display:none;margin-bottom:80px}
+  .columns[data-view="balance"]{display:none}
+  .columns[data-view="balance"] + .balance-view{display:block}
+  .balance-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .bal-card{
+    background:var(--surface);border:1px solid var(--rule);border-radius:16px;padding:18px;
+  }
+  .bal-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .bal-card-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;letter-spacing:-.01em}
+  .bal-card-pill{
+    font-size:11px;padding:3px 10px;border-radius:999px;font-weight:600;
+    background:var(--surface-3);color:var(--ink-faint);
+  }
+  .bal-card-pill.positive{background:rgba(91,227,138,.16);color:var(--income)}
+  .bal-card-pill.negative{background:rgba(255,122,138,.16);color:var(--expense)}
+  .bal-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--rule)}
+  .bal-row:first-of-type{border-top:0}
+  .bal-row-label{font-size:13px;color:var(--ink-soft)}
+  .bal-row-label .bal-sub{font-size:11px;color:var(--ink-faint);margin-left:6px}
+  .bal-row-value{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+  .bal-row-value.income{color:var(--income)}
+  .bal-row-value.expense{color:var(--expense)}
+  .bal-row-value.neutral{color:var(--ink)}
+  .bal-row-value.dim{color:var(--ink-faint)}
+  .bal-net{
+    margin-top:12px;padding-top:12px;border-top:1px solid var(--rule-strong);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .bal-net-label{font-size:12px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+  .bal-net-value{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;font-variant-numeric:tabular-nums}
+  .bal-net-value.positive{color:var(--income)}
+  .bal-net-value.negative{color:var(--expense)}
+  .bal-bar{height:4px;background:var(--surface-2);border-radius:2px;overflow:hidden;margin-top:10px}
+  .bal-bar-fill{height:100%;background:var(--brand);transition:width .3s ease}
+  .bal-bar-fill.income{background:var(--income)}
+  .bal-bar-fill.expense{background:var(--expense)}
 
   /* Columns */
   .columns{display:grid;gap:12px;margin-bottom:80px;grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -534,6 +574,7 @@
   <nav class="section-nav" id="sectionNav">
     <button data-view="income" class="active">Receitas <span class="nav-count" id="navCountIncome">0</span></button>
     <button data-view="expense">Despesas <span class="nav-count" id="navCountExpense">0</span></button>
+    <button data-view="balance">Balanço</button>
   </nav>
 
   <section class="columns" id="columns" data-view="income">
@@ -592,6 +633,10 @@
         Adicionar despesa
       </button>
     </div>
+  </section>
+
+  <section class="balance-view" id="balanceView">
+    <div class="balance-grid" id="balanceGrid"></div>
   </section>
 </div>
 
@@ -967,8 +1012,110 @@ function render(){
   renderMonth();
   renderSummary();
   renderLists();
+  renderBalance();
   renderHideToggle();
   renderSectionNav();
+}
+
+function renderBalance(){
+  const grid = $('#balanceGrid');
+  if(!grid) return;
+  const mKey = state.current;
+  const items = state.data.items.filter(i => isItemActiveInMonth(i, mKey));
+  const incomes  = items.filter(i => i.type === 'income');
+  const expenses = items.filter(i => i.type === 'expense');
+
+  const sumPaid    = arr => arr.filter(i => getStatus(mKey, i.id)).reduce((s,i)=>s+i.amount,0);
+  const sumPending = arr => arr.filter(i => !getStatus(mKey, i.id)).reduce((s,i)=>s+i.amount,0);
+  const sumAll     = arr => arr.reduce((s,i)=>s+i.amount,0);
+
+  const totalIncome   = sumAll(incomes);
+  const totalExpense  = sumAll(expenses);
+  const paidExpense   = sumPaid(expenses);
+  const pendingExpense= sumPending(expenses);
+  const balance       = totalIncome - totalExpense;
+  const realized      = sumPaid(incomes) - paidExpense;
+
+  const cards = [];
+
+  // Resumo geral
+  cards.push(`
+    <div class="bal-card">
+      <div class="bal-card-head">
+        <div class="bal-card-title">Resumo do mês</div>
+        <span class="bal-card-pill ${balance>=0?'positive':'negative'}">${balance>=0?'Superávit':'Déficit'}</span>
+      </div>
+      <div class="bal-row">
+        <div class="bal-row-label">Receitas previstas</div>
+        <div class="bal-row-value income">${fmtBRL(totalIncome)}</div>
+      </div>
+      <div class="bal-row">
+        <div class="bal-row-label">Despesas previstas</div>
+        <div class="bal-row-value expense">${fmtBRL(totalExpense)}</div>
+      </div>
+      <div class="bal-row">
+        <div class="bal-row-label">Pago <span class="bal-sub">${expenses.length?Math.round(paidExpense/totalExpense*100)||0:0}%</span></div>
+        <div class="bal-row-value dim">${fmtBRL(paidExpense)}</div>
+      </div>
+      <div class="bal-row">
+        <div class="bal-row-label">Pendente</div>
+        <div class="bal-row-value neutral">${fmtBRL(pendingExpense)}</div>
+      </div>
+      <div class="bal-net">
+        <div class="bal-net-label">Saldo previsto</div>
+        <div class="bal-net-value ${balance>=0?'positive':'negative'}">${fmtBRL(balance)}</div>
+      </div>
+      <div class="bal-net" style="margin-top:8px;padding-top:8px;border-top:0">
+        <div class="bal-net-label" style="font-size:11px">Saldo realizado</div>
+        <div class="bal-net-value ${realized>=0?'positive':'negative'}" style="font-size:14px">${fmtBRL(realized)}</div>
+      </div>
+    </div>
+  `);
+
+  // Per-owner
+  const owners = [
+    {id:'audaza',   label:'Audaza'},
+    {id:'vinicius', label:'Vinicius'},
+    {id:'lais',     label:'Lais'},
+    {id:'apolo',    label:'Apolo'},
+  ];
+  owners.forEach(o => {
+    const own = expenses.filter(i => (i.owner||'audaza') === o.id);
+    if(own.length === 0) return;
+    const ownPaid    = sumPaid(own);
+    const ownPending = sumPending(own);
+    const ownTotal   = ownPaid + ownPending;
+    const share      = totalExpense > 0 ? Math.round(ownTotal/totalExpense*100) : 0;
+    const paidPct    = ownTotal > 0 ? Math.round(ownPaid/ownTotal*100) : 0;
+    cards.push(`
+      <div class="bal-card">
+        <div class="bal-card-head">
+          <div class="bal-card-title">${o.label}</div>
+          <span class="bal-card-pill">${share}% do total</span>
+        </div>
+        <div class="bal-row">
+          <div class="bal-row-label">Pago <span class="bal-sub">${paidPct}%</span></div>
+          <div class="bal-row-value dim">${fmtBRL(ownPaid)}</div>
+        </div>
+        <div class="bal-row">
+          <div class="bal-row-label">Pendente</div>
+          <div class="bal-row-value expense">${fmtBRL(ownPending)}</div>
+        </div>
+        <div class="bal-bar"><div class="bal-bar-fill expense" style="width:${paidPct}%"></div></div>
+        <div class="bal-net">
+          <div class="bal-net-label">Total</div>
+          <div class="bal-net-value">${fmtBRL(ownTotal)}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  if(cards.length === 1 && expenses.length === 0 && incomes.length === 0){
+    grid.innerHTML = `<div class="bal-card" style="text-align:center;color:var(--ink-faint);font-size:13px">Sem lançamentos neste mês.</div>`;
+    return;
+  }
+
+  grid.innerHTML = cards.join('');
 }
 
 function renderSectionNav(){
