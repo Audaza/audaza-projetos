@@ -990,7 +990,11 @@ function renderLists(){
       .filter(i => i.type === type
         && (owner === null || (i.owner||'audaza') === owner)
         && isItemActiveInMonth(i, state.current))
-      .sort((a,b)=> a.dayOfMonth - b.dayOfMonth || a.name.localeCompare(b.name));
+      .sort((a,b)=>{
+        const pa = getStatus(state.current, a.id) ? 1 : 0;
+        const pb = getStatus(state.current, b.id) ? 1 : 0;
+        return pa - pb || a.dayOfMonth - b.dayOfMonth || a.name.localeCompare(b.name);
+      });
     const total = items.reduce((s,i)=> s + i.amount, 0);
     if(totalId) $('#'+totalId).textContent = fmtBRL(total);
 
