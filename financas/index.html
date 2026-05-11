@@ -179,12 +179,36 @@
   .progress-bar{height:6px;background:var(--surface-3);border-radius:99px;overflow:hidden;display:flex}
   .progress-fill{height:100%;background:linear-gradient(90deg,var(--income),#7ec8ff);transition:width .3s ease}
 
+  /* Section nav */
+  .section-nav{
+    display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface-2);
+    padding:4px;border-radius:13px;margin-bottom:18px;border:1px solid var(--rule);
+    max-width:420px;
+  }
+  .section-nav button{
+    padding:11px 14px;border-radius:9px;font-size:13px;font-weight:500;color:var(--ink-faint);
+    transition:all .15s ease;display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .section-nav button .nav-count{
+    font-size:11px;padding:2px 7px;border-radius:999px;background:var(--surface-3);
+    color:var(--ink-faint);font-weight:600;
+  }
+  .section-nav button.active{background:var(--surface-3);color:var(--ink)}
+  .section-nav button.active[data-view="income"]{background:var(--income-soft);color:var(--income)}
+  .section-nav button.active[data-view="income"] .nav-count{background:rgba(91,227,138,.18);color:var(--income)}
+  .section-nav button.active[data-view="expense"]{background:var(--expense-soft);color:var(--expense)}
+  .section-nav button.active[data-view="expense"] .nav-count{background:rgba(255,122,138,.18);color:var(--expense)}
+
   /* Columns */
   .columns{display:grid;gap:12px;margin-bottom:80px;grid-template-columns:repeat(4,minmax(0,1fr))}
   .col.income{grid-column:1/-1}
+  .columns[data-view="income"] .col.expense{display:none}
+  .columns[data-view="expense"] .col.income{display:none}
   @media (min-width:1400px){
     .columns{grid-template-columns:1fr repeat(4,minmax(0,1fr))}
     .col.income{grid-column:auto}
+    .columns[data-view="expense"]{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .columns[data-view="income"] .col.income{grid-column:1/-1}
   }
   @media (max-width:880px){.columns{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media (max-width:560px){
@@ -507,7 +531,12 @@
     </div>
   </section>
 
-  <section class="columns">
+  <nav class="section-nav" id="sectionNav">
+    <button data-view="income" class="active">Receitas <span class="nav-count" id="navCountIncome">0</span></button>
+    <button data-view="expense">Despesas <span class="nav-count" id="navCountExpense">0</span></button>
+  </nav>
+
+  <section class="columns" id="columns" data-view="income">
     <div class="col income">
       <div class="col-head">
         <div class="col-title"><span class="dot"></span>Receitas</div>
@@ -671,6 +700,7 @@ const PBKDF2_ITERS     = 200000;
 const AUTOLOCK_MS      = 5 * 60 * 1000;
 const MIN_PIN_LEN      = 4;
 const HIDDEN_PREF_KEY  = 'audaza.financas.hideValues';
+const VIEW_PREF_KEY    = 'audaza.financas.view';
 
 const CATEGORIES = {
   income: [
@@ -805,6 +835,7 @@ const state = {
   salt: null,
   // ui
   hideValues: localStorage.getItem(HIDDEN_PREF_KEY) === '1',
+  view: localStorage.getItem(VIEW_PREF_KEY) || 'income',
   lockTimer: null,
 };
 
@@ -937,6 +968,18 @@ function render(){
   renderSummary();
   renderLists();
   renderHideToggle();
+  renderSectionNav();
+}
+
+function renderSectionNav(){
+  const cols = $('#columns');
+  if(cols) cols.dataset.view = state.view;
+  document.querySelectorAll('#sectionNav button').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.view === state.view);
+  });
+  const items = state.data.items.filter(i => isItemActiveInMonth(i, state.current));
+  $('#navCountIncome').textContent  = items.filter(i => i.type === 'income').length;
+  $('#navCountExpense').textContent = items.filter(i => i.type === 'expense').length;
 }
 
 function renderMonth(){
@@ -1508,6 +1551,15 @@ function bind(){
   $('#prevMonth').onclick = ()=>{ state.current = shiftMonth(state.current,-1); render(); };
   $('#nextMonth').onclick = ()=>{ state.current = shiftMonth(state.current, 1); render(); };
   $('#goToday').onclick   = ()=>{ state.current = monthKey(new Date()); render(); };
+
+  // section nav (Receitas / Despesas)
+  document.querySelectorAll('#sectionNav button').forEach(btn=>{
+    btn.onclick = ()=>{
+      state.view = btn.dataset.view;
+      localStorage.setItem(VIEW_PREF_KEY, state.view);
+      render();
+    };
+  });
 
   // fab + add buttons
   $('#fab').onclick = ()=> openModal({type: state.formType || 'expense'});
