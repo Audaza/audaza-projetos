@@ -1471,7 +1471,7 @@ function closeDetailModal() {
   currentLinkId = null;
 }
 
-function editFromDetail() { closeDetailModal(); openEditModal(currentLinkId); }
+function editFromDetail() { const id = currentLinkId; closeDetailModal(); openEditModal(id); }
 function deleteFromDetail() { deleteLink(currentLinkId); }
 
 /* ─── EXPORT ─── */
