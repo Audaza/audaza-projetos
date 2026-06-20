@@ -546,6 +546,12 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
           <div class="help">Use pra organizar por cliente, campanha, canal.</div>
         </div>
 
+        <div class="field" id="formShareField" style="display:none">
+          <label class="label">Compartilhar com <small>quem mais pode ver este link</small></label>
+          <div id="formShareList" style="display:flex;flex-direction:column;gap:2px;border:1px solid var(--rule);border-radius:10px;padding:8px 12px"></div>
+          <div class="help">Marque os usuários que poderão <strong>visualizar</strong> (somente leitura) este link.</div>
+        </div>
+
         <details class="adv">
           <summary>Preview no WhatsApp/Instagram (Open Graph)</summary>
           <div class="adv-body">
@@ -828,6 +834,8 @@ const SUPABASE_ANON_KEY = 'sb_publishable_Im6il7Dgwh0X37rhI6iv-g_ENceHMN5';
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
+let isAdmin = false;
+let shareableUsers = [];
 let allLinks = [];
 let currentLinkId = null;
 const charts = {};
@@ -926,7 +934,27 @@ function showApp() {
   document.getElementById('loginView').classList.add('hidden');
   document.getElementById('appView').classList.remove('hidden');
   document.getElementById('userEmail').textContent = currentUser.email;
+  isAdmin = !!(currentUser.app_metadata && currentUser.app_metadata.role === 'admin');
+  if (isAdmin) loadShareableUsers();
   loadLinks();
+}
+
+/* ─── COMPARTILHAMENTO ─── */
+async function loadShareableUsers() {
+  const { data, error } = await supa.rpc('audazalinks_list_shareable');
+  if (!error && Array.isArray(data)) shareableUsers = data;
+}
+function renderShareList(selected) {
+  const field = document.getElementById('formShareField');
+  const list = document.getElementById('formShareList');
+  if (!isAdmin || !shareableUsers.length) { field.style.display = 'none'; list.innerHTML = ''; return; }
+  const sel = new Set(selected || []);
+  field.style.display = '';
+  list.innerHTML = shareableUsers.map(u =>
+    `<label style="display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;font-size:13.5px">
+       <input type="checkbox" class="share-cb" value="${u.id}" ${sel.has(u.id) ? 'checked' : ''}/>
+       <span>${u.email}</span>
+     </label>`).join('');
 }
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -1295,6 +1323,7 @@ function openCreateModal() {
   document.getElementById('formLinkId').value = '';
   setFormTags([]);
   bindTagsInput();
+  renderShareList([]);
   updatePreview();
   document.getElementById('formModal').classList.add('open');
 }
@@ -1319,6 +1348,7 @@ function openEditModal(id) {
   document.getElementById('formIsActive').value = String(l.is_active);
   setFormTags(l.tags || []);
   bindTagsInput();
+  renderShareList(l.shared_with || []);
   updatePreview();
   document.getElementById('formModal').classList.add('open');
 }
@@ -1366,6 +1396,9 @@ async function submitLinkForm() {
     is_active: document.getElementById('formIsActive').value === 'true',
   };
   if (!id) payload.created_by = currentUser.id;
+  if (isAdmin) {
+    payload.shared_with = Array.from(document.querySelectorAll('#formShareList .share-cb:checked')).map(c => c.value);
+  }
 
   const btn = document.getElementById('formSubmitBtn');
   btn.disabled = true; btn.textContent = 'Salvando...';
