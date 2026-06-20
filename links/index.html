@@ -505,8 +505,29 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
         <input type="hidden" id="formLinkId" />
 
         <div class="field">
+          <label class="label">Tipo de destino *</label>
+          <div id="destTypeTabs" style="display:flex;gap:8px">
+            <button type="button" class="btn dtype-btn" data-dtype="link" onclick="setDestType('link')">🔗 Link</button>
+            <button type="button" class="btn dtype-btn" data-dtype="whatsapp" onclick="setDestType('whatsapp')">💬 Mensagem WhatsApp</button>
+          </div>
+        </div>
+
+        <div class="field" id="destLinkWrap">
           <label class="label">URL de destino *</label>
-          <input type="url" class="input" id="formDestination" placeholder="https://audaza.com/landing/..." required />
+          <input type="url" class="input" id="formDestination" placeholder="https://audaza.com/landing/..." />
+        </div>
+
+        <div id="destWhatsWrap" style="display:none">
+          <div class="field">
+            <label class="label">Telefone (com DDD) *</label>
+            <input type="tel" class="input" id="formWaPhone" placeholder="Ex: 65 99999-8888" />
+            <div class="help">Pode digitar com espaços/traços. Sem código de país, assumo <strong>55 (Brasil)</strong>.</div>
+          </div>
+          <div class="field">
+            <label class="label">Mensagem personalizada <small>opcional</small></label>
+            <textarea class="textarea" id="formWaMessage" placeholder="Ex: Olá! Vim pelo link e quero saber mais sobre..."></textarea>
+            <div class="help">Texto que já vem digitado no WhatsApp quando a pessoa abre o link.</div>
+          </div>
         </div>
 
         <div class="field-row">
@@ -1321,6 +1342,7 @@ function openCreateModal() {
   document.getElementById('formSubmitBtn').textContent = 'Criar link';
   document.getElementById('linkForm').reset();
   document.getElementById('formLinkId').value = '';
+  setDestType('link');
   setFormTags([]);
   bindTagsInput();
   renderShareList([]);
@@ -1333,7 +1355,16 @@ function openEditModal(id) {
   document.getElementById('formModalTitle').textContent = 'Editar link';
   document.getElementById('formSubmitBtn').textContent = 'Salvar alterações';
   document.getElementById('formLinkId').value = l.id;
-  document.getElementById('formDestination').value = l.destination || '';
+  const wa = parseWaLink(l.destination || '');
+  if (wa) {
+    setDestType('whatsapp');
+    document.getElementById('formWaPhone').value = wa.phone;
+    document.getElementById('formWaMessage').value = wa.text;
+    document.getElementById('formDestination').value = '';
+  } else {
+    setDestType('link');
+    document.getElementById('formDestination').value = l.destination || '';
+  }
   document.getElementById('formHost').value = l.host;
   document.getElementById('formSlug').value = l.slug;
   document.getElementById('formTitle').value = l.title || '';
@@ -1354,6 +1385,36 @@ function openEditModal(id) {
 }
 function closeFormModal() { document.getElementById('formModal').classList.remove('open'); }
 
+/* ─── TIPO DE DESTINO (link vs mensagem WhatsApp) ─── */
+let destType = 'link';
+function setDestType(t) {
+  destType = (t === 'whatsapp') ? 'whatsapp' : 'link';
+  document.getElementById('destLinkWrap').style.display  = (destType === 'link')     ? '' : 'none';
+  document.getElementById('destWhatsWrap').style.display = (destType === 'whatsapp') ? '' : 'none';
+  document.querySelectorAll('#destTypeTabs .dtype-btn').forEach(b => {
+    const on = b.dataset.dtype === destType;
+    b.classList.toggle('btn-br', on);
+    b.classList.toggle('btn-g', !on);
+  });
+}
+function buildWaLink(phoneRaw, msg) {
+  let digits = (phoneRaw || '').replace(/\D/g, '');
+  if (!digits) return null;
+  if (digits.length <= 11) digits = '55' + digits;   // sem código de país → assume Brasil
+  const base = 'https://wa.me/' + digits;
+  return msg ? base + '?text=' + encodeURIComponent(msg) : base;
+}
+function parseWaLink(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname === 'wa.me' || u.hostname === 'api.whatsapp.com') {
+      const phone = (u.hostname === 'wa.me') ? u.pathname.replace(/\D/g, '') : (u.searchParams.get('phone') || '').replace(/\D/g, '');
+      return { phone, text: u.searchParams.get('text') || '' };
+    }
+  } catch {}
+  return null;
+}
+
 function updatePreview() {
   const host = document.getElementById('formHost').value;
   const slug = document.getElementById('formSlug').value || '<slug>';
@@ -1364,19 +1425,27 @@ document.getElementById('formSlug').addEventListener('input', updatePreview);
 
 async function submitLinkForm() {
   const id = document.getElementById('formLinkId').value;
-  const destination = document.getElementById('formDestination').value.trim();
   const host = document.getElementById('formHost').value;
   let slug = document.getElementById('formSlug').value.trim();
   const title = document.getElementById('formTitle').value.trim();
 
-  if (!destination) { toast('Destino é obrigatório', 'error'); return; }
-  // Normaliza: adiciona https:// se faltar esquema
-  let normalizedDest = destination;
-  if (!/^https?:\/\//i.test(normalizedDest)) {
-    normalizedDest = 'https://' + normalizedDest.replace(/^\/+/, '');
+  let normalizedDest;
+  if (destType === 'whatsapp') {
+    const phone = document.getElementById('formWaPhone').value.trim();
+    const msg = document.getElementById('formWaMessage').value.trim();
+    if (phone.replace(/\D/g, '').length < 8) { toast('Informe um telefone válido (com DDD)', 'error'); return; }
+    normalizedDest = buildWaLink(phone, msg);
+  } else {
+    const destination = document.getElementById('formDestination').value.trim();
+    if (!destination) { toast('Destino é obrigatório', 'error'); return; }
+    // Normaliza: adiciona https:// se faltar esquema
+    normalizedDest = destination;
+    if (!/^https?:\/\//i.test(normalizedDest)) {
+      normalizedDest = 'https://' + normalizedDest.replace(/^\/+/, '');
+    }
+    // Valida URL
+    try { new URL(normalizedDest); } catch { toast('URL de destino inválida', 'error'); return; }
   }
-  // Valida URL
-  try { new URL(normalizedDest); } catch { toast('URL de destino inválida', 'error'); return; }
 
   if (!slug) slug = randomSlug();
   if (!/^[a-zA-Z0-9_-]+$/.test(slug)) { toast('Slug só pode ter letras, números, _ e -', 'error'); return; }
