@@ -352,6 +352,12 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
 .qr-swatch::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);background-size:200% 100%;animation:qr-shimmer 1.4s infinite;pointer-events:none}
 .qr-swatch.has-real::after{display:none}
 @keyframes qr-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* Foto no centro do QR */
+.qr-photo-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.qr-photo-thumb{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid var(--rule);display:block}
+.qr-photo-remove{width:24px;height:24px;padding:0;border-radius:50%;display:grid;place-items:center;color:var(--ink-faint);font-size:13px;line-height:1}
+.qr-photo-remove:hover{background:rgba(255,122,122,.14);color:var(--danger)}
+
 .qr-swatch-basic{background-color:#fff}
 .qr-swatch-mono{background-color:#fafafa}
 .qr-swatch-audaza{background-color:#0a0c12}
@@ -719,6 +725,15 @@ body.light #qrCode canvas,body.light #qrCode svg,body.light #qrCode img{box-shad
           </div>
           <div class="qr-box">
             <div id="qrCode"></div>
+            <div class="qr-photo-row">
+              <input type="file" id="qrPhotoInput" accept="image/*" style="display:none" onchange="handleQRPhotoUpload(event)" />
+              <button type="button" class="btn btn-s btn-sm" id="qrPhotoBtn" onclick="document.getElementById('qrPhotoInput').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <span id="qrPhotoBtnLabel">Foto no centro</span>
+              </button>
+              <img id="qrPhotoThumb" class="qr-photo-thumb hidden" alt="Foto do QR" />
+              <button type="button" class="btn qr-photo-remove hidden" id="qrPhotoRemoveBtn" onclick="removeQRPhoto()" title="Remover foto">✕</button>
+            </div>
             <div style="position:relative;display:inline-block">
               <button class="btn btn-s btn-sm" onclick="toggleQRStylesMenu(event)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -869,17 +884,115 @@ function loadQRStyling() {
   return qrModulePromise;
 }
 
-// Cache de previews dos 6 estilos (regerado a cada novo link)
-let qrPreviewCache = { linkId: null, dataUrls: {} };
+// Foto opcional no centro do QR (só na sessão — não vai pro banco)
+let qrCenterPhoto = null;
+
+// Processa a foto: recorte quadrado central → círculo com anel branco (fica bem em qualquer fundo)
+function processQRPhotoFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const S = 512, pad = 12, ring = 20;
+          const c = document.createElement('canvas');
+          c.width = S; c.height = S;
+          const ctx = c.getContext('2d');
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(S / 2, S / 2, S / 2 - pad, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+          const side = Math.min(img.width, img.height);
+          ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, pad, pad, S - pad * 2, S - pad * 2);
+          ctx.restore();
+          ctx.beginPath();
+          ctx.arc(S / 2, S / 2, S / 2 - pad, 0, Math.PI * 2);
+          ctx.lineWidth = ring;
+          ctx.strokeStyle = '#ffffff';
+          ctx.stroke();
+          resolve(c.toDataURL('image/png'));
+        } catch (err) { reject(err); }
+      };
+      img.onerror = () => reject(new Error('Imagem inválida'));
+      img.src = reader.result;
+    };
+    reader.onerror = () => reject(new Error('Falha ao ler o arquivo'));
+    reader.readAsDataURL(file);
+  });
+}
+
+// Injeta a foto num config do qr-code-styling (sobe correção pra H pra manter leitura)
+function applyQRPhoto(cfg) {
+  if (!qrCenterPhoto) return cfg;
+  return {
+    ...cfg,
+    qrOptions: { ...(cfg.qrOptions || {}), errorCorrectionLevel: 'H' },
+    image: qrCenterPhoto,
+    imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: 0.26, hideBackgroundDots: true },
+  };
+}
+
+function updateQRPhotoUI() {
+  const thumb = document.getElementById('qrPhotoThumb');
+  const removeBtn = document.getElementById('qrPhotoRemoveBtn');
+  const label = document.getElementById('qrPhotoBtnLabel');
+  if (qrCenterPhoto) {
+    thumb.src = qrCenterPhoto;
+    thumb.classList.remove('hidden');
+    removeBtn.classList.remove('hidden');
+    label.textContent = 'Trocar foto';
+  } else {
+    thumb.classList.add('hidden');
+    removeBtn.classList.add('hidden');
+    thumb.removeAttribute('src');
+    label.textContent = 'Foto no centro';
+  }
+}
+
+async function handleQRPhotoUpload(e) {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  try {
+    qrCenterPhoto = await processQRPhotoFile(file);
+    updateQRPhotoUI();
+    refreshQRWithPhoto();
+    toast('Foto aplicada no QR!', 'success');
+  } catch (err) {
+    console.error('QR photo error:', err);
+    toast('Erro na foto: ' + err.message, 'error');
+  }
+}
+
+function removeQRPhoto() {
+  qrCenterPhoto = null;
+  updateQRPhotoUI();
+  refreshQRWithPhoto();
+}
+
+// Re-renderiza o QR da tela + previews do dropdown com/sem a foto
+function refreshQRWithPhoto() {
+  if (!currentLinkId) return;
+  const link = allLinks.find(l => l.id === currentLinkId);
+  if (!link) return;
+  renderDetailQR(link);
+  resetQRPreviewSwatches();
+  generateQRPreviews(currentLinkId);
+}
+
+// Cache de previews dos 6 estilos (regerado a cada novo link ou troca de foto)
+let qrPreviewCache = { linkId: null, photo: null, dataUrls: {} };
 
 async function generateQRPreviews(linkId) {
-  if (qrPreviewCache.linkId === linkId && Object.keys(qrPreviewCache.dataUrls).length > 0) {
+  if (qrPreviewCache.linkId === linkId && qrPreviewCache.photo === qrCenterPhoto && Object.keys(qrPreviewCache.dataUrls).length > 0) {
     applyQRPreviews();
     return;
   }
   const link = allLinks.find(l => l.id === linkId);
   if (!link) return;
-  qrPreviewCache = { linkId, dataUrls: {} };
+  qrPreviewCache = { linkId, photo: qrCenterPhoto, dataUrls: {} };
 
   let QRCodeStyling;
   try { QRCodeStyling = await loadQRStyling(); } catch { return; }
@@ -890,14 +1003,14 @@ async function generateQRPreviews(linkId) {
   await Promise.all(styleKeys.map(async (key) => {
     try {
       // Preview 200×200 com margem proporcionalmente maior (~22%) pra ficar visível em 52px
-      const cfg = { ...QR_STYLES[key].config(shortUrl), width: 200, height: 200, margin: 44 };
+      const cfg = applyQRPhoto({ ...QR_STYLES[key].config(shortUrl), width: 200, height: 200, margin: 44 });
       const qr = new QRCodeStyling(cfg);
       const holder = document.createElement('div');
       holder.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:200px;height:200px;';
       document.body.appendChild(holder);
       qr.append(holder);
-      // espera o canvas renderizar
-      await new Promise(r => setTimeout(r, 120));
+      // espera o canvas renderizar (foto central demora um pouco mais)
+      await new Promise(r => setTimeout(r, qrCenterPhoto ? 300 : 120));
       const canvas = holder.querySelector('canvas');
       if (canvas && canvas.width > 0) {
         try { qrPreviewCache.dataUrls[key] = canvas.toDataURL('image/png'); } catch {}
@@ -906,8 +1019,8 @@ async function generateQRPreviews(linkId) {
     } catch (e) { /* skip */ }
   }));
 
-  // Só aplica se ainda for o mesmo link (evita corrida com troca rápida)
-  if (qrPreviewCache.linkId === linkId) applyQRPreviews();
+  // Só aplica se ainda for o mesmo link e a mesma foto (evita corrida com troca rápida)
+  if (qrPreviewCache.linkId === linkId && qrPreviewCache.photo === qrCenterPhoto) applyQRPreviews();
 }
 
 function applyQRPreviews() {
@@ -1498,6 +1611,32 @@ async function deleteLink(id) {
 }
 
 /* ─── DETAIL ─── */
+// QR do modal (clássico P&B) — com foto no centro se o usuário enviou uma
+async function renderDetailQR(link) {
+  const shortUrl = `https://${link.host}/${link.slug}`;
+  const qrEl = document.getElementById('qrCode');
+  qrEl.innerHTML = '';
+  try {
+    const QRCodeStyling = await loadQRStyling();
+    currentQR = new QRCodeStyling(applyQRPhoto({
+      type: 'canvas',
+      width: 1024,
+      height: 1024,
+      data: shortUrl,
+      margin: 48,
+      qrOptions: { errorCorrectionLevel: 'M' },
+      dotsOptions: { type: 'square', color: '#0a0a0a' },
+      backgroundOptions: { color: '#ffffff' },
+      cornersSquareOptions: { type: 'square', color: '#0a0a0a' },
+      cornersDotOptions: { type: 'square', color: '#0a0a0a' },
+    }));
+    currentQR.append(qrEl);
+  } catch (e) {
+    console.error('QR error:', e);
+    qrEl.innerHTML = `<div style="width:200px;height:200px;display:grid;place-items:center;background:var(--alt);border-radius:8px;color:var(--danger);font-size:12px;text-align:center;padding:12px;">Erro ao gerar QR<br/><small style="opacity:.6">${escapeHtml(e.message)}</small></div>`;
+  }
+}
+
 async function openDetail(id) {
   currentLinkId = id;
   const link = allLinks.find(l => l.id === id);
@@ -1516,27 +1655,8 @@ async function openDetail(id) {
   document.getElementById('detailModal').classList.add('open');
 
   // QR padrão do modal: clássico profissional — quadrados, sem logo, margem generosa
-  const qrEl = document.getElementById('qrCode');
-  qrEl.innerHTML = '';
-  try {
-    const QRCodeStyling = await loadQRStyling();
-    currentQR = new QRCodeStyling({
-      type: 'canvas',
-      width: 1024,
-      height: 1024,
-      data: shortUrl,
-      margin: 48,
-      qrOptions: { errorCorrectionLevel: 'M' },
-      dotsOptions: { type: 'square', color: '#0a0a0a' },
-      backgroundOptions: { color: '#ffffff' },
-      cornersSquareOptions: { type: 'square', color: '#0a0a0a' },
-      cornersDotOptions: { type: 'square', color: '#0a0a0a' },
-    });
-    currentQR.append(qrEl);
-  } catch (e) {
-    console.error('QR error:', e);
-    qrEl.innerHTML = `<div style="width:200px;height:200px;display:grid;place-items:center;background:var(--alt);border-radius:8px;color:var(--danger);font-size:12px;text-align:center;padding:12px;">Erro ao gerar QR<br/><small style="opacity:.6">${escapeHtml(e.message)}</small></div>`;
-  }
+  updateQRPhotoUI();
+  await renderDetailQR(link);
 
   // Analytics
   try {
@@ -1884,10 +2004,10 @@ async function downloadQRStyle(styleKey) {
   try {
     const QRCodeStyling = await loadQRStyling();
     const shortUrl = `https://${link.host}/${link.slug}`;
-    const tempQR = new QRCodeStyling(style.config(shortUrl));
+    const tempQR = new QRCodeStyling(applyQRPhoto(style.config(shortUrl)));
     const slug = link.slug.replace(/[^a-zA-Z0-9_-]/g, '_');
     tempQR.download({
-      name: `audaza-links_${slug}_${styleKey}`,
+      name: `audaza-links_${slug}_${styleKey}${qrCenterPhoto ? '_foto' : ''}`,
       extension: 'png',
     });
     toast(`QR "${style.name}" gerando…`, 'success');
